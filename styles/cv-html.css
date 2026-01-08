@@ -1,0 +1,253 @@
+/* CV HTML Preview Styles - Paged.js support */
+
+/* Paged.js page configuration */
+@page {
+  size: A4;
+  margin: 18mm 15mm;
+}
+
+/* Wrapper for all content */
+.cv-pages-wrapper {
+  width: 100%;
+  max-width: 210mm;
+  margin: 0 auto;
+  background: transparent;
+}
+
+/* Individual page container (Paged.js will handle actual pages) */
+.cv-page {
+  width: 100%;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 10pt;
+  color: #000000;
+}
+
+/* Header */
+.cv-header {
+  margin-bottom: 30px;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.cv-header-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.cv-header-text {
+  flex: 1;
+}
+
+.cv-name {
+  font-size: 28pt;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #000000;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+}
+
+.cv-title {
+  font-size: 13pt;
+  color: #4B5563;
+  margin-bottom: 10px;
+  margin-top: 0;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.cv-contact {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font-size: 10pt;
+  color: #6B7280;
+  margin-top: 8px;
+}
+
+.cv-contact-item {
+  margin-right: 16px;
+}
+
+.cv-profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  object-fit: cover;
+  margin-left: 20px;
+  flex-shrink: 0;
+}
+
+/* Sections - Keep together on same page */
+.cv-section {
+  margin-bottom: 24px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-section[data-keep] {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-section-title {
+  font-size: 13pt;
+  font-weight: bold;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid #D1D5DB;
+  text-transform: uppercase;
+  color: #111827;
+  letter-spacing: 0.5px;
+}
+
+/* Experience Items - Keep together on same page */
+.cv-item {
+  margin-bottom: 16px;
+  padding-left: 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-item[data-keep] {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-experience-item {
+  margin-bottom: 16px;
+  padding-left: 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-item-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  align-items: baseline;
+}
+
+.cv-item-title {
+  font-size: 12pt;
+  font-weight: bold;
+  color: #111827;
+  flex: 1;
+  margin-bottom: 4px;
+}
+
+.cv-item-date {
+  font-size: 10pt;
+  color: #6B7280;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.cv-item-company {
+  font-size: 11pt;
+  margin-bottom: 3px;
+  color: #374151;
+  font-weight: normal;
+}
+
+.cv-item-location {
+  font-size: 9pt;
+  color: #9CA3AF;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.cv-item-description {
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #4B5563;
+  white-space: pre-wrap;
+}
+
+/* Skills & Languages */
+.cv-skills-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.cv-skill-item {
+  font-size: 10pt;
+  background-color: #F3F4F6;
+  padding: 6px 12px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  border-radius: 3px;
+  color: #374151;
+  display: inline-block;
+}
+
+.cv-language-item {
+  font-size: 10pt;
+  background-color: #EFF6FF;
+  padding: 6px 12px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  border-radius: 3px;
+  color: #1E40AF;
+  display: inline-block;
+}
+
+/* Page break utilities */
+.page-break-before {
+  break-before: page;
+  page-break-before: always;
+}
+
+.page-break-after {
+  break-after: page;
+  page-break-after: always;
+}
+
+[data-keep] {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 15mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .cv-pages-wrapper {
+    max-width: 100%;
+  }
+
+  .cv-page {
+    box-shadow: none;
+  }
+
+  .cv-section,
+  .cv-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Prevent orphans and widows */
+  p, h1, h2, h3 {
+    orphans: 3;
+    widows: 3;
+  }
+}
+

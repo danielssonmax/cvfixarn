@@ -1,0 +1,26 @@
+# Kopiera denna fil till .env.local och fyll i dina riktiga värden
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://ivocubrsbufrvswnwkyp.supabase.co/
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2b2N1YnJzYnVmcnZzd253a3lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk2NDg0MzEsImV4cCI6MjA1NTIyNDQzMX0.WGNtyjx1VIL0pAE5cPtdLQZgFsbgmEgRQUa-wVPHhR0
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+
+# Stripe Configuration
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
+
+# Application Configuration
+NEXT_PUBLIC_URL=http://localhost:3000
+
+# Google Analytics (Optional)
+NEXT_PUBLIC_GA_ID=AW-16880470708
+NEXT_PUBLIC_GTM_ID=GTM-KSFMWF8M
+
+# Rate Limiting (Optional - för produktion)
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url_here
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token_here
+
+# iScraper Configuration (för LinkedIn-import)
+ISCRAPER_API_KEY=your_iscraper_api_key_here
+ISCRAPER_BASE_URL=https://api.proapis.com/iscraper/v4/profile-details
