@@ -11,6 +11,12 @@ const nextConfig = {
   },
   // Transpile ESM packages
   transpilePackages: ['@react-pdf/renderer'],
+  // Turbopack configuration (Next.js 16+)
+  turbopack: {
+    resolveAlias: {
+      canvas: false,
+    },
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Exclude Node.js modules from client-side bundle
