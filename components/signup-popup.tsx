@@ -58,6 +58,15 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
       // Refresh user context
       await checkAuthStatus()
       
+      // Track signup conversion for Google Ads
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-16880470708/5B1xCODokd8bELSVnvE-',
+          'value': 1.0,
+          'currency': 'SEK'
+        })
+      }
+      
       // Close popup
       onClose()
       
