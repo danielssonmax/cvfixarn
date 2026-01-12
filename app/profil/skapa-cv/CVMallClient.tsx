@@ -93,13 +93,41 @@ export default function CVMallClient() {
         })
       }
       
+      // Add user to premium table
+      const addUserToPremium = async () => {
+        if (user) {
+          try {
+            const { error } = await supabase
+              .from('premium')
+              .upsert({
+                uid: user.id,
+                email: user.email,
+                premium: true
+              }, {
+                onConflict: 'uid'
+              })
+            
+            if (error) {
+              console.error('Error adding user to premium:', error)
+            } else {
+              console.log('User added to premium successfully')
+              setIsSubscribed(true)
+            }
+          } catch (err) {
+            console.error('Error adding user to premium:', err)
+          }
+        }
+      }
+      
+      addUserToPremium()
+      
       // Clean up URL by removing query params
       const url = new URL(window.location.href)
       url.searchParams.delete('checkout')
       url.searchParams.delete('session_id')
       window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
     }
-  }, [checkoutSuccess, searchParams])
+  }, [checkoutSuccess, searchParams, user])
 
   // Use react-hook-form
   const form = useForm({
