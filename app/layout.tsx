@@ -5,6 +5,7 @@ import type React from "react"
 import Script from "next/script"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { sanitizeHTML } from "@/lib/sanitize"
+import { CookieConsent } from "@/components/cookie-consent"
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -24,6 +25,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Consent Mode - Default to denied */}
+        <Script id="google-consent-default" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'wait_for_update': 500
+            });
+          `}
+        </Script>
+
         {/* Google Tag Manager */}
         <Script id="google-tag-manager" strategy="beforeInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -55,6 +71,7 @@ export default function RootLayout({
         {/* End Google Tag Manager (noscript) */}
       <AuthProvider>
         {children}
+        <CookieConsent />
       </AuthProvider>
       </body>
     </html>
