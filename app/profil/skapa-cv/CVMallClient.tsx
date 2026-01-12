@@ -78,6 +78,28 @@ export default function CVMallClient() {
   const [isLoadingCV, setIsLoadingCV] = useState(false)
   const hasLoadedData = useRef(false)
   const editId = searchParams.get('edit')
+  const checkoutSuccess = searchParams.get('checkout')
+
+  // Track purchase conversion when redirected from successful Stripe checkout
+  useEffect(() => {
+    if (checkoutSuccess === 'success') {
+      // Fire Google Ads purchase conversion
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-16880470708/a_QzCJbbyOEbELSVnvE-',
+          'value': 1.0,
+          'currency': 'SEK',
+          'transaction_id': searchParams.get('session_id') || ''
+        })
+      }
+      
+      // Clean up URL by removing query params
+      const url = new URL(window.location.href)
+      url.searchParams.delete('checkout')
+      url.searchParams.delete('session_id')
+      window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
+    }
+  }, [checkoutSuccess, searchParams])
 
   // Use react-hook-form
   const form = useForm({

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+ import { NextResponse } from "next/server"
 import { getStripeInstance } from "@/lib/stripe"
 import { createCheckoutSessionSchema, validateRequest, sanitizeInput } from "@/lib/validations"
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const { priceId, userId } = validation.data
 
     const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000"
-    const returnUrl = `${baseUrl}/return?session_id={CHECKOUT_SESSION_ID}`
+    const returnUrl = `${baseUrl}/profil/skapa-cv?checkout=success&session_id={CHECKOUT_SESSION_ID}`
 
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
