@@ -82,7 +82,7 @@ export default function CVMallClient() {
 
   // Track purchase conversion when redirected from successful Stripe checkout
   useEffect(() => {
-    if (checkoutSuccess === 'success') {
+    if (checkoutSuccess === 'success' && user) {
       // Fire Google Ads purchase conversion
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
@@ -93,29 +93,27 @@ export default function CVMallClient() {
         })
       }
       
-      // Add user to premium table
+      // Add user to premium table with status "PAID"
       const addUserToPremium = async () => {
-        if (user) {
-          try {
-            const { error } = await supabase
-              .from('premium')
-              .upsert({
-                uid: user.id,
-                email: user.email,
-                premium: true
-              }, {
-                onConflict: 'uid'
-              })
-            
-            if (error) {
-              console.error('Error adding user to premium:', error)
-            } else {
-              console.log('User added to premium successfully')
-              setIsSubscribed(true)
-            }
-          } catch (err) {
-            console.error('Error adding user to premium:', err)
+        try {
+          const { error } = await supabase
+            .from('premium')
+            .upsert({
+              uid: user.id,
+              email: user.email,
+              premium: 'PAID'
+            }, {
+              onConflict: 'uid'
+            })
+          
+          if (error) {
+            console.error('Error adding user to premium:', error)
+          } else {
+            console.log('User added to premium with PAID status')
+            setIsSubscribed(true)
           }
+        } catch (err) {
+          console.error('Error adding user to premium:', err)
         }
       }
       
@@ -312,9 +310,41 @@ export default function CVMallClient() {
     }
   }, [user])
 
-  // Premium check removed - all users can use the app
+  // Check if user has PAID premium status
   useEffect(() => {
-    setIsSubscribed(true)
+    const checkPremiumStatus = async () => {
+      if (!user) {
+        setIsSubscribed(false)
+        return
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('premium')
+          .select('premium')
+          .eq('uid', user.id)
+          .single()
+        
+        if (error) {
+          console.log('No premium record found:', error.message)
+          setIsSubscribed(false)
+          return
+        }
+        
+        if (data?.premium === 'PAID') {
+          console.log('User has PAID premium status')
+          setIsSubscribed(true)
+        } else {
+          console.log('User premium status:', data?.premium)
+          setIsSubscribed(false)
+        }
+      } catch (err) {
+        console.error('Error checking premium status:', err)
+        setIsSubscribed(false)
+      }
+    }
+    
+    checkPremiumStatus()
   }, [user])
 
   const handleSignupSuccess = () => {

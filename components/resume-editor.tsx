@@ -730,10 +730,41 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
   //   ...overflow checking code...
   // }, [])
 
-  // Premium check removed - not needed for now
+  // Check if user has PAID premium status
   useEffect(() => {
-    // All users can download PDFs
-    setIsSubscribed(true)
+    const checkPremiumStatus = async () => {
+      if (!user) {
+        setIsSubscribed(false)
+        return
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('premium')
+          .select('premium')
+          .eq('uid', user.id)
+          .single()
+        
+        if (error) {
+          console.log('No premium record found:', error.message)
+          setIsSubscribed(false)
+          return
+        }
+        
+        if (data?.premium === 'PAID') {
+          console.log('User has PAID premium status')
+          setIsSubscribed(true)
+        } else {
+          console.log('User premium status:', data?.premium)
+          setIsSubscribed(false)
+        }
+      } catch (err) {
+        console.error('Error checking premium status:', err)
+        setIsSubscribed(false)
+      }
+    }
+    
+    checkPremiumStatus()
   }, [user])
 
   const handleSectionUpdate = useCallback(
@@ -1483,11 +1514,17 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
   }
 
   const handleDownloadClick = () => {
-    console.log('🔽 Download clicked, user:', user ? 'logged in' : 'not logged in')
+    console.log('🔽 Download clicked, user:', user ? 'logged in' : 'not logged in', 'isSubscribed:', isSubscribed)
     if (user) {
-      // Användaren är inloggad - visa Stripe checkout
-      console.log('🔽 Opening payment popup...')
-      setShowCapturePayment(true)
+      if (isSubscribed) {
+        // Användaren har betalat - ladda ner direkt
+        console.log('🔽 User has PAID status, downloading PDF...')
+        downloadPDF()
+      } else {
+        // Användaren är inloggad men har inte betalat - visa Stripe checkout
+        console.log('🔽 Opening payment popup...')
+        setShowCapturePayment(true)
+      }
     } else {
       // Användaren är inte inloggad - visa signup popup
       console.log('🔽 Opening signup popup...')
