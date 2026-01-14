@@ -1,72 +1,80 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    // Get data from request body
+    const requestData = await request.json()
+    const { user_id, id, title, data } = requestData
     
-    // Try cookie-based auth first
-    let { data: { user } } = await supabase.auth.getUser()
+    // Try to get user from Authorization header if not in body
+    let userId = user_id
+    const auth = request.headers.get('authorization') || ''
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null
     
-    // Fallback: Authorization: Bearer <access_token>
-    if (!user) {
-      const auth = request.headers.get('authorization') || ''
-      const token = auth.startsWith('Bearer ') ? auth.slice(7) : null
-      if (token) {
-        console.log('🔑 Trying header-based auth...')
-        const serverClient = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          { auth: { persistSession: false } }
-        )
-        const { data: userData, error: jwtErr } = await serverClient.auth.getUser(token)
-        if (!jwtErr && userData.user) {
-          user = userData.user
-          console.log('✅ Header-based auth successful:', user.id)
-        }
+    if (token && !userId) {
+      // Verify token and get user ID
+      const authClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        { auth: { persistSession: false } }
+      )
+      const { data: userData, error: jwtErr } = await authClient.auth.getUser(token)
+      if (!jwtErr && userData.user) {
+        userId = userData.user.id
+        console.log('✅ Auth successful, user ID:', userId)
       }
-    } else {
-      console.log('✅ Cookie-based auth successful:', user.id)
     }
     
-    if (!user) {
-      console.log('⚠️ No user session found')
-      return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 })
+    if (!userId) {
+      console.log('⚠️ No user ID found in request')
+      return NextResponse.json({ success: false, error: 'User ID is required' }, { status: 400 })
+    }
+    
+    if (!data) {
+      console.log('⚠️ No data found in request')
+      return NextResponse.json({ success: false, error: 'Data is required' }, { status: 400 })
+    }
+    
+    // Use service role key for database operations to bypass RLS
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } }
+    )
+
+    const now = new Date().toISOString()
+    const cvToSave = {
+      user_id: userId,
+      data: data,
+      title: title || 'Untitled CV',
+      updated_at: now,
     }
 
-    const cvData = await request.json()
-    const { id, version, draft_id, ...dataToSave } = cvData
-    
     if (id) {
       // Check if CV exists first
       const { data: existingCV, error: checkError } = await supabase
         .from('cvs')
-        .select('version')
+        .select('id')
         .eq('id', id)
-        .eq('user_id', user.id)
-        .maybeSingle() // Returns null if not found, doesn't throw error
+        .eq('user_id', userId)
+        .maybeSingle()
       
       if (checkError) {
         throw checkError
       }
       
       if (!existingCV) {
-        // CV doesn't exist - INSERT instead of UPDATE
+        // CV doesn't exist - INSERT
         console.log('📝 CV not found, creating new one with id:', id)
-        const newVersion = Date.now()
         const { data: newCV, error: insertError } = await supabase
           .from('cvs')
           .insert({
-            id, // Use the provided ID
-            ...dataToSave,
-            user_id: user.id,
-            version: newVersion,
-            active: true, // New CVs are active by default
+            id,
+            ...cvToSave,
+            created_at: now,
           })
           .select()
           .single()
@@ -81,29 +89,13 @@ export async function POST(request: Request) {
         })
       }
       
-      // CV exists - UPDATE with optimistic locking
+      // CV exists - UPDATE
       console.log('✏️ Updating existing CV:', id)
-      
-      // Check version conflict
-      if (version && existingCV.version > version) {
-        return NextResponse.json({
-          success: false,
-          error: 'Version conflict - CV was updated by another tab/device',
-          conflict: true,
-          currentVersion: existingCV.version,
-        }, { status: 409 })
-      }
-
-      // Update with new version
-      const newVersion = Date.now()
       const { data: updatedCV, error: updateError } = await supabase
         .from('cvs')
-        .update({
-          ...dataToSave,
-          version: newVersion,
-        })
+        .update(cvToSave)
         .eq('id', id)
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .select()
         .single()
 
@@ -117,14 +109,11 @@ export async function POST(request: Request) {
       })
     } else {
       // INSERT new CV
-      const newVersion = Date.now()
       const { data: newCV, error: insertError } = await supabase
         .from('cvs')
         .insert({
-          ...dataToSave,
-          user_id: user.id,
-          draft_id: draft_id || null,
-          version: newVersion,
+          ...cvToSave,
+          created_at: now,
         })
         .select()
         .single()

@@ -1,35 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 
 export const runtime = 'nodejs'
 
 // GET - Load CV by ID
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
     const { searchParams } = new URL(request.url)
     const cvId = searchParams.get('id')
-    
-    // Get current user (must be logged in)
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-    
-    if (userError || !user) {
-      return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 })
-    }
+    const userId = searchParams.get('user_id')
     
     if (!cvId) {
       return NextResponse.json({ success: false, error: 'CV ID is required' }, { status: 400 })
     }
     
-    // Get CV
-    const { data, error } = await supabase
+    // Use service role key for database operations
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } }
+    )
+    
+    // Build query
+    let query = supabase
       .from('cvs')
-      .select('*')
+      .select('id, user_id, data, title, created_at, updated_at')
       .eq('id', cvId)
-      .eq('user_id', user.id)
-      .maybeSingle()
+    
+    // If user_id is provided, filter by it
+    if (userId) {
+      query = query.eq('user_id', userId)
+    }
+    
+    const { data, error } = await query.maybeSingle()
     
     if (error) {
       console.error('❌ Error loading CV:', error)

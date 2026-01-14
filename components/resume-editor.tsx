@@ -961,7 +961,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
       
       const loadCVFromDatabase = async () => {
         try {
-          const response = await fetch(`/api/load-cv?id=${cvId}`, {
+          const response = await fetch(`/api/load-cv?id=${cvId}&user_id=${user.id}`, {
             credentials: 'include',
           })
           const result = await response.json()
@@ -970,81 +970,49 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
             const savedCV = result.cv
             loadedCV = savedCV
             
-            // Restore CV data from database
-            if (savedCV.cv_name) setCvName(savedCV.cv_name)
-            if (savedCV.selected_template) setSelectedTemplate(savedCV.selected_template)
-            if (savedCV.selected_font) setSelectedFont(savedCV.selected_font)
-            if (savedCV.font_size) {
-              const size = savedCV.font_size === 9 ? 'XS' : savedCV.font_size === 10 ? 'S' : savedCV.font_size === 11 ? 'M' : savedCV.font_size === 12 ? 'L' : 'XL'
-              const pixels = savedCV.font_size === 9 ? '12px' : savedCV.font_size === 10 ? '14px' : savedCV.font_size === 11 ? '16px' : savedCV.font_size === 12 ? '18px' : '20px'
-              setFontSize(size)
-              setFontSizePixels(pixels)
-            }
-            if (savedCV.line_height) setLineHeight(savedCV.line_height.toString())
-            if (savedCV.selected_color) setSelectedColor(savedCV.selected_color)
-            if (savedCV.header_color) setHeaderColor(savedCV.header_color)
-            
-            // Restore section order
-            if (savedCV.section_order && Array.isArray(savedCV.section_order)) {
-              setAddedSections(savedCV.section_order)
+            // Restore CV title from database
+            if (savedCV.title) {
+              setCvName(savedCV.title)
             }
             
-            // Restore section names
-            if (savedCV.section_names && typeof savedCV.section_names === 'object') {
-              const namesMap = savedCV.section_names as { [key: string]: string }
-              setStaticSectionSections(prev => 
-                prev.map(section => ({
-                  ...section,
-                  title: namesMap[section.id] || section.title
-                }))
-              )
-              setOptionalSections(prev =>
-                prev.map(section => ({
-                  ...section,
-                  title: namesMap[section.id] || section.title
-                }))
-              )
-            }
-            
-            // Restore form data
-            if (savedCV.personal_info) {
-              form.setValue('personalInfo', savedCV.personal_info)
-            }
-            if (savedCV.work_experience && savedCV.work_experience.length > 0) {
-              form.setValue('sections.experience.items', savedCV.work_experience)
-            }
-            if (savedCV.education && savedCV.education.length > 0) {
-              form.setValue('sections.education.items', savedCV.education)
-            }
-            if (savedCV.skills && savedCV.skills.length > 0) {
-              form.setValue('sections.skills.items', savedCV.skills)
-            }
-            if (savedCV.languages && savedCV.languages.length > 0) {
-              form.setValue('sections.languages.items', savedCV.languages)
-            }
-            if (savedCV.profile) {
-              form.setValue('sections.profile', savedCV.profile)
-            }
-            if (savedCV.courses && savedCV.courses.length > 0) {
-              form.setValue('sections.courses.items', savedCV.courses)
-            }
-            if (savedCV.internships && savedCV.internships.length > 0) {
-              form.setValue('sections.internship.items', savedCV.internships)
-            }
-            if (savedCV.certificates && savedCV.certificates.length > 0) {
-              form.setValue('sections.certificates.items', savedCV.certificates)
-            }
-            if (savedCV.achievements && savedCV.achievements.length > 0) {
-              form.setValue('sections.achievements.items', savedCV.achievements)
-            }
-            if (savedCV.references && savedCV.references.length > 0) {
-              form.setValue('sections.references.items', savedCV.references)
-            }
-            if (savedCV.traits && savedCV.traits.length > 0) {
-              form.setValue('sections.traits.items', savedCV.traits)
-            }
-            if (savedCV.hobbies && savedCV.hobbies.length > 0) {
-              form.setValue('sections.hobbies.items', savedCV.hobbies)
+            // Restore form data from the data JSONB column
+            if (savedCV.data) {
+              const cvData = savedCV.data
+              
+              // Restore personalInfo
+              if (cvData.personalInfo) {
+                form.setValue('personalInfo', cvData.personalInfo)
+              }
+              
+              // Restore experience (from experience array in data)
+              if (cvData.experience && Array.isArray(cvData.experience) && cvData.experience.length > 0) {
+                form.setValue('sections.experience.items', cvData.experience)
+              }
+              
+              // Restore education
+              if (cvData.education && Array.isArray(cvData.education) && cvData.education.length > 0) {
+                form.setValue('sections.education.items', cvData.education)
+              }
+              
+              // Restore skills
+              if (cvData.skills && Array.isArray(cvData.skills) && cvData.skills.length > 0) {
+                form.setValue('sections.skills.items', cvData.skills)
+              }
+              
+              // Restore languages
+              if (cvData.languages && Array.isArray(cvData.languages) && cvData.languages.length > 0) {
+                form.setValue('sections.languages.items', cvData.languages)
+              }
+              
+              // Restore references
+              if (cvData.references && Array.isArray(cvData.references) && cvData.references.length > 0) {
+                form.setValue('sections.references.items', cvData.references)
+              }
+              
+              // Restore certifications
+              if (cvData.certifications && Array.isArray(cvData.certifications) && cvData.certifications.length > 0) {
+                form.setValue('sections.certificates.items', cvData.certifications)
+              }
             }
             
             // Mark that initial data has been loaded
@@ -1270,6 +1238,43 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
         const { data: { session } } = await supabaseClient.auth.getSession()
         const accessToken = session?.access_token
         
+        // Get current form values
+        const currentFormData = form.getValues()
+        
+        // Transform data to match the database format
+        const formattedData = {
+          skills: currentFormData.sections?.skills?.items || currentFormData.skills || [],
+          password: "",
+          projects: [],
+          education: currentFormData.sections?.education?.items || currentFormData.education || [],
+          languages: currentFormData.sections?.languages?.items || currentFormData.languages || [],
+          experience: (currentFormData.sections?.experience?.items || currentFormData.workExperience || []).map((exp: any) => ({
+            title: exp.title || "",
+            company: exp.company || "",
+            current: exp.current || false,
+            endDate: exp.endDate || "",
+            endYear: exp.endYear || "",
+            location: exp.location || "",
+            startDate: exp.startDate || "",
+            startYear: exp.startYear || "",
+            description: exp.description || ""
+          })),
+          references: currentFormData.sections?.references?.items || [],
+          personalInfo: {
+            email: currentFormData.personalInfo?.email || "",
+            phone: currentFormData.personalInfo?.phone || "",
+            title: currentFormData.personalInfo?.title || "",
+            address: currentFormData.personalInfo?.address || "",
+            summary: currentFormData.personalInfo?.summary || "",
+            lastName: currentFormData.personalInfo?.lastName || "",
+            location: currentFormData.personalInfo?.location || "",
+            firstName: currentFormData.personalInfo?.firstName || "",
+            postalCode: currentFormData.personalInfo?.postalCode || ""
+          },
+          certifications: currentFormData.sections?.certificates?.items || [],
+          workExperience: []
+        }
+        
         const response = await fetch('/api/save-cv', {
           method: 'POST',
           credentials: 'include',
@@ -1278,8 +1283,10 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
             ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           },
           body: JSON.stringify({
-            ...data,
-            version: currentVersion, // Add version for optimistic locking
+            id: cvId,
+            user_id: user.id,
+            title: cvName || 'Untitled CV',
+            data: formattedData,
           }),
         })
         
@@ -1309,7 +1316,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
     } finally {
       setTimeout(() => setIsSavingChanges(false), 1000)
     }
-  }, [user, cvId, currentVersion, supabaseClient])
+  }, [user, cvId, currentVersion, supabaseClient, form, cvName])
 
   // Use debounced autosave
   useDebouncedAutosave(cvData, {

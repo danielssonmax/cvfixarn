@@ -267,7 +267,7 @@ export default function ProfilePage() {
                             <div className="flex-1 min-w-0">
                               <h3 className="text-sm font-medium text-gray-900 truncate">{cv.title}</h3>
                               <p className="text-xs text-gray-500 mt-1">
-                                Redigerad för {format(new Date(cv.updated_at), 'P', { locale: sv })}
+                                Dina CV
                               </p>
                             </div>
                             
