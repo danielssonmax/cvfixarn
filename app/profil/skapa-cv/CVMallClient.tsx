@@ -76,6 +76,7 @@ export default function CVMallClient() {
   const [lastLoadedId, setLastLoadedId] = useState<string | null>(null)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [isLoadingCV, setIsLoadingCV] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const hasLoadedData = useRef(false)
   const editId = searchParams.get('edit')
   const checkoutSuccess = searchParams.get('checkout')
@@ -87,9 +88,9 @@ export default function CVMallClient() {
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-16880470708/a_QzCJbbyOEbELSVnvE-',
-          'value': 1.0,
+          'value': 237.0,
           'currency': 'SEK',
-          'transaction_id': searchParams.get('session_id') || ''
+          'transaction_id': user.id
         })
       }
       
@@ -119,6 +120,9 @@ export default function CVMallClient() {
       }
       
       addUserToPremium()
+      
+      // Show success dialog
+      setShowSuccessDialog(true)
       
       // Clean up URL by removing query params
       const url = new URL(window.location.href)
@@ -557,6 +561,38 @@ export default function CVMallClient() {
         mode={popupMode}
         setMode={setPopupMode}
       />
+
+      {/* Payment Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent id="conversion" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center text-green-600">
+              🎉 Grattis!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-6 text-center">
+            <p className="text-lg text-gray-800 mb-6">
+              Du är ett steg närmare ditt nya jobb! Ladda ner ditt nya CV nu
+            </p>
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false)
+                downloadPDF()
+              }}
+              className="w-full bg-[#00bf63] hover:bg-[#00a052] text-white font-semibold py-3 px-6 rounded-md"
+            >
+              Ladda ner CV
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowSuccessDialog(false)}
+              className="w-full mt-3"
+            >
+              Stäng
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Stripe Checkout Dialog */}
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
