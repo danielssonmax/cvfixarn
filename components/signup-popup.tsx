@@ -64,7 +64,6 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
               {
                 uid: data.user.id,
                 email: email,
-                name: nameFromEmail,
                 premium: 'false',
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
