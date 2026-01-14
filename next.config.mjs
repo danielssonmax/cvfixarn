@@ -67,7 +67,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob: https://media.licdn.com; connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://www.google.com https://*.google.com https://media.licdn.com data: blob:; frame-src https://js.stripe.com https://www.googletagmanager.com blob:; worker-src 'self' blob:;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://unpkg.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob: https://media.licdn.com; connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://www.google.com https://*.google.com https://*.google.se https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://media.licdn.com data: blob:; frame-src https://js.stripe.com https://www.googletagmanager.com blob:; worker-src 'self' blob:;",
           },
         ],
       },

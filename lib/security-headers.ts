@@ -20,12 +20,12 @@ export const SECURITY_HEADERS = {
   // Content Security Policy
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://unpkg.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://unpkg.com https://googleads.g.doubleclick.net",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://*.supabase.co https://api.stripe.com",
-    "frame-src https://js.stripe.com",
+    "connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://www.google.com https://*.google.com https://*.google.se https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net",
+    "frame-src https://js.stripe.com https://www.googletagmanager.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
