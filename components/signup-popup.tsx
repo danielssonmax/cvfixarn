@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/contexts/AuthContext"
+import { getGclidFromCookie } from "@/lib/gclid-utils"
 
 interface SignupPopupProps {
   isOpen: boolean
@@ -58,6 +59,9 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
           // Extract name from email (part before @) or use email as fallback
           const nameFromEmail = email.split('@')[0] || email
           
+          // Get gclid from cookie if available
+          const gclid = getGclidFromCookie()
+          
           const { data: premiumData, error: premiumError } = await supabase
             .from('premium')
             .insert([
@@ -65,6 +69,7 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
                 uid: data.user.id,
                 email: email,
                 premium: 'false',
+                gclid: gclid || null,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
               },
