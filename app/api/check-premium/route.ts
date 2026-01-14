@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     }
 
     // If no data is found, assume the user is not premium
-    const isPremium = data?.premium ?? false
+    const isPremium = data?.premium === 'true'
 
     return NextResponse.json({ premium: isPremium })
   } catch (error) {

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     const { userId, email, name } = validation.data
 
-    const { error } = await supabase.from("premium").insert([{ uid: userId, email, name, premium: false }])
+    const { error } = await supabase.from("premium").insert([{ uid: userId, email, name, premium: "false" }])
 
     if (error) throw error
 

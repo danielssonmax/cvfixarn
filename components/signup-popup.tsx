@@ -52,6 +52,36 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
         if (sessionError) throw sessionError
       }
 
+      // Create row in premium table
+      if (data.user) {
+        try {
+          // Extract name from email (part before @) or use email as fallback
+          const nameFromEmail = email.split('@')[0] || email
+          
+          const { data: premiumData, error: premiumError } = await supabase
+            .from('premium')
+            .insert([
+              {
+                uid: data.user.id,
+                email: email,
+                name: nameFromEmail,
+                premium: 'false',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+            ])
+            .select()
+
+          if (premiumError) {
+            console.error('Error creating premium row:', premiumError)
+            // Don't throw - user is created, just log the error
+          }
+        } catch (createUserError) {
+          console.error('Error inserting into premium table:', createUserError)
+          // Don't throw - user is created, just log the error
+        }
+      }
+
       // Wait a moment for cookies to propagate
       await new Promise(resolve => setTimeout(resolve, 1000))
 

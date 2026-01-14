@@ -93,7 +93,8 @@ export default function CVMallClient() {
         })
       }
       
-      // Add user to premium table with status "PAID"
+      // Add user to premium table with status "true"
+      // Note: This is a fallback - the webhook should handle this, but this ensures immediate UI update
       const addUserToPremium = async () => {
         try {
           const { error } = await supabase
@@ -101,7 +102,7 @@ export default function CVMallClient() {
             .upsert({
               uid: user.id,
               email: user.email,
-              premium: 'PAID'
+              premium: 'true'
             }, {
               onConflict: 'uid'
             })
@@ -109,7 +110,7 @@ export default function CVMallClient() {
           if (error) {
             console.error('Error adding user to premium:', error)
           } else {
-            console.log('User added to premium with PAID status')
+            console.log('User added to premium with true status')
             setIsSubscribed(true)
           }
         } catch (err) {
@@ -310,7 +311,7 @@ export default function CVMallClient() {
     }
   }, [user])
 
-  // Check if user has PAID premium status
+  // Check if user has premium status
   useEffect(() => {
     const checkPremiumStatus = async () => {
       if (!user) {
@@ -331,8 +332,8 @@ export default function CVMallClient() {
           return
         }
         
-        if (data?.premium === 'PAID') {
-          console.log('User has PAID premium status')
+        if (data?.premium === 'true') {
+          console.log('User has premium status')
           setIsSubscribed(true)
         } else {
           console.log('User premium status:', data?.premium)

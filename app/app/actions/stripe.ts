@@ -46,7 +46,7 @@ export async function checkSubscriptionStatus(userId?: string) {
   return { isSubscribed: false }
     }
 
-    return { isSubscribed: data?.premium || false }
+    return { isSubscribed: data?.premium === 'true' }
   } catch (error) {
     console.error("Error checking premium status:", error)
     return { isSubscribed: false }

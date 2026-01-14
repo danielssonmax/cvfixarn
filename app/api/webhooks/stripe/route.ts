@@ -55,6 +55,7 @@ export async function POST(req: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session
     const userId = session.metadata?.userId
+    const customerEmail = session.customer_email || session.customer_details?.email
 
     if (userId) {
       // Log successful payment
@@ -73,10 +74,27 @@ export async function POST(req: Request) {
       )
 
       // Update the premium status in the database
+      // Use upsert to ensure the row exists, then update premium to "true"
+      const updateData: any = { 
+        uid: userId, 
+        premium: "true",
+        updated_at: new Date().toISOString()
+      }
+      
+      // Include email if available (for cases where row might not exist yet)
+      if (customerEmail) {
+        updateData.email = customerEmail
+      }
+      
       const { error } = await supabase
         .from("premium")
-        .update({ premium: true })
-        .eq("uid", userId)
+        .upsert(
+          updateData,
+          { 
+            onConflict: "uid",
+            ignoreDuplicates: false
+          }
+        )
 
       if (error) {
         console.error("Error updating premium status:", error)

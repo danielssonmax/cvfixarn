@@ -730,7 +730,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
   //   ...overflow checking code...
   // }, [])
 
-  // Check if user has PAID premium status
+  // Check if user has premium status
   useEffect(() => {
     const checkPremiumStatus = async () => {
       if (!user) {
@@ -751,8 +751,8 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
           return
         }
         
-        if (data?.premium === 'PAID') {
-          console.log('User has PAID premium status')
+        if (data?.premium === 'true') {
+          console.log('User has premium status')
           setIsSubscribed(true)
         } else {
           console.log('User premium status:', data?.premium)

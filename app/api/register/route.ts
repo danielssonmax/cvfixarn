@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       'low'
     )
 
-    const { error } = await supabase.from("premium").insert([{ uid: userId, email, name, premium: false }])
+    const { error } = await supabase.from("premium").insert([{ uid: userId, email, name, premium: "false" }])
 
     if (error) {
       // Log registration failure
