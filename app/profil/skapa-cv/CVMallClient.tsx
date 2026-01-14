@@ -564,13 +564,13 @@ export default function CVMallClient() {
 
       {/* Payment Success Dialog */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent id="conversion" className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-center text-green-600">
               🎉 Grattis!
             </DialogTitle>
           </DialogHeader>
-          <div className="py-6 text-center">
+          <div id="conversion" className="py-6 text-center">
             <p className="text-lg text-gray-800 mb-6">
               Du är ett steg närmare ditt nya jobb! Ladda ner ditt nya CV nu
             </p>
