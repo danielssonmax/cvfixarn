@@ -2069,7 +2069,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
             </div>
 
             {/* Download button at bottom of form */}
-            <div className="mt-8 pt-4 border-t border-gray-200">
+            <div className="mt-8 pt-4 border-t border-gray-200 pb-20 md:pb-8">
               <button
                 className="w-full bg-[#00bf63] hover:bg-[#00a857] text-white flex items-center justify-center gap-2 py-3 rounded-md transition-all font-medium text-base"
                 style={{ 
