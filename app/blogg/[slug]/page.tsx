@@ -9,6 +9,56 @@ import { sanitizeHTML } from "@/lib/sanitize"
 
 // This would typically come from a CMS or database
 const blogPosts = {
+  "rekryterarens-5-ovantade-cv-tips": {
+    title: "Rekryterarens 5 oväntade CV-tips som landar dig intervjun",
+    date: "2025-01-28",
+    category: "CV-tips",
+    excerpt:
+      "Fem överraskande och effektiva tips direkt från en rekryterare som förändrar hur du ser på ditt CV och ökar dina chanser att landa drömjobbet.",
+    content: `
+      <p>Att skriva ett CV som verkligen fångar en rekryterares uppmärksamhet kan kännas som en omöjlig uppgift. Hur sticker man ut i mängden och vad är det egentligen som gör skillnad? Här är fem överraskande och effektiva tips direkt från en rekryterare som kommer att förändra hur du ser på ditt CV och öka dina chanser att landa drömjobbet.</p>
+
+      <figure class="my-8">
+        <img src="/blog/rekryterarens-cv-tips-infografik.png" alt="Infografik: Rekryterarens bästa tips för ett imponerande CV – layout och grunduppgifter (matcha annonsens språk, professionellt foto, skippa personnummer och adress) samt innehåll och anpassning (säljande sammanfattning 3–5 meningar, prioritera relevans i erfarenhetslistan, optimera med nyckelord från jobbannonsen)." width="1200" height="auto" loading="lazy" />
+      </figure>
+
+      <h2>1. Skippa din adress och ditt personnummer</h2>
+      <p>När det kommer till kontaktinformation är mindre mer. Allt en rekryterare behöver för att kunna kontakta dig är ditt namn, din e-postadress, ditt telefonnummer och eventuellt en länk till din LinkedIn-profil. Din fullständiga adress och ditt personnummer är helt onödiga i det här skedet av processen.</p>
+      <h5>Varför det spelar roll</h5>
+      <p>Den typen av information hanteras först om du blir erbjuden en anställning. Detta tips förenklar inte bara ditt CV och gör det mer lättläst, utan skyddar också din personliga integritet under ansökningsprocessen.</p>
+
+      <h2>2. Fokusera din sammanfattning på jobbet, inte dina hobbies</h2>
+      <p>En kort sammanfattning på 3–5 meningar högst upp i ditt CV är ett utmärkt sätt att snabbt fånga intresse. Men dess syfte är inte att berätta om dina fritidsintressen eller din personlighet, utan att tydligt visa varför just du är rätt person för den specifika tjänsten du söker.</p>
+      <h5>Rekryterarens perspektiv</h5>
+      <p><em>You don't have to write about hobbies or who you are as a person, but why we should hire you.</em></p>
+      <h6>Så signalerar du rätt</h6>
+      <p>Genom att skräddarsy din sammanfattning signalerar du omedelbart till rekryteraren att du inte bara är en passiv sökande, utan en proaktiv problemlösare som förstår deras specifika behov. Det visar att du kan koppla dina styrkor direkt till arbetsgivarens utmaningar.</p>
+
+      <h2>3. Lyft fram all din erfarenhet – även den från andra länder</h2>
+      <p>Lista all relevant arbetslivserfarenhet du har. Om du saknar erfarenhet som är direkt kopplad till jobbet, kom ihåg att projekt, volontärarbete och praktikplatser också är otroligt värdefulla. Även om du har haft ett jobb under lång tid som verkar orelaterat, tänk på de överförbara färdigheter du utvecklat – som kundservice, projektledning eller ansvarstagande – och lyft fram dem.</p>
+      <h5>Internationell erfarenhet räknas</h5>
+      <p>En särskilt viktig poäng är att erfarenhet från ditt hemland eller andra länder är en styrka. Inkludera den alltid, eftersom den visar på en bredd och anpassningsförmåga som många arbetsgivare värdesätter högt.</p>
+      <h6>Expertråd</h6>
+      <p><em>If you have experience from another country or your home country, it's great to have that as well, because all experience is good experience.</em></p>
+      <p>Detta är ett uppmuntrande och viktigt råd, särskilt för dig med en internationell bakgrund. Din unika erfarenhetsbank är en tillgång – se till att den syns.</p>
+
+      <h2>4. Använd jobbannonsens egna nyckelord</h2>
+      <p>En enkel men extremt effektiv strategi är att tala rekryterarens språk. Läs igenom jobbannonsen noggrant och identifiera de nyckelord som används för att beskriva efterfrågade kompetenser. Välj sedan ut de ord som du anser genuint speglar dina egna färdigheter och väv in dem i beskrivningarna av dina erfarenheter i ditt CV.</p>
+      <h5>Strategisk anpassning, inte kopiering</h5>
+      <p>Det handlar inte om att kopiera och klistra in, utan om att skapa en strategisk anpassning. Genom att använda samma terminologi som arbetsgivaren skapar du en omedelbar igenkänning och visar tydligt att din profil matchar jobbets krav.</p>
+
+      <h2>5. Lämna referenserna utanför CV:t</h2>
+      <p>Du behöver inte inkludera namn och kontaktuppgifter till dina referenser direkt i ditt CV. Detta är information som blir relevant först senare i rekryteringsprocessen.</p>
+      <h5>Så gör du istället</h5>
+      <p>Skriv istället en enkel mening i slutet av ditt CV, till exempel "Referenser lämnas på begäran". Om du skriver ditt CV på engelska använder du frasen "References can be provided upon request".</p>
+      <h6>Välj rätt referens</h6>
+      <p>Kom ihåg: den mest kraftfulla referensen är inte nödvändigtvis din högsta chef, utan den person som konkret kan gå i god för de specifika kompetenser och erfarenheter som är relevanta för just den här nya rollen.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Att skapa ett vinnande CV handlar inte om att skriva om allt från grunden, utan om att göra små, strategiska justeringar som har stor effekt. Genom att följa dessa råd visar du att du är professionell, relevant och har förstått vad arbetsgivaren letar efter.</p>
+      <p>Vilket av dessa tips kommer du att använda för att vässa ditt CV redan idag?</p>
+    `,
+  },
   "sa-skriver-du-ett-cv-som-sticker-ut": {
     title: "Så skriver du ett CV som sticker ut",
     date: "2024-02-14",

@@ -7,10 +7,11 @@ const sanitizeConfig = {
     'p', 'br', 'strong', 'em', 'b', 'i', 'u', 'span', 'div',
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'ul', 'ol', 'li',
-    'a', 'blockquote', 'pre', 'code'
+    'a', 'blockquote', 'pre', 'code',
+    'img', 'figure'
   ],
   ALLOWED_ATTR: [
-    'href', 'title', 'class', 'id', 'style'
+    'href', 'title', 'class', 'id', 'style', 'src', 'alt', 'width', 'height', 'loading'
   ],
   ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
   FORBID_TAGS: [

@@ -19,6 +19,13 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const blogPosts = [
     {
+      title: "Rekryterarens 5 oväntade CV-tips som landar dig intervjun",
+      description: "Fem överraskande och effektiva tips direkt från en rekryterare som ökar dina chanser att landa drömjobbet.",
+      date: "2025-01-28",
+      slug: "rekryterarens-5-ovantade-cv-tips",
+      category: "CV-tips",
+    },
+    {
       title: "Så skriver du ett CV som sticker ut",
       description: "Tips och tricks för att skapa ett CV som får rekryterare att höja på ögonbrynen",
       date: "2024-02-14",

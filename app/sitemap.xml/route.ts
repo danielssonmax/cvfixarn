@@ -8,6 +8,7 @@ function generateSiteMap() {
     "",
     "/cv-mall",
     "/blogg",
+    "/blogg/rekryterarens-5-ovantade-cv-tips",
     "/anvandarvillkor",
     "/marknadsforing",
     "/vanliga-fragor",
