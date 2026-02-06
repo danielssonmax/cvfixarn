@@ -6,6 +6,7 @@ import Script from "next/script"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { sanitizeHTML } from "@/lib/sanitize"
 import { CookieConsent } from "@/components/cookie-consent"
+import { Analytics } from "@vercel/analytics/next"
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -72,6 +73,7 @@ export default function RootLayout({
       <AuthProvider>
         {children}
         <CookieConsent />
+        <Analytics />
       </AuthProvider>
       </body>
     </html>

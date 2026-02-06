@@ -182,11 +182,13 @@ export default function ProfilePage() {
             >
               CV:n
             </button>
-            <button
-              className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-white hover:text-gray-900"
-            >
-              Mina sidor
-            </button>
+            <Link href="/profil/konto">
+              <button
+                className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-white hover:text-gray-900"
+              >
+                Mina sidor
+              </button>
+            </Link>
           </nav>
         </aside>
 
