@@ -34,7 +34,7 @@ export default function StripeCheckoutDialog({ isOpen, onClose, onSubscriptionSu
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          priceId: "price_1QsiZFGE8ubumLAk8sl4g9Z9",
+          priceId: "price_1SxjgoGE8ubumLAkT6ZRDsga",
           userId: user.id 
         }),
       })
