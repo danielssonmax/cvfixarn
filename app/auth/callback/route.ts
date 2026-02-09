@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Redirect to the CV editor page after successful authentication
-  return NextResponse.redirect(new URL('/profil/skapa-cv', request.url))
+  // Redirect to the CV editor page after successful authentication; ?new=true opens payment dialog immediately
+  return NextResponse.redirect(new URL('/profil/skapa-cv?new=true', request.url))
 }
 

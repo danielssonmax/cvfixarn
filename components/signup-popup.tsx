@@ -103,11 +103,8 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
       
       // Close popup
       onClose()
-      
-      // Show simple alert
-      alert("✅ Konto skapat! Dina ändringar sparas automatiskt.")
-      
-      // Call success callback if provided
+
+      // Call success callback if provided (e.g. open Stripe checkout immediately)
       if (onSignupSuccess) {
         onSignupSuccess()
       }

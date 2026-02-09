@@ -95,6 +95,7 @@ export default function CVMallClient() {
   const hasLoadedData = useRef(false)
   const editId = searchParams.get('edit')
   const checkoutSuccess = searchParams.get('checkout')
+  const isNewUser = searchParams.get('new') === 'true'
 
   // Sync mobile template with selectedTemplate when it changes
   useEffect(() => {
@@ -178,6 +179,16 @@ export default function CVMallClient() {
       window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
     }
   }, [checkoutSuccess, searchParams, user])
+
+  // When user lands on /skapa-cv after signup (?new=true), open Stripe checkout immediately (no "konto skapat" popup)
+  useEffect(() => {
+    if (isNewUser && user && !isSubscribed) {
+      setShowCapturePayment(true)
+      const url = new URL(window.location.href)
+      url.searchParams.delete('new')
+      window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
+    }
+  }, [isNewUser, user])
 
   // Use react-hook-form
   const form = useForm({
@@ -605,8 +616,6 @@ export default function CVMallClient() {
           setShowCapturePayment(true)
         }}
         onOpenLogin={() => setPopupMode("login")}
-        mode={popupMode}
-        setMode={setPopupMode}
       />
 
       {/* Mobile Preview Dialog */}
@@ -626,8 +635,8 @@ export default function CVMallClient() {
             </div>
           </DialogHeader>
           
-          {/* Controls Bar */}
-          <div className="px-4 py-3 bg-white border-b border-gray-200 overflow-x-auto">
+          {/* Controls Bar - overflow-visible so dropdowns are not clipped */}
+          <div className="px-4 py-3 bg-white border-b border-gray-200 overflow-visible">
             <div className="flex items-center gap-2 min-w-max">
               {/* Template Selector */}
               <div className="relative">
@@ -643,7 +652,7 @@ export default function CVMallClient() {
                   <ChevronDown className={`h-3 w-3 transition-transform ${showMobileTemplateMenu ? "rotate-180" : ""}`} />
                 </button>
                 {showMobileTemplateMenu && (
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999] max-h-64 overflow-y-auto">
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
                     {templates.map((template) => (
                       <button
                         key={template.id}
@@ -678,7 +687,7 @@ export default function CVMallClient() {
                   <ChevronDown className={`h-3 w-3 transition-transform ${showMobileFontMenu ? "rotate-180" : ""}`} />
                 </button>
                 {showMobileFontMenu && (
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999] max-h-64 overflow-y-auto">
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
                     {fonts.slice(0, 10).map((font) => (
                       <button
                         key={font}
@@ -711,7 +720,7 @@ export default function CVMallClient() {
                   <ChevronDown className={`h-3 w-3 transition-transform ${showMobileFontSizeMenu ? "rotate-180" : ""}`} />
                 </button>
                 {showMobileFontSizeMenu && (
-                  <div className="absolute bottom-full left-0 mb-2 w-32 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
+                  <div className="absolute top-full left-0 mt-2 w-32 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
                     {["XS", "S", "M", "L", "XL"].map((size) => (
                       <button
                         key={size}
@@ -738,7 +747,7 @@ export default function CVMallClient() {
                   <div className="w-4 h-4 rounded border border-gray-300" style={{ backgroundColor: mobileSelectedColor }} />
                 </button>
                 {showMobileColorMenu && (
-                  <div className="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-3 z-[999]">
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-3 z-[999]">
                     <div className="text-xs font-semibold text-gray-600 mb-2">Textfärg</div>
                     <div className="grid grid-cols-6 gap-2 mb-3">
                       {["#000000", "#374151", "#6B7280", "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#F97316", "#14B8A6", "#6366F1"].map((color) => (

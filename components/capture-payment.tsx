@@ -56,7 +56,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
               <div className="text-right">
                 <span className="text-3xl font-bold text-[#00bf63]">0 kr</span>
                 <p className="text-xs text-gray-500 mt-1">
-                  Därefter 69 kr/vecka ·<br />
+                  Därefter 6npm9 kr/vecka ·<br />
                   ingen bindningstid
                 </p>
               </div>

@@ -54,24 +54,28 @@ export default function StripeCheckoutDialog({ isOpen, onClose, onSubscriptionSu
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh] overflow-hidden p-0">
+        <DialogHeader className="px-6 pt-6 pb-2 flex-shrink-0">
           <DialogTitle>CVfixaren medlemskap</DialogTitle>
         </DialogHeader>
         {error ? (
-          <div className="flex flex-col items-center justify-center h-64 text-center space-y-4 overflow-y-auto">
+          <div className="flex flex-col items-center justify-center h-64 text-center space-y-4 overflow-y-auto px-6 pb-6">
             <AlertTriangle className="h-8 w-8 text-yellow-500" />
             <p className="text-gray-600">{error}</p>
           </div>
         ) : clientSecret && stripePromise ? (
-          <EmbeddedCheckoutProvider
-            stripe={stripePromise}
-            options={{ clientSecret }}
-          >
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
+          <div className="flex-1 min-h-0 px-6 pb-6">
+            <div className="h-[70vh] max-h-[500px] overflow-y-auto rounded-md border border-gray-200">
+              <EmbeddedCheckoutProvider
+                stripe={stripePromise}
+                options={{ clientSecret }}
+              >
+                <EmbeddedCheckout />
+              </EmbeddedCheckoutProvider>
+            </div>
+          </div>
         ) : (
-          <div className="flex justify-center items-center h-64">
+          <div className="flex justify-center items-center h-64 px-6 pb-6">
             <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
           </div>
         )}
