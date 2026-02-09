@@ -56,7 +56,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
               <div className="text-right">
                 <span className="text-3xl font-bold text-[#00bf63]">0 kr</span>
                 <p className="text-xs text-gray-500 mt-1">
-                  Därefter 6npm9 kr/vecka ·<br />
+                  Därefter 69 kr/vecka ·<br />
                   ingen bindningstid
                 </p>
               </div>
@@ -143,7 +143,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
           {/* Fine print */}
           <p className="mt-6 text-xs text-gray-500 leading-relaxed">
             Du får full tillgång till alla CV-mallar och funktioner i 7 dagar gratis. Därefter 
-            förnyas prenumerationen för 89 kr/vecka. Du kan avsluta när du vill via dina 
+            förnyas prenumerationen för 69 kr/vecka. Du kan avsluta när du vill via dina 
             inställningar.
           </p>
         </div>
