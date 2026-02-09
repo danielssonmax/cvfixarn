@@ -47,14 +47,14 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
           <div className="mt-6 border border-gray-200 rounded-xl p-4 bg-gray-50/50">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-semibold text-gray-900">CVfixaren medlemskap</h3>
+                <h3 className="font-semibold text-gray-900">Premium</h3>
                 <p className="text-sm text-gray-600 mt-1">
                   Ladda ner ditt CV som PDF och få tillgång<br />
                   till alla mallar och funktioner.
                 </p>
               </div>
               <div className="text-right">
-                <span className="text-3xl font-bold text-[#00bf63]">0 kr</span>
+                <span className="text-3xl font-bold text-[#00bf63]">0 kr för 7 dagar</span>
                 <p className="text-xs text-gray-500 mt-1">
                   Därefter 69 kr/vecka ·<br />
                   ingen bindningstid
@@ -128,7 +128,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
           <div className="mt-6 space-y-3">
             <div className="flex items-center gap-3">
               <Check className="h-4 w-4 text-gray-400 flex-shrink-0" />
-              <span className="text-sm text-gray-600">Ladda ner ditt CV som PDF</span>
+              <span className="text-sm text-gray-600">Ladda ner ditt CV som ATS-anpassad PDF</span>
             </div>
             <div className="flex items-center gap-3">
               <Check className="h-4 w-4 text-gray-400 flex-shrink-0" />
