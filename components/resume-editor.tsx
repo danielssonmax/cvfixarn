@@ -93,7 +93,7 @@ import {
   broadcastSyncSuccess,
   subscribeToBroadcast,
 } from "@/lib/cv-storage"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useDebouncedAutosave } from "@/hooks/use-debounced-autosave"
 
 interface FormData {
@@ -430,6 +430,7 @@ const generateUUID = () => {
 
 const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalTemplate = "default", onSelectTemplate, form: externalForm }) => {
   const { user } = useAuth()
+  const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -1873,7 +1874,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
           </div>
           
           <div className="flex justify-end items-center gap-3">
-            {user && (
+            {user && pathname !== "/profil/skapa-cv" && (
               <button
                 className="text-white text-sm font-medium px-4 py-2 rounded-md transition-all hover:bg-white/10"
                 onClick={async () => {
