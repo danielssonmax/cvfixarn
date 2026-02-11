@@ -1,5 +1,4 @@
 import "./globals.css"
-import { Inter, Playfair_Display } from "next/font/google"
 import { cn } from "@/lib/utils"
 import type React from "react"
 import Script from "next/script"
@@ -8,23 +7,13 @@ import { sanitizeHTML } from "@/lib/sanitize"
 import { CookieConsent } from "@/components/cookie-consent"
 import { Analytics } from "@vercel/analytics/next"
 
-const fontSans = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
-
-const fontHeading = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-heading",
-})
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="sv" suppressHydrationWarning>
       <head>
         {/* Google Consent Mode - Default to denied */}
         <Script id="google-consent-default" strategy="beforeInteractive">
@@ -62,7 +51,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable, fontHeading.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
         {/* Google Tag Manager (noscript) */}
         <noscript
           dangerouslySetInnerHTML={{
@@ -81,5 +70,9 @@ export default function RootLayout({
 }
 
 export const metadata = {
-  generator: "v0.dev",
+  generator: "CVfixaren.se",
+  metadataBase: new URL("https://www.cvfixaren.se"),
+  alternates: {
+    canonical: "./",
+  },
 }

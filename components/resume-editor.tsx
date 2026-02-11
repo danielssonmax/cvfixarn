@@ -1887,7 +1887,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
               </button>
             )}
             <button
-              className="bg-[#00bf63] text-white px-4 py-2 rounded-md hover:bg-[#00a857] transition-colors font-medium text-sm flex items-center gap-2"
+              className="btn-sweep-glow bg-[#00bf63] text-white px-4 py-2 rounded-md hover:bg-[#00a857] transition-colors font-medium text-sm flex items-center gap-2"
               onClick={handleDownloadClick}
               disabled={isDownloading}
               style={{ border: 'none', outline: 'none' }}
@@ -2072,7 +2072,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
             {/* Download button at bottom of form */}
             <div className="mt-8 pt-4 border-t border-gray-200 pb-20 md:pb-8">
               <button
-                className="w-full bg-[#00bf63] hover:bg-[#00a857] text-white flex items-center justify-center gap-2 py-3 rounded-md transition-all font-medium text-base"
+                className="btn-sweep-glow w-full bg-[#00bf63] hover:bg-[#00a857] text-white flex items-center justify-center gap-2 py-3 rounded-md transition-all font-medium text-base"
                 style={{ 
                   border: '0px solid transparent', 
                   outline: '0px solid transparent', 
