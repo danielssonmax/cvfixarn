@@ -1,6 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 
 const templates = [
   {
@@ -31,39 +33,45 @@ const templates = [
 
 export default function ATSCVTemplatesPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-3xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">ATS-anpassade cv-mallar</h1>
-        <p className="text-xl text-gray-600">
-          Förbättra ditt jobbsökande med våra ATS-anpassade cv-mallar. Imponera på mänskliga och robotrekryterare med en effektiv design. Överlista algoritmen och visa att du är noga med detaljer.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {templates.map((template) => (
-          <div
-            key={template.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105"
-          >
-            <div className="relative aspect-[3/4] w-full">
-              <Image
-                src={template.image || "/placeholder.svg"}
-                alt={`${template.name} förhandsvisning`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            </div>
-            <div className="p-6">
-              <h2 className="text-2xl font-semibold mb-2">{template.name}</h2>
-              <p className="text-gray-600 mb-4">{template.description}</p>
-              <Link href={`/profil/skapa-cv?template=${template.id}`}>
-                <Button className="w-full bg-[#00bf63] hover:bg-[#00a857] text-white">Använd denna mall</Button>
-              </Link>
-            </div>
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <h1 className="text-4xl font-bold mb-4">ATS-anpassade cv-mallar</h1>
+            <p className="text-xl text-gray-600">
+              Förbättra ditt jobbsökande med våra ATS-anpassade cv-mallar. Imponera på mänskliga och robotrekryterare med en effektiv design. Överlista algoritmen och visa att du är noga med detaljer.
+            </p>
           </div>
-        ))}
-      </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {templates.map((template) => (
+              <div
+                key={template.id}
+                className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105"
+              >
+                <div className="relative aspect-[3/4] w-full">
+                  <Image
+                    src={template.image || "/placeholder.svg"}
+                    alt={`${template.name} förhandsvisning`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+                <div className="p-6">
+                  <h2 className="text-2xl font-semibold mb-2">{template.name}</h2>
+                  <p className="text-gray-600 mb-4">{template.description}</p>
+                  <Link href={`/profil/skapa-cv?template=${template.id}`}>
+                    <Button className="w-full bg-[#00bf63] hover:bg-[#00a857] text-white">Använd denna mall</Button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   )
 }

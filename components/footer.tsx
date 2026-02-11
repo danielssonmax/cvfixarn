@@ -47,6 +47,11 @@ export function Footer() {
                   ATS-anpassade CV-mallar
                 </Link>
               </li>
+              <li>
+                <Link href="/cv-exempel" className="text-sm text-gray-400 hover:text-[#00bf63] transition-colors">
+                  CV-exempel
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
