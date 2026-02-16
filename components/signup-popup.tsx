@@ -17,7 +17,19 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [magicLinkSent, setMagicLinkSent] = useState(false)
   const { checkAuthStatus } = useAuth()
+
+  const sendMagicLink = async (emailAddress: string) => {
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email: emailAddress,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+    if (otpError) throw otpError
+    setMagicLinkSent(true)
+  }
 
   const handleSignup = async () => {
     if (!email) {
@@ -27,6 +39,7 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
 
     setIsLoading(true)
     setError("")
+    setMagicLinkSent(false)
 
     try {
       // Create user account directly without email verification
@@ -41,7 +54,22 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
         },
       })
 
-      if (signUpError) throw signUpError
+      if (signUpError) {
+        // If user already exists, automatically send a magic link instead
+        const msg = signUpError.message?.toLowerCase() || ""
+        if (msg.includes("already") || msg.includes("exists") || msg.includes("registered") || msg.includes("already registered") || signUpError.status === 422 || signUpError.status === 400) {
+          await sendMagicLink(email)
+          return
+        }
+        throw signUpError
+      }
+
+      // Supabase may return a user without a session if the email is already taken
+      // (some Supabase configs return identities: [] for existing users)
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        await sendMagicLink(email)
+        return
+      }
 
       // If we got a session, set it explicitly to ensure cookies are set
       if (data.session) {
@@ -56,9 +84,6 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
       // Create row in premium table
       if (data.user) {
         try {
-          // Extract name from email (part before @) or use email as fallback
-          const nameFromEmail = email.split('@')[0] || email
-          
           // Get gclid from cookie if available
           const gclid = getGclidFromCookie()
           
@@ -78,11 +103,9 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
 
           if (premiumError) {
             console.error('Error creating premium row:', premiumError)
-            // Don't throw - user is created, just log the error
           }
         } catch (createUserError) {
           console.error('Error inserting into premium table:', createUserError)
-          // Don't throw - user is created, just log the error
         }
       }
 
@@ -128,76 +151,94 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
             Ladda ned ditt CV som PDF, spara och redigera när som helst—allt på ett ställe.
           </p>
 
-          {/* Email field */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-800">E-post</label>
-            <input
-              type="email"
-              placeholder="namn@exempel.se"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !isLoading) {
-                  handleSignup()
-                }
-              }}
-              disabled={isLoading}
-              className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2.5 text-[15px] outline-none focus:ring-4 focus:ring-gray-200 focus:border-gray-700 disabled:opacity-50"
-            />
-            
-            {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
-            )}
-            
-            {/* CTA */}
-            <button
-              className="mt-3 w-full rounded-md bg-[#00bf63] px-4 py-2.5 text-white font-semibold hover:brightness-110 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleSignup}
-              disabled={isLoading}
-            >
-              {isLoading ? "Skapar konto..." : "Fortsätt"}
-            </button>
-          </div>
+          {magicLinkSent ? (
+            <div className="mt-4">
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800 font-medium mb-1">
+                  Inloggningslänk skickad!
+                </p>
+                <p className="text-xs text-green-700">
+                  Vi hittade ett befintligt konto med <strong>{email}</strong>. Kolla din e-post och klicka på länken för att logga in.
+                </p>
+              </div>
+              <p className="mt-4 text-xs text-gray-500 leading-relaxed text-center">
+                Hittar du inte mejlet? Kolla skräpposten eller försök igen.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Email field */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-800">E-post</label>
+                <input
+                  type="email"
+                  placeholder="namn@exempel.se"
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isLoading) {
+                      handleSignup()
+                    }
+                  }}
+                  disabled={isLoading}
+                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2.5 text-[15px] outline-none focus:ring-4 focus:ring-gray-200 focus:border-gray-700 disabled:opacity-50"
+                />
+                
+                {error && (
+                  <p className="mt-2 text-sm text-red-600">{error}</p>
+                )}
+                
+                {/* CTA */}
+                <button
+                  className="mt-3 w-full rounded-md bg-[#00bf63] px-4 py-2.5 text-white font-semibold hover:brightness-110 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleSignup}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Skapar konto..." : "Fortsätt"}
+                </button>
+              </div>
 
-          {/* Value props */}
-          <ul className="mt-4 space-y-2 text-sm text-gray-600">
-            <li className="flex items-start gap-2">
-              <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
-              Ladda ned som PDF
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
-              Spara och redigera ditt CV
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
-              Välj mellan flera professionella mallar
-            </li>
-          </ul>
+              {/* Value props */}
+              <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
+                  Ladda ned som PDF
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
+                  Spara och redigera ditt CV
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
+                  Välj mellan flera professionella mallar
+                </li>
+              </ul>
 
-          {/* Info text instead of terms checkbox */}
-          <p className="mt-4 text-xs text-gray-500 leading-relaxed">
-            Genom att fortsätta godkänner du våra villkor. 
-          </p>
+              {/* Info text instead of terms checkbox */}
+              <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+                Genom att fortsätta godkänner du våra villkor. 
+              </p>
 
-          {/* Login link */}
-          <p className="mt-4 text-sm text-gray-600 text-center">
-            Har du redan ett konto?{" "}
-            <a 
-              href="#" 
-              className="font-medium underline hover:no-underline"
-              onClick={(e) => {
-                e.preventDefault()
-                onClose()
-                if (onOpenLogin) {
-                  onOpenLogin()
-                }
-              }}
-            >
-              Logga in
-            </a>
-          </p>
+              {/* Login link */}
+              <p className="mt-4 text-sm text-gray-600 text-center">
+                Har du redan ett konto?{" "}
+                <a 
+                  href="#" 
+                  className="font-medium underline hover:no-underline"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onClose()
+                    if (onOpenLogin) {
+                      onOpenLogin()
+                    }
+                  }}
+                >
+                  Logga in
+                </a>
+              </p>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>
