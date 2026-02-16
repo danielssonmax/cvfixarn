@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { X, Settings, Cookie } from "lucide-react"
 
 interface CookiePreferences {
@@ -13,6 +14,7 @@ const COOKIE_CONSENT_KEY = "cookie_consent_preferences"
 const COOKIE_CONSENT_VERSION = "1.0"
 
 export function CookieConsent() {
+  const pathname = usePathname()
   const [showBanner, setShowBanner] = useState(false)
   const [showPreferences, setShowPreferences] = useState(false)
   const [showIcon, setShowIcon] = useState(false)
@@ -22,7 +24,11 @@ export function CookieConsent() {
     marketing: false,
   })
 
+  const isPrintPage = pathname === "/print"
+
   useEffect(() => {
+    if (isPrintPage) return
+
     // Check if user has already made a choice
     const savedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
     
@@ -52,7 +58,7 @@ export function CookieConsent() {
         ad_personalization: "denied",
       })
     }
-  }, [])
+  }, [isPrintPage])
 
   const applyConsent = (prefs: CookiePreferences) => {
     if (typeof window === "undefined") return
@@ -144,6 +150,9 @@ export function CookieConsent() {
     setShowBanner(false)
     setShowPreferences(true)
   }
+
+  // Hide on print page to prevent it from appearing in exported PDFs
+  if (isPrintPage) return null
 
   // Cookie icon to reopen preferences
   if (showIcon && !showBanner && !showPreferences) {
