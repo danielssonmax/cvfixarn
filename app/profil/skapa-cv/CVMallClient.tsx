@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useForm } from "react-hook-form"
 import ResumeEditor from "@/components/resume-editor"
+import type { ResumeEditorHandle } from "@/components/resume-editor"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { loadStripe } from "@stripe/stripe-js"
@@ -87,12 +88,14 @@ export default function CVMallClient() {
   const [mobileLineHeight, setMobileLineHeight] = useState("1.5")
   const [mobileSelectedColor, setMobileSelectedColor] = useState("#000000")
   const [mobileHeaderColor, setMobileHeaderColor] = useState("#000000")
+  const [mobileSectionOrder, setMobileSectionOrder] = useState<string[]>(["personalInfo", "profile", "experience", "education", "skills", "languages"])
   const [showMobileTemplateMenu, setShowMobileTemplateMenu] = useState(false)
   const [showMobileFontMenu, setShowMobileFontMenu] = useState(false)
   const [showMobileFontSizeMenu, setShowMobileFontSizeMenu] = useState(false)
   const [showMobileLineHeightMenu, setShowMobileLineHeightMenu] = useState(false)
   const [showMobileColorMenu, setShowMobileColorMenu] = useState(false)
   const hasLoadedData = useRef(false)
+  const editorRef = useRef<ResumeEditorHandle>(null)
   const editId = searchParams.get('edit')
   const checkoutSuccess = searchParams.get('checkout')
   const isNewUser = searchParams.get('new') === 'true'
@@ -101,6 +104,36 @@ export default function CVMallClient() {
   useEffect(() => {
     setMobileSelectedTemplate(selectedTemplate)
   }, [selectedTemplate])
+
+  // Open mobile preview and initialize from editor's current settings
+  const openMobilePreview = () => {
+    const settings = editorRef.current?.getSettings()
+    if (settings) {
+      setMobileSelectedTemplate(settings.selectedTemplate)
+      setMobileSelectedFont(settings.selectedFont)
+      setMobileFontSize(settings.fontSize)
+      setMobileFontSizePixels(settings.fontSizePixels)
+      setMobileLineHeight(settings.lineHeight)
+      setMobileSelectedColor(settings.selectedColor)
+      setMobileHeaderColor(settings.headerColor)
+      setMobileSectionOrder(settings.addedSections)
+    }
+    setShowMobilePreview(true)
+  }
+
+  // Close mobile preview and sync settings back to the editor
+  const closeMobilePreview = () => {
+    editorRef.current?.updateSettings({
+      selectedTemplate: mobileSelectedTemplate,
+      selectedFont: mobileSelectedFont,
+      fontSize: mobileFontSize,
+      fontSizePixels: mobileFontSizePixels,
+      lineHeight: mobileLineHeight,
+      selectedColor: mobileSelectedColor,
+      headerColor: mobileHeaderColor,
+    })
+    setShowMobilePreview(false)
+  }
 
   // Font options
   const fonts = ["Poppins", "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Playfair Display", "Merriweather", "Raleway", "Nunito", "Source Sans Pro", "Oswald", "Lora", "PT Sans", "Ubuntu", "Crimson Text", "Libre Baskerville", "Fira Sans", "Work Sans", "Noto Sans", "Trebuchet MS", "Arial Black"]
@@ -591,6 +624,7 @@ export default function CVMallClient() {
       {/* Main content */}
       <main className="flex-1 overflow-hidden flex-col">
         <ResumeEditor 
+          ref={editorRef}
           selectedTemplate={selectedTemplate}
           form={form}
         />
@@ -619,7 +653,7 @@ export default function CVMallClient() {
       />
 
       {/* Mobile Preview Dialog */}
-      <Dialog open={showMobilePreview} onOpenChange={setShowMobilePreview}>
+      <Dialog open={showMobilePreview} onOpenChange={(open) => { if (!open) closeMobilePreview() }}>
         <DialogContent className="max-w-full w-full h-[90vh] p-0 flex flex-col">
           <DialogHeader className="px-4 pt-4 pb-3 border-b">
             <div className="flex items-center justify-between">
@@ -627,7 +661,7 @@ export default function CVMallClient() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setShowMobilePreview(false)}
+                onClick={closeMobilePreview}
                 className="h-6 w-6"
               >
                 <X className="h-4 w-4" />
@@ -797,15 +831,25 @@ export default function CVMallClient() {
               selectedColor={mobileSelectedColor}
               headerColor={mobileHeaderColor}
               zoomLevel={0.6}
-              sectionOrder={["personalInfo", "profile", "experience", "education", "skills", "languages"]}
-              sections={[
-                { id: "personalInfo", title: "Personlig information", hidden: false },
-                { id: "profile", title: "Profil", hidden: false },
-                { id: "experience", title: "Erfarenhet", hidden: false },
-                { id: "education", title: "Utbildning", hidden: false },
-                { id: "skills", title: "Färdigheter", hidden: false },
-                { id: "languages", title: "Språk", hidden: false },
-              ]}
+              sectionOrder={mobileSectionOrder}
+              sections={mobileSectionOrder.map((id: string) => {
+                const titleMap: Record<string, string> = {
+                  personalInfo: "Personuppgifter",
+                  profile: "Profil",
+                  experience: "Arbetslivserfarenhet",
+                  education: "Utbildning",
+                  skills: "Färdigheter",
+                  languages: "Språk",
+                  courses: "Kurser",
+                  internship: "Praktik",
+                  references: "Referenser",
+                  traits: "Egenskaper",
+                  certificates: "Certifikat",
+                  achievements: "Prestationer",
+                  hobbies: "Hobbies",
+                }
+                return { id, title: titleMap[id] || id, hidden: false }
+              })}
               templates={templates}
               onSelectTemplate={setMobileSelectedTemplate}
             />
@@ -877,7 +921,7 @@ export default function CVMallClient() {
       {/* Mobile Preview Button - Only visible on mobile, fixed at bottom */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 flex justify-center shadow-lg">
         <Button
-          onClick={() => setShowMobilePreview(true)}
+          onClick={openMobilePreview}
           className="w-full max-w-xs bg-[#00bf63] hover:bg-[#00a052] text-white font-semibold flex items-center justify-center gap-2"
         >
           <Eye className="h-4 w-4" />

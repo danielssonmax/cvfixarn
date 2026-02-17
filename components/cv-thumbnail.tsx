@@ -20,35 +20,42 @@ export function CVThumbnail({ cvData }: CVThumbnailProps) {
     )
   }
 
+  // Support both flat format (from transformer) and raw DB format (with nested data + _settings)
+  const isRawDBFormat = cvData.data && typeof cvData.data === 'object' && !cvData.selected_template
+  const jsonData = isRawDBFormat ? cvData.data : null
+  const settings = jsonData?._settings || {}
+
   const cvId = cvData.id || 'default'
-  const scopeClass = `cv-thumb-${cvId.substring(0, 8)}` // Unique class per CV
-  const template = cvData.selected_template || 'default'
-  const selectedFont = cvData.selected_font || 'Poppins'
-  const fontSize = `${cvData.font_size || 11}px`
-  const lineHeight = (cvData.line_height || 1.5).toString()
-  const textColor = cvData.selected_color || '#000000'
-  const headerColor = cvData.header_color || '#000000'
+  const scopeClass = `cv-thumb-${cvId.substring(0, 8)}`
+  const template = cvData.selected_template || settings.selectedTemplate || 'default'
+  const selectedFont = cvData.selected_font || settings.selectedFont || 'Poppins'
+  const rawFontSize = cvData.font_size || (settings.fontSize === 'XS' ? 9 : settings.fontSize === 'S' ? 10 : settings.fontSize === 'M' ? 11 : settings.fontSize === 'L' ? 12 : settings.fontSize === 'XL' ? 13 : 11)
+  const fontSize = `${rawFontSize}px`
+  const lineHeight = (cvData.line_height || (settings.lineHeight ? parseFloat(settings.lineHeight) : 1.5)).toString()
+  const textColor = cvData.selected_color || settings.selectedColor || '#000000'
+  const headerColor = cvData.header_color || settings.headerColor || '#000000'
   
-  // Convert CV data to format expected by generators
+  // Convert CV data to format expected by generators, handling both formats
+  const personalInfo = cvData.personal_info || jsonData?.personalInfo || {}
   const data = {
-    personalInfo: cvData.personal_info || {},
-    workExperience: cvData.work_experience || [],
-    education: cvData.education || [],
-    skills: cvData.skills || [],
-    languages: cvData.languages || [],
+    personalInfo,
+    workExperience: cvData.work_experience || jsonData?.experience || jsonData?.workExperience || [],
+    education: cvData.education || jsonData?.education || [],
+    skills: cvData.skills || jsonData?.skills || [],
+    languages: cvData.languages || jsonData?.languages || [],
     sections: {
-      profile: cvData.profile,
-      courses: { items: cvData.courses || [] },
-      internship: { items: cvData.internships || [] },
-      certificates: { items: cvData.certificates || [] },
-      achievements: { items: cvData.achievements || [] },
-      references: { items: cvData.references || [] },
-      traits: { items: cvData.traits || [] },
-      hobbies: { items: cvData.hobbies || [] },
+      profile: cvData.profile || jsonData?.profile,
+      courses: { items: cvData.courses || jsonData?.courses || [] },
+      internship: { items: cvData.internships || jsonData?.internships || [] },
+      certificates: { items: cvData.certificates || jsonData?.certifications || [] },
+      achievements: { items: cvData.achievements || jsonData?.achievements || [] },
+      references: { items: cvData.references || jsonData?.references || [] },
+      traits: { items: cvData.traits || jsonData?.traits || [] },
+      hobbies: { items: cvData.hobbies || jsonData?.hobbies || [] },
     }
   }
   
-  const sectionOrder = cvData.section_order || ['personalInfo', 'profile', 'experience', 'education', 'skills', 'languages']
+  const sectionOrder = cvData.section_order || settings.sectionOrder || ['personalInfo', 'profile', 'experience', 'education', 'skills', 'languages']
   const sections = sectionOrder.map((id: string) => ({
     id,
     title: cvData.section_names?.[id] || id,

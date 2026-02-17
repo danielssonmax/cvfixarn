@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useEffect, useRef, useState, useMemo } from "react"
+import React, { useCallback, useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from "react"
 import { useForm, FormProvider, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import PreviewBridge from "@/components/PreviewBridge"
@@ -143,6 +143,28 @@ interface FormData {
       hidden: boolean
     }
   }
+}
+
+export interface ResumeEditorHandle {
+  getSettings: () => {
+    selectedTemplate: string
+    selectedFont: string
+    fontSize: string
+    fontSizePixels: string
+    lineHeight: string
+    selectedColor: string
+    headerColor: string
+    addedSections: string[]
+  }
+  updateSettings: (settings: {
+    selectedTemplate?: string
+    selectedFont?: string
+    fontSize?: string
+    fontSizePixels?: string
+    lineHeight?: string
+    selectedColor?: string
+    headerColor?: string
+  }) => void
 }
 
 interface ResumeEditorProps {
@@ -428,7 +450,7 @@ const generateUUID = () => {
   })
 }
 
-const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalTemplate = "default", onSelectTemplate, form: externalForm }) => {
+const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ selectedTemplate: externalTemplate = "default", onSelectTemplate, form: externalForm }, ref) => {
   const { user } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
@@ -469,8 +491,89 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
           }),
         })
         
-        // When user logs in, clear localStorage (we'll use DB instead)
+        // When user signs in, sync any unsaved CV data to the database, then clear localStorage
         if (event === 'SIGNED_IN') {
+          const localCV = getCVFromLocalStorage()
+          // Use live form values (most up-to-date) with localStorage as fallback for settings
+          const currentFormData = form.getValues()
+          const hasFormData = currentFormData?.personalInfo?.firstName || currentFormData?.personalInfo?.lastName || currentFormData?.personalInfo?.email
+          const hasLocalData = localCV && (localCV.personal_info?.firstName || localCV.personal_info?.email)
+
+          if ((hasFormData || hasLocalData) && session.user) {
+            try {
+              // Prefer live form state for field data; use localStorage for settings
+              const formattedData = {
+                skills: currentFormData?.sections?.skills?.items || currentFormData?.skills || localCV?.skills || [],
+                password: "",
+                projects: [],
+                education: currentFormData?.sections?.education?.items || currentFormData?.education || localCV?.education || [],
+                languages: currentFormData?.sections?.languages?.items || currentFormData?.languages || localCV?.languages || [],
+                experience: (currentFormData?.sections?.experience?.items || currentFormData?.workExperience || localCV?.work_experience || []).map((exp: any) => ({
+                  title: exp.title || "",
+                  company: exp.company || "",
+                  current: exp.current || false,
+                  endDate: exp.endDate || "",
+                  endYear: exp.endYear || "",
+                  location: exp.location || "",
+                  startDate: exp.startDate || "",
+                  startYear: exp.startYear || "",
+                  description: exp.description || ""
+                })),
+                references: currentFormData?.sections?.references?.items || localCV?.references || [],
+                personalInfo: {
+                  ...(currentFormData?.personalInfo || localCV?.personal_info || {}),
+                },
+                certifications: currentFormData?.sections?.certificates?.items || localCV?.certificates || [],
+                courses: currentFormData?.sections?.courses?.items || localCV?.courses || [],
+                internships: currentFormData?.sections?.internship?.items || localCV?.internships || [],
+                achievements: currentFormData?.sections?.achievements?.items || localCV?.achievements || [],
+                traits: currentFormData?.sections?.traits?.items || localCV?.traits || [],
+                hobbies: currentFormData?.sections?.hobbies?.items || localCV?.hobbies || [],
+                profile: currentFormData?.sections?.profile || localCV?.profile || null,
+                workExperience: [],
+                _settings: {
+                  selectedTemplate: localCV?.selected_template || selectedTemplate || 'default',
+                  selectedFont: localCV?.selected_font || selectedFont || 'Poppins',
+                  fontSize: localCV ? (localCV.font_size === 9 ? 'XS' : localCV.font_size === 10 ? 'S' : localCV.font_size === 11 ? 'M' : localCV.font_size === 12 ? 'L' : localCV.font_size === 13 ? 'XL' : 'M') : fontSize || 'M',
+                  fontSizePixels: localCV ? (localCV.font_size === 9 ? '12px' : localCV.font_size === 10 ? '14px' : localCV.font_size === 11 ? '16px' : localCV.font_size === 12 ? '18px' : localCV.font_size === 13 ? '20px' : '16px') : fontSizePixels || '16px',
+                  lineHeight: localCV?.line_height?.toString() || lineHeight || '1.5',
+                  selectedColor: localCV?.selected_color || selectedColor || '#000000',
+                  headerColor: localCV?.header_color || headerColor || '#000000',
+                  sectionOrder: localCV?.section_order || addedSections || ['personalInfo', 'profile', 'experience', 'education', 'skills', 'languages'],
+                },
+              }
+
+              const localCvId = localCV?.id || cvId
+              const cvTitle = localCV?.cv_name || cvName || 'Untitled CV'
+
+              await fetch('/api/save-cv', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                  id: localCvId,
+                  user_id: session.user.id,
+                  title: cvTitle,
+                  data: formattedData,
+                }),
+              })
+
+              // Update the URL to point to the synced CV if needed
+              if (localCvId && localCvId !== cvId) {
+                setCvId(localCvId)
+                window.history.replaceState(null, '', `/profil/skapa-cv?id=${localCvId}`)
+              }
+
+              // Reset so the [user, cvId] effect will re-load from DB with the synced data
+              hasLoadedFromDBRef.current = false
+              setHasLoadedInitialData(false)
+            } catch (syncError) {
+              console.error('Failed to sync CV to database:', syncError)
+            }
+          }
           clearCVFromLocalStorage()
         }
       }
@@ -666,6 +769,29 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
   const [headerColor, setHeaderColor] = useState("#000000")
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
   const colorPickerRef = useRef<HTMLDivElement>(null)
+
+  // Expose settings getters/setters to parent via ref
+  useImperativeHandle(ref, () => ({
+    getSettings: () => ({
+      selectedTemplate,
+      selectedFont,
+      fontSize,
+      fontSizePixels,
+      lineHeight,
+      selectedColor,
+      headerColor,
+      addedSections,
+    }),
+    updateSettings: (settings) => {
+      if (settings.selectedTemplate !== undefined) setSelectedTemplate(settings.selectedTemplate)
+      if (settings.selectedFont !== undefined) setSelectedFont(settings.selectedFont)
+      if (settings.fontSize !== undefined) setFontSize(settings.fontSize)
+      if (settings.fontSizePixels !== undefined) setFontSizePixels(settings.fontSizePixels)
+      if (settings.lineHeight !== undefined) setLineHeight(settings.lineHeight)
+      if (settings.selectedColor !== undefined) setSelectedColor(settings.selectedColor)
+      if (settings.headerColor !== undefined) setHeaderColor(settings.headerColor)
+    },
+  }), [selectedTemplate, selectedFont, fontSize, fontSizePixels, lineHeight, selectedColor, headerColor, addedSections])
   const lineHeightDropdownRef = useRef<HTMLDivElement>(null)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(1.0)
@@ -1014,6 +1140,52 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
               if (cvData.certifications && Array.isArray(cvData.certifications) && cvData.certifications.length > 0) {
                 form.setValue('sections.certificates.items', cvData.certifications)
               }
+              
+              // Restore courses
+              if (cvData.courses && Array.isArray(cvData.courses) && cvData.courses.length > 0) {
+                form.setValue('sections.courses.items', cvData.courses)
+              }
+              
+              // Restore internships
+              if (cvData.internships && Array.isArray(cvData.internships) && cvData.internships.length > 0) {
+                form.setValue('sections.internship.items', cvData.internships)
+              }
+              
+              // Restore achievements
+              if (cvData.achievements && Array.isArray(cvData.achievements) && cvData.achievements.length > 0) {
+                form.setValue('sections.achievements.items', cvData.achievements)
+              }
+              
+              // Restore traits
+              if (cvData.traits && Array.isArray(cvData.traits) && cvData.traits.length > 0) {
+                form.setValue('sections.traits.items', cvData.traits)
+              }
+              
+              // Restore hobbies
+              if (cvData.hobbies && Array.isArray(cvData.hobbies) && cvData.hobbies.length > 0) {
+                form.setValue('sections.hobbies.items', cvData.hobbies)
+              }
+              
+              // Restore profile
+              if (cvData.profile) {
+                form.setValue('sections.profile', cvData.profile)
+              }
+              
+              // Restore settings (template, font, colors, etc.)
+              if (cvData._settings) {
+                if (cvData._settings.selectedTemplate) setSelectedTemplate(cvData._settings.selectedTemplate)
+                if (cvData._settings.selectedFont) setSelectedFont(cvData._settings.selectedFont)
+                if (cvData._settings.fontSize) {
+                  setFontSize(cvData._settings.fontSize)
+                  if (cvData._settings.fontSizePixels) setFontSizePixels(cvData._settings.fontSizePixels)
+                }
+                if (cvData._settings.lineHeight) setLineHeight(cvData._settings.lineHeight)
+                if (cvData._settings.selectedColor) setSelectedColor(cvData._settings.selectedColor)
+                if (cvData._settings.headerColor) setHeaderColor(cvData._settings.headerColor)
+                if (cvData._settings.sectionOrder && Array.isArray(cvData._settings.sectionOrder)) {
+                  setAddedSections(cvData._settings.sectionOrder)
+                }
+              }
             }
             
             // Mark that initial data has been loaded
@@ -1109,8 +1281,8 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
         setHasLoadedInitialData(true)
       }
     } else {
-      // User is logged in but no cvId - DON'T mark as loaded yet
-      // Wait for user to make actual changes before trying to sync
+      // User is logged in but no cvId - mark as loaded so autosave can work once cvId is assigned
+      setHasLoadedInitialData(true)
     }
     
     // Set version from loaded data
@@ -1242,7 +1414,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
         // Get current form values
         const currentFormData = form.getValues()
         
-        // Transform data to match the database format
+        // Transform data to match the database format, including all settings
         const formattedData = {
           skills: currentFormData.sections?.skills?.items || currentFormData.skills || [],
           password: "",
@@ -1262,6 +1434,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
           })),
           references: currentFormData.sections?.references?.items || [],
           personalInfo: {
+            ...currentFormData.personalInfo,
             email: currentFormData.personalInfo?.email || "",
             phone: currentFormData.personalInfo?.phone || "",
             title: currentFormData.personalInfo?.title || "",
@@ -1273,7 +1446,24 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
             postalCode: currentFormData.personalInfo?.postalCode || ""
           },
           certifications: currentFormData.sections?.certificates?.items || [],
-          workExperience: []
+          courses: currentFormData.sections?.courses?.items || [],
+          internships: currentFormData.sections?.internship?.items || [],
+          achievements: currentFormData.sections?.achievements?.items || [],
+          traits: currentFormData.sections?.traits?.items || [],
+          hobbies: currentFormData.sections?.hobbies?.items || [],
+          profile: currentFormData.sections?.profile || null,
+          workExperience: [],
+          // Include settings so they persist across sessions
+          _settings: {
+            selectedTemplate,
+            selectedFont,
+            fontSize,
+            fontSizePixels,
+            lineHeight,
+            selectedColor,
+            headerColor,
+            sectionOrder: addedSections,
+          },
         }
         
         const response = await fetch('/api/save-cv', {
@@ -1317,7 +1507,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
     } finally {
       setTimeout(() => setIsSavingChanges(false), 1000)
     }
-  }, [user, cvId, currentVersion, supabaseClient, form, cvName])
+  }, [user, cvId, currentVersion, supabaseClient, form, cvName, selectedTemplate, selectedFont, fontSize, fontSizePixels, lineHeight, selectedColor, headerColor, addedSections])
 
   // Use debounced autosave
   useDebouncedAutosave(cvData, {
@@ -1437,78 +1627,113 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
     try {
       const currentValues = form.getValues()
 
-      // Skapa en uppdaterad sections-objekt som bara innehåller aktiva sektioner
-      const updatedSections = Object.entries(currentValues.sections || {})
-        .filter(([sectionId]) => addedSections.includes(sectionId))
-        .reduce((acc, [key, value]) => {
-          (acc as any)[key] = value
-          return acc
-        }, {} as any)
-
-      // Filtrera bort tomma objekt från grundläggande sektioner
-      const filterEmptyObjects = (array: any[]) => {
-        return array.filter(item => {
-          // Kontrollera om objektet har några icke-tomma värden
-          return Object.values(item).some(value => {
-            if (typeof value === 'string') return value.trim() !== ''
-            if (typeof value === 'boolean') return true
-            return value !== null && value !== undefined
-          })
-        })
+      // Build data in the same format as autosave for consistency
+      const formattedData = {
+        skills: currentValues.sections?.skills?.items || currentValues.skills || [],
+        password: "",
+        projects: [],
+        education: currentValues.sections?.education?.items || currentValues.education || [],
+        languages: currentValues.sections?.languages?.items || currentValues.languages || [],
+        experience: (currentValues.sections?.experience?.items || currentValues.workExperience || []).map((exp: any) => ({
+          title: exp.title || "",
+          company: exp.company || "",
+          current: exp.current || false,
+          endDate: exp.endDate || "",
+          endYear: exp.endYear || "",
+          location: exp.location || "",
+          startDate: exp.startDate || "",
+          startYear: exp.startYear || "",
+          description: exp.description || ""
+        })),
+        references: currentValues.sections?.references?.items || [],
+        personalInfo: {
+          ...currentValues.personalInfo,
+          email: currentValues.personalInfo?.email || "",
+          phone: currentValues.personalInfo?.phone || "",
+          title: currentValues.personalInfo?.title || "",
+          address: currentValues.personalInfo?.address || "",
+          summary: currentValues.personalInfo?.summary || "",
+          lastName: currentValues.personalInfo?.lastName || "",
+          location: currentValues.personalInfo?.location || "",
+          firstName: currentValues.personalInfo?.firstName || "",
+          postalCode: currentValues.personalInfo?.postalCode || ""
+        },
+        certifications: currentValues.sections?.certificates?.items || [],
+        courses: currentValues.sections?.courses?.items || [],
+        internships: currentValues.sections?.internship?.items || [],
+        achievements: currentValues.sections?.achievements?.items || [],
+        traits: currentValues.sections?.traits?.items || [],
+        hobbies: currentValues.sections?.hobbies?.items || [],
+        profile: currentValues.sections?.profile || null,
+        workExperience: [],
+        _settings: {
+          selectedTemplate,
+          selectedFont,
+          fontSize,
+          fontSizePixels,
+          lineHeight,
+          selectedColor,
+          headerColor,
+          sectionOrder: addedSections,
+        },
       }
 
-      // Hantera grundläggande sektioner baserat på addedSections
-      const cvData = {
-        user_id: user?.id,
-        title: currentValues.personalInfo?.firstName || currentValues.personalInfo?.lastName 
-          ? `${currentValues.personalInfo.firstName || ''} ${currentValues.personalInfo.lastName || ''}'s CV`.trim()
-          : 'Untitled CV',
-        data: {
-          personalInfo: {
-            ...currentValues.personalInfo,
-            title: currentValues.personalInfo.title || "",
-            firstName: currentValues.personalInfo.firstName || "",
-            lastName: currentValues.personalInfo.lastName || "",
-            email: currentValues.personalInfo.email || "",
-            phone: currentValues.personalInfo.phone || "",
-            location: currentValues.personalInfo.location || "",
-            summary: currentValues.personalInfo.summary || "",
-            photo: currentValues.personalInfo.photo || "",
-            address: currentValues.personalInfo.address || "",
-            postalCode: currentValues.personalInfo.postalCode || "",
-            optionalFields: currentValues.personalInfo.optionalFields || {},
+      if (user && user.id) {
+        // Save via the same API endpoint as autosave
+        const { data: { session } } = await supabaseClient.auth.getSession()
+        const accessToken = session?.access_token
+        
+        const response = await fetch('/api/save-cv', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           },
-          // Spara bara data för sektioner som finns i addedSections
-          workExperience: addedSections.includes('experience') ? filterEmptyObjects(currentValues.workExperience || []) : [],
-          education: addedSections.includes('education') ? filterEmptyObjects(currentValues.education || []) : [],
-          skills: addedSections.includes('skills') ? filterEmptyObjects(currentValues.skills || []) : [],
-          languages: addedSections.includes('languages') ? filterEmptyObjects(currentValues.languages || []) : [],
-          sections: updatedSections,
+          body: JSON.stringify({
+            id: cvId,
+            user_id: user.id,
+            title: cvName || 'Untitled CV',
+            data: formattedData,
+          }),
+        })
+        
+        const result = await response.json()
+        
+        if (!response.ok) {
+          toast({
+            title: "Error",
+            description: `Failed to save CV: ${result.error || 'Unknown error'}`,
+            variant: "destructive",
+          })
+          return
         }
-      }
-
-
-      const { data, error } = await supabase
-        .from('cvs')
-        .upsert([cvData], {
-          onConflict: 'user_id,title'
-        })
-        .select()
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: `Failed to save CV: ${error.message}`,
-          variant: "destructive",
-        })
-        return
+        
+        if (result.success && result.cv) {
+          setCurrentVersion(result.cv.version)
+        }
+      } else {
+        // Not logged in - save to localStorage
+        saveCVToLocalStorage({
+          id: cvId,
+          cv_name: cvName,
+          selected_template: selectedTemplate,
+          selected_font: selectedFont,
+          font_size: fontSize === 'XS' ? 9 : fontSize === 'S' ? 10 : fontSize === 'M' ? 11 : fontSize === 'L' ? 12 : 13,
+          line_height: parseFloat(lineHeight),
+          selected_color: selectedColor,
+          header_color: headerColor,
+          ...formattedData,
+          section_order: addedSections,
+          section_names: sectionNamesMap,
+        }, cvId || undefined)
       }
 
       setShowSuccessMessage(true)
       setTimeout(() => setShowSuccessMessage(false), 3000)
       toast({
-        title: "Success",
-        description: "CV saved successfully to your pages.",
+        title: "Sparat",
+        description: "CV:t har sparats.",
       })
     } catch (error) {
       toast({
@@ -2648,6 +2873,8 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ selectedTemplate: externalT
       </div>
     </FormProvider>
   )
-}
+})
+
+ResumeEditor.displayName = 'ResumeEditor'
 
 export default ResumeEditor

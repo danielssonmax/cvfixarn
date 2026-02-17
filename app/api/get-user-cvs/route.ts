@@ -20,8 +20,9 @@ export async function GET() {
     // Get all active CVs for this user, ordered by most recently updated
     const { data: cvs, error } = await supabase
       .from('cvs')
-      .select('id, title')
+      .select('id, title, data, created_at, updated_at')
       .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
     
     if (error) {
       console.error('❌ Error fetching user CVs:', error)

@@ -48,6 +48,52 @@ export default function ProfilePage() {
     }
   }, [user])
 
+  // Transform the JSONB data from the database into the flat format CVThumbnail expects
+  const transformCVDataForThumbnail = (dbRow: any): any => {
+    if (!dbRow || !dbRow.data) return null
+    
+    const jsonData = dbRow.data
+    const settings = jsonData._settings || {}
+    
+    return {
+      id: dbRow.id,
+      selected_template: settings.selectedTemplate || 'default',
+      selected_font: settings.selectedFont || 'Poppins',
+      font_size: settings.fontSize === 'XS' ? 9 : settings.fontSize === 'S' ? 10 : settings.fontSize === 'M' ? 11 : settings.fontSize === 'L' ? 12 : settings.fontSize === 'XL' ? 13 : 11,
+      line_height: settings.lineHeight ? parseFloat(settings.lineHeight) : 1.5,
+      selected_color: settings.selectedColor || '#000000',
+      header_color: settings.headerColor || '#000000',
+      personal_info: jsonData.personalInfo || {},
+      work_experience: jsonData.experience || jsonData.workExperience || [],
+      education: jsonData.education || [],
+      skills: jsonData.skills || [],
+      languages: jsonData.languages || [],
+      profile: jsonData.profile || null,
+      courses: jsonData.courses || [],
+      internships: jsonData.internships || [],
+      certificates: jsonData.certifications || [],
+      achievements: jsonData.achievements || [],
+      references: jsonData.references || [],
+      traits: jsonData.traits || [],
+      hobbies: jsonData.hobbies || [],
+      section_order: settings.sectionOrder || ['personalInfo', 'profile', 'experience', 'education', 'skills', 'languages'],
+      section_names: {},
+    }
+  }
+
+  // Extract a display title from the CV JSONB data
+  const extractCVTitle = (dbRow: any): string => {
+    if (!dbRow?.data?.personalInfo) return dbRow?.title || 'CV utan titel'
+    
+    const { firstName, lastName, title: jobTitle } = dbRow.data.personalInfo
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim()
+    
+    if (fullName && jobTitle) return `${fullName} – ${jobTitle}`
+    if (fullName) return fullName
+    if (jobTitle) return jobTitle
+    return dbRow?.title || 'CV utan titel'
+  }
+
   const fetchCVs = async () => {
     try {
       const response = await fetch('/api/get-user-cvs', {
@@ -56,36 +102,13 @@ export default function ProfilePage() {
       const result = await response.json()
       
       if (result.success) {
-        // Fetch full CV data for each CV
-        const cvPromises = result.cvs.map(async (cv: any) => {
-          try {
-            const cvResponse = await fetch(`/api/load-cv?id=${cv.id}`, {
-              credentials: 'include',
-            })
-            const response = await cvResponse.json()
-            
-            // Extract the actual CV data from the response
-            const cvData = response.success ? response.cv : response
-            
-            return {
-              id: cv.id,
-              title: cv.cv_name || 'CV utan titel',
-              created_at: cv.created_at,
-              updated_at: cv.updated_at,
-              cvData: cvData, // Store entire CV data
-            }
-          } catch (error) {
-            return {
-              id: cv.id,
-              title: cv.cv_name || 'CV utan titel',
-              created_at: cv.created_at,
-              updated_at: cv.updated_at,
-              cvData: null,
-            }
-          }
-        })
-        
-        const mappedCVs = await Promise.all(cvPromises)
+        const mappedCVs = result.cvs.map((cv: any) => ({
+          id: cv.id,
+          title: extractCVTitle(cv),
+          created_at: cv.created_at,
+          updated_at: cv.updated_at,
+          cvData: transformCVDataForThumbnail(cv),
+        }))
         setCvs(mappedCVs)
       } else {
         console.error('Failed to load CVs:', result.error)
@@ -268,9 +291,11 @@ export default function ProfilePage() {
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <h3 className="text-sm font-medium text-gray-900 truncate">{cv.title}</h3>
-                              <p className="text-xs text-gray-500 mt-1">
-                                Dina CV
-                              </p>
+                              {cv.updated_at && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Redigerad {format(new Date(cv.updated_at), 'P', { locale: sv })}
+                                </p>
+                              )}
                             </div>
                             
                             <DropdownMenu open={openDropdownId === cv.id} onOpenChange={(open) => setOpenDropdownId(open ? cv.id : null)}>
@@ -313,12 +338,16 @@ export default function ProfilePage() {
                   <div key={cv.id} className="group">
                     <Link href={`/profil/skapa-cv?id=${cv.id}`}>
                       <div className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer border border-transparent hover:border-gray-200 transition-all">
-                        <div className="w-10 h-10 bg-gray-100 rounded flex-shrink-0"></div>
+                        <div className="w-16 h-20 rounded border border-gray-200 overflow-hidden flex-shrink-0 bg-gray-50">
+                          <CVThumbnail cvData={cv.cvData} />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm font-medium text-gray-900 truncate">{cv.title}</h3>
-                          <p className="text-xs text-gray-500">
-                            Redigerad för {format(new Date(cv.updated_at), 'P', { locale: sv })}
-                          </p>
+                          {cv.updated_at && (
+                            <p className="text-xs text-gray-500">
+                              Redigerad {format(new Date(cv.updated_at), 'P', { locale: sv })}
+                            </p>
+                          )}
                         </div>
                         
                         <DropdownMenu>
