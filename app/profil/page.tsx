@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/AuthContext"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
@@ -49,11 +50,13 @@ export default function ProfilePage() {
   }, [user])
 
   // Transform the JSONB data from the database into the flat format CVThumbnail expects
+  // Handles both new format (flat with _settings) and old format (nested sections, workExperience)
   const transformCVDataForThumbnail = (dbRow: any): any => {
     if (!dbRow || !dbRow.data) return null
     
-    const jsonData = dbRow.data
-    const settings = jsonData._settings || {}
+    const d = dbRow.data
+    const settings = d._settings || {}
+    const sections = d.sections || {}
     
     return {
       id: dbRow.id,
@@ -63,29 +66,30 @@ export default function ProfilePage() {
       line_height: settings.lineHeight ? parseFloat(settings.lineHeight) : 1.5,
       selected_color: settings.selectedColor || '#000000',
       header_color: settings.headerColor || '#000000',
-      personal_info: jsonData.personalInfo || {},
-      work_experience: jsonData.experience || jsonData.workExperience || [],
-      education: jsonData.education || [],
-      skills: jsonData.skills || [],
-      languages: jsonData.languages || [],
-      profile: jsonData.profile || null,
-      courses: jsonData.courses || [],
-      internships: jsonData.internships || [],
-      certificates: jsonData.certifications || [],
-      achievements: jsonData.achievements || [],
-      references: jsonData.references || [],
-      traits: jsonData.traits || [],
-      hobbies: jsonData.hobbies || [],
+      personal_info: d.personalInfo || {},
+      work_experience: d.experience || d.workExperience || sections.experience?.items || [],
+      education: d.education || sections.education?.items || [],
+      skills: d.skills || sections.skills?.items || [],
+      languages: d.languages || sections.languages?.items || [],
+      profile: d.profile || sections.profile || null,
+      courses: d.courses || sections.courses?.items || [],
+      internships: d.internships || sections.internship?.items || [],
+      certificates: d.certifications || sections.certificates?.items || [],
+      achievements: d.achievements || sections.achievements?.items || [],
+      references: d.references || sections.references?.items || [],
+      traits: d.traits || sections.traits?.items || [],
+      hobbies: d.hobbies || sections.hobbies?.items || [],
       section_order: settings.sectionOrder || ['personalInfo', 'profile', 'experience', 'education', 'skills', 'languages'],
       section_names: {},
     }
   }
 
-  // Extract a display title from the CV JSONB data
+  // Extract a display title from the CV JSONB data (handles both old and new formats)
   const extractCVTitle = (dbRow: any): string => {
-    if (!dbRow?.data?.personalInfo) return dbRow?.title || 'CV utan titel'
+    const personalInfo = dbRow?.data?.personalInfo
+    if (!personalInfo) return dbRow?.title || 'CV utan titel'
     
-    const { firstName, lastName, title: jobTitle } = dbRow.data.personalInfo
+    const { firstName, lastName, title: jobTitle } = personalInfo
     const fullName = [firstName, lastName].filter(Boolean).join(' ').trim()
     
     if (fullName && jobTitle) return `${fullName} – ${jobTitle}`
@@ -96,8 +100,15 @@ export default function ProfilePage() {
 
   const fetchCVs = async () => {
     try {
+      // Get access token for reliable auth
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
+
       const response = await fetch('/api/get-user-cvs', {
         credentials: 'include',
+        headers: {
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
       })
       const result = await response.json()
       
@@ -129,9 +140,15 @@ export default function ProfilePage() {
     if (!cvToDelete) return
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
+
       const response = await fetch(`/api/delete-cv?id=${cvToDelete}`, {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
       })
       const result = await response.json()
       
