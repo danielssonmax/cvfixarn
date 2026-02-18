@@ -1081,97 +1081,108 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     // Don't try to sync on mount - let auto-save handle it after user makes changes
     // This avoids 401 errors when session isn't ready yet
     
-    // Load CV from database if logged in and has ID in URL
-    if (user && cvId && !hasLoadedFromDBRef.current) {
-      // When logged in, ALWAYS load from DB, NEVER from localStorage
-      hasLoadedFromDBRef.current = true // Mark as loading to prevent duplicate loads
+    // Load CV from database when there's an ID in the URL
+    if (cvId && !hasLoadedFromDBRef.current) {
+      hasLoadedFromDBRef.current = true
       
       const loadCVFromDatabase = async () => {
         try {
-          const response = await fetch(`/api/load-cv?id=${cvId}&user_id=${user.id}`, {
-            credentials: 'include',
-          })
+          // Load by ID; include user_id if logged in for ownership verification
+          const url = user
+            ? `/api/load-cv?id=${cvId}&user_id=${user.id}`
+            : `/api/load-cv?id=${cvId}`
+          const response = await fetch(url, { credentials: 'include' })
           const result = await response.json()
           
           if (result.success && result.cv) {
             const savedCV = result.cv
             loadedCV = savedCV
             
-            // Restore CV title from database
             if (savedCV.title) {
               setCvName(savedCV.title)
             }
             
-            // Restore form data from the data JSONB column
             if (savedCV.data) {
               const cvData = savedCV.data
               
-              // Restore personalInfo
+              // Restore personalInfo (same key in both old and new format)
               if (cvData.personalInfo) {
                 form.setValue('personalInfo', cvData.personalInfo)
               }
               
-              // Restore experience (from experience array in data)
-              if (cvData.experience && Array.isArray(cvData.experience) && cvData.experience.length > 0) {
-                form.setValue('sections.experience.items', cvData.experience)
+              // Restore experience — handle both new format (experience) and old format (workExperience, sections.experience)
+              const experienceData = cvData.experience || cvData.workExperience || cvData.sections?.experience?.items || []
+              if (Array.isArray(experienceData) && experienceData.length > 0) {
+                form.setValue('sections.experience.items', experienceData)
               }
               
-              // Restore education
-              if (cvData.education && Array.isArray(cvData.education) && cvData.education.length > 0) {
-                form.setValue('sections.education.items', cvData.education)
+              // Restore education — handle both flat and nested
+              const educationData = cvData.education || cvData.sections?.education?.items || []
+              if (Array.isArray(educationData) && educationData.length > 0) {
+                form.setValue('sections.education.items', educationData)
               }
               
               // Restore skills
-              if (cvData.skills && Array.isArray(cvData.skills) && cvData.skills.length > 0) {
-                form.setValue('sections.skills.items', cvData.skills)
+              const skillsData = cvData.skills || cvData.sections?.skills?.items || []
+              if (Array.isArray(skillsData) && skillsData.length > 0) {
+                form.setValue('sections.skills.items', skillsData)
               }
               
               // Restore languages
-              if (cvData.languages && Array.isArray(cvData.languages) && cvData.languages.length > 0) {
-                form.setValue('sections.languages.items', cvData.languages)
+              const languagesData = cvData.languages || cvData.sections?.languages?.items || []
+              if (Array.isArray(languagesData) && languagesData.length > 0) {
+                form.setValue('sections.languages.items', languagesData)
               }
               
               // Restore references
-              if (cvData.references && Array.isArray(cvData.references) && cvData.references.length > 0) {
-                form.setValue('sections.references.items', cvData.references)
+              const referencesData = cvData.references || cvData.sections?.references?.items || []
+              if (Array.isArray(referencesData) && referencesData.length > 0) {
+                form.setValue('sections.references.items', referencesData)
               }
               
               // Restore certifications
-              if (cvData.certifications && Array.isArray(cvData.certifications) && cvData.certifications.length > 0) {
-                form.setValue('sections.certificates.items', cvData.certifications)
+              const certsData = cvData.certifications || cvData.sections?.certificates?.items || []
+              if (Array.isArray(certsData) && certsData.length > 0) {
+                form.setValue('sections.certificates.items', certsData)
               }
               
               // Restore courses
-              if (cvData.courses && Array.isArray(cvData.courses) && cvData.courses.length > 0) {
-                form.setValue('sections.courses.items', cvData.courses)
+              const coursesData = cvData.courses || cvData.sections?.courses?.items || []
+              if (Array.isArray(coursesData) && coursesData.length > 0) {
+                form.setValue('sections.courses.items', coursesData)
               }
               
               // Restore internships
-              if (cvData.internships && Array.isArray(cvData.internships) && cvData.internships.length > 0) {
-                form.setValue('sections.internship.items', cvData.internships)
+              const internshipsData = cvData.internships || cvData.sections?.internship?.items || []
+              if (Array.isArray(internshipsData) && internshipsData.length > 0) {
+                form.setValue('sections.internship.items', internshipsData)
               }
               
               // Restore achievements
-              if (cvData.achievements && Array.isArray(cvData.achievements) && cvData.achievements.length > 0) {
-                form.setValue('sections.achievements.items', cvData.achievements)
+              const achievementsData = cvData.achievements || cvData.sections?.achievements?.items || []
+              if (Array.isArray(achievementsData) && achievementsData.length > 0) {
+                form.setValue('sections.achievements.items', achievementsData)
               }
               
               // Restore traits
-              if (cvData.traits && Array.isArray(cvData.traits) && cvData.traits.length > 0) {
-                form.setValue('sections.traits.items', cvData.traits)
+              const traitsData = cvData.traits || cvData.sections?.traits?.items || []
+              if (Array.isArray(traitsData) && traitsData.length > 0) {
+                form.setValue('sections.traits.items', traitsData)
               }
               
               // Restore hobbies
-              if (cvData.hobbies && Array.isArray(cvData.hobbies) && cvData.hobbies.length > 0) {
-                form.setValue('sections.hobbies.items', cvData.hobbies)
+              const hobbiesData = cvData.hobbies || cvData.sections?.hobbies?.items || []
+              if (Array.isArray(hobbiesData) && hobbiesData.length > 0) {
+                form.setValue('sections.hobbies.items', hobbiesData)
               }
               
-              // Restore profile
-              if (cvData.profile) {
-                form.setValue('sections.profile', cvData.profile)
+              // Restore profile (handle both object and nested format)
+              const profileData = cvData.profile || cvData.sections?.profile || null
+              if (profileData) {
+                form.setValue('sections.profile', profileData)
               }
               
-              // Restore settings (template, font, colors, etc.)
+              // Restore settings from _settings (new format)
               if (cvData._settings) {
                 if (cvData._settings.selectedTemplate) setSelectedTemplate(cvData._settings.selectedTemplate)
                 if (cvData._settings.selectedFont) setSelectedFont(cvData._settings.selectedFont)
@@ -1186,27 +1197,40 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                   setAddedSections(cvData._settings.sectionOrder)
                 }
               }
+
+              // Build section order from data if _settings.sectionOrder not present
+              if (!cvData._settings?.sectionOrder) {
+                const detectedSections = ['personalInfo']
+                if (profileData) detectedSections.push('profile')
+                if (experienceData.length > 0) detectedSections.push('experience')
+                if (educationData.length > 0) detectedSections.push('education')
+                if (skillsData.length > 0) detectedSections.push('skills')
+                if (languagesData.length > 0) detectedSections.push('languages')
+                if (referencesData.length > 0) detectedSections.push('references')
+                if (certsData.length > 0) detectedSections.push('certificates')
+                if (coursesData.length > 0) detectedSections.push('courses')
+                if (internshipsData.length > 0) detectedSections.push('internship')
+                if (achievementsData.length > 0) detectedSections.push('achievements')
+                if (traitsData.length > 0) detectedSections.push('traits')
+                if (hobbiesData.length > 0) detectedSections.push('hobbies')
+                setAddedSections(detectedSections)
+              }
             }
             
-            // Mark that initial data has been loaded
             setHasLoadedInitialData(true)
           } else if (response.status === 404) {
-            // CV doesn't exist yet - this is normal for new CVs
-            // Mark as loaded to allow saving
             setHasLoadedInitialData(true)
           } else {
-            // Failed to load - mark as loaded to allow saving new data
             setHasLoadedInitialData(true)
           }
         } catch (error) {
-          // Error loading - mark as loaded to allow saving new data
           setHasLoadedInitialData(true)
         }
       }
       
       loadCVFromDatabase()
     }
-    // Load CV from localStorage if not logged in
+    // Load CV from localStorage if not logged in (and DB load didn't handle it)
     else if (!user) {
       const savedCV = getCVFromLocalStorage()
       loadedCV = savedCV
