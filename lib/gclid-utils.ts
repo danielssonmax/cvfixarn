@@ -1,39 +1,69 @@
 /**
  * Extracts the gclid from the _gcl_aw cookie
  * Cookie format: GCL.{timestamp}.{gclid}
- * Example: GCL.1768392494.CjwKCAiAmp3LBhAkEiwAJM2JUIgWnyqzmqqnnelJIb_HrGxC88cIQb1GzsJTrZWWzffsrtCcz4pBbhoCt7sQAvD_BwE
- * Returns: CjwKCAiAmp3LBhAkEiwAJM2JUIgWnyqzmqqnnelJIb_HrGxC88cIQb1GzsJTrZWWzffsrtCcz4pBbhoCt7sQAvD_BwE
  */
 export function getGclidFromCookie(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
+  return extractGclCookie('_gcl_aw')
+}
 
-  // Get the _gcl_aw cookie
+/**
+ * Extracts the gbraid from the _gcl_gb cookie
+ * Cookie format: GCL.{timestamp}.{gbraid}
+ */
+export function getGbraidFromCookie(): string | null {
+  return extractGclCookie('_gcl_gb')
+}
+
+/**
+ * Shared parser for _gcl_* cookies (gclid, gbraid, wbraid, etc.)
+ * All follow the same format: GCL.{timestamp}.{value}
+ */
+function extractGclCookie(cookieName: string): string | null {
+  if (typeof window === 'undefined') return null
+
   const cookies = document.cookie.split(';')
-  const gclAwCookie = cookies.find(cookie => cookie.trim().startsWith('_gcl_aw='))
+  const targetCookie = cookies.find(c => c.trim().startsWith(`${cookieName}=`))
+  if (!targetCookie) return null
 
-  if (!gclAwCookie) {
-    return null
-  }
+  const cookieValue = targetCookie.split('=')[1]?.trim()
+  if (!cookieValue) return null
 
-  // Extract the value (everything after '=')
-  const cookieValue = gclAwCookie.split('=')[1]?.trim()
-
-  if (!cookieValue) {
-    return null
-  }
-
-  // Parse the cookie value: GCL.{timestamp}.{gclid}
-  // Split by '.' and get everything after the second dot
   const parts = cookieValue.split('.')
-  
-  if (parts.length < 3) {
-    return null
+  if (parts.length < 3) return null
+
+  return parts.slice(2).join('.') || null
+}
+
+const REFERRER_KEY = 'cvfixaren_referrer'
+
+/**
+ * Captures and stores the original referrer when the user first lands on the site.
+ * Should be called once on app mount. Only stores the first referrer per session.
+ */
+export function captureReferrer(): void {
+  if (typeof window === 'undefined') return
+
+  // Only store if we don't already have one (first landing)
+  if (sessionStorage.getItem(REFERRER_KEY)) return
+
+  const referrer = document.referrer
+  if (referrer) {
+    try {
+      const url = new URL(referrer)
+      // Don't store self-referrals
+      if (url.hostname !== window.location.hostname) {
+        sessionStorage.setItem(REFERRER_KEY, referrer)
+      }
+    } catch {
+      sessionStorage.setItem(REFERRER_KEY, referrer)
+    }
   }
+}
 
-  // Join everything after the second dot (index 2 onwards)
-  const gclid = parts.slice(2).join('.')
-
-  return gclid || null
+/**
+ * Returns the stored original referrer, or null if none captured.
+ */
+export function getReferrer(): string | null {
+  if (typeof window === 'undefined') return null
+  return sessionStorage.getItem(REFERRER_KEY) || null
 }

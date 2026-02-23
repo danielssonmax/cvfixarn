@@ -5,6 +5,7 @@ import Script from "next/script"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { sanitizeHTML } from "@/lib/sanitize"
 import { CookieConsent } from "@/components/cookie-consent"
+import { ReferrerTracker } from "@/components/referrer-tracker"
 import { Analytics } from "@vercel/analytics/next"
 
 export default function RootLayout({
@@ -61,6 +62,7 @@ export default function RootLayout({
         {/* End Google Tag Manager (noscript) */}
       <AuthProvider>
         {children}
+        <ReferrerTracker />
         <CookieConsent />
         <Analytics />
       </AuthProvider>

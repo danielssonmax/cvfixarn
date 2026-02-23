@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/contexts/AuthContext"
-import { getGclidFromCookie } from "@/lib/gclid-utils"
+import { getGclidFromCookie, getGbraidFromCookie, getReferrer } from "@/lib/gclid-utils"
 
 interface SignupPopupProps {
   isOpen: boolean
@@ -84,8 +84,9 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
       // Create row in premium table
       if (data.user) {
         try {
-          // Get gclid from cookie if available
           const gclid = getGclidFromCookie()
+          const gbraid = getGbraidFromCookie()
+          const referer = getReferrer()
           
           const { data: premiumData, error: premiumError } = await supabase
             .from('premium')
@@ -95,6 +96,8 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
                 email: email,
                 premium: 'false',
                 gclid: gclid || null,
+                gbraid: gbraid || null,
+                referer: referer || null,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
               },
