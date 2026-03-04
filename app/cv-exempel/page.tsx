@@ -4,8 +4,19 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Section } from "@/components/section"
-import { ArrowRight, FileText, CheckCircle } from "lucide-react"
+import { FileText, CheckCircle } from "lucide-react"
 import type { Metadata } from "next"
+
+const exampleSlugs: Record<string, string> = {
+  Student: "student",
+  Sjuksköterska: "sjukskoterska",
+  Undersköterska: "underskoterska",
+  Lagerarbetare: "lagerarbetare",
+  Gymnasieelev: "gymnasieelev",
+  Konsult: "konsult",
+  Barnskötare: "barnskotare",
+  "Servitör/servitris": "servitor-servitris",
+}
 
 export const metadata: Metadata = {
   title: "CV-exempel för olika yrken och branscher (2026) | CVfixaren",
@@ -277,15 +288,18 @@ export default function CVExempelPage() {
                   {category.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {category.examples.map((example) => (
-                    <Link
-                      key={example}
-                      href="/profil/skapa-cv"
-                      className="text-xs bg-gray-50 hover:bg-[#00bf63]/10 hover:text-[#00bf63] text-muted-foreground px-3 py-1.5 rounded-full transition-colors border border-gray-100"
-                    >
-                      {example}
-                    </Link>
-                  ))}
+                  {category.examples.map((example) => {
+                    const slug = exampleSlugs[example]
+                    return (
+                      <Link
+                        key={example}
+                        href={slug ? `/cv-exempel/${slug}` : "/profil/skapa-cv"}
+                        className="text-xs bg-gray-50 hover:bg-[#00bf63]/10 hover:text-[#00bf63] text-muted-foreground px-3 py-1.5 rounded-full transition-colors border border-gray-100"
+                      >
+                        {example}
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
             ))}

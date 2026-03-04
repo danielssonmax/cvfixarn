@@ -52,6 +52,11 @@ export function Footer() {
                   CV-exempel
                 </Link>
               </li>
+              <li>
+                <Link href="/exempel-personliga-brev" className="text-sm text-gray-400 hover:text-[#00bf63] transition-colors">
+                  Personliga brev-exempel
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

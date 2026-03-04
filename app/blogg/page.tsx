@@ -19,6 +19,34 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const blogPosts = [
     {
+      title: "Hur man skriver ett personligt brev utan erfarenhet",
+      description: "Saknar du arbetslivserfarenhet? Lär dig skriva ett övertygande personligt brev som visar din potential, motivation och vilja att lära.",
+      date: "2026-02-10",
+      slug: "personligt-brev-utan-erfarenhet",
+      category: "Personligt brev",
+    },
+    {
+      title: "Varför vill du jobba här? Bra och dåliga svar",
+      description: "Undvik de vanligaste misstagen och lär dig fem vinnande strategier för att svara på intervjuns klurigaste fråga.",
+      date: "2026-02-10",
+      slug: "varfor-vill-du-jobba-har",
+      category: "Intervjutips",
+    },
+    {
+      title: "Hur man presenterar sig själv (med exempel): En komplett guide",
+      description: "Lär dig presentera dig själv på ett roligt och professionellt sätt i intervjuer, mejl och telefonsamtal.",
+      date: "2026-02-10",
+      slug: "presentera-dig-sjalv",
+      category: "Intervjutips",
+    },
+    {
+      title: "Styrkor och svagheter på jobbintervjun: Så svarar du som ett proffs",
+      description: "Lär dig identifiera dina styrkor och svagheter, ge konkreta exempel och undvika klichéer på jobbintervjun.",
+      date: "2026-02-10",
+      slug: "styrkor-och-svagheter-jobbintervjun",
+      category: "Intervjutips",
+    },
+    {
       title: "Rekryterarens 5 oväntade CV-tips som landar dig intervjun",
       description: "Fem överraskande och effektiva tips direkt från en rekryterare som ökar dina chanser att landa drömjobbet.",
       date: "2025-01-28",

@@ -9,6 +9,288 @@ import { sanitizeHTML } from "@/lib/sanitize"
 
 // This would typically come from a CMS or database
 const blogPosts = {
+  "personligt-brev-utan-erfarenhet": {
+    title: "Hur man skriver ett personligt brev utan erfarenhet",
+    date: "2026-02-10",
+    category: "Personligt brev",
+    excerpt:
+      "Saknar du arbetslivserfarenhet? Ingen fara. Lär dig skriva ett övertygande personligt brev som visar din potential, motivation och vilja att lära.",
+    content: `
+      <p>Om du inte har någon arbetslivserfarenhet kan det kännas svårt att skriva ett personligt brev. Men ett väl genomtänkt personligt brev är fortfarande det bästa sättet att presentera dig för arbetsgivaren och visa att du är en lämplig kandidat – även utan erfarenhet.</p>
+      <p>I det personliga brevet kan du beskriva vad som motiverar dig, lyfta fram dina styrkor och intressen, och visa upp din potential. I den här guiden går vi igenom hur du skriver ett personligt brev utan erfarenhet, med konkreta exempel och tips.</p>
+
+      <h2>Skriva ett personligt brev till ditt första jobb</h2>
+      <p>När du söker ditt allra första jobb är det troligt att du inte har någon erfarenhet att visa upp. Då kan det kännas frestande att hoppa över det personliga brevet helt, men det vore ett misstag – du missar chansen att visa vem du är.</p>
+      <p>Kom ihåg: <strong>alla</strong> har någon gång suttit i samma sits. Nyckeln är att lyfta fram bakgrunden till ditt intresse för branschen. En personalchef förväntar sig kanske inte att du stannar för alltid, men om du kan visa ett genuint intresse och engagemang ligger du redan långt före andra kandidater.</p>
+
+      <blockquote>
+        <p><strong>Exempel (Barista):</strong><br/>
+        <em>"Som juridikstudent vid Uppsala universitet har kaffe blivit en stor del av min vardag. Under de senaste två åren har jag utforskat konsten att brygga kaffe och tillreda olika kaffedrycker. Min passion för att göra en perfekt espresso, tillsammans med min positiva attityd och viljan att lära, gör mig till en utmärkt kandidat för en deltidstjänst som barista."</em></p>
+      </blockquote>
+
+      <h2>Personligt brev utan erfarenhet inom det specifika området</h2>
+      <p>En annan vanlig situation är att du gör ett karriärbyte och söker ett jobb inom ett helt nytt område. Att skriva ett personligt brev utan erfarenhet inom det specifika området kan kännas som en utmaning, men det är i själva verket en möjlighet att visa upp all den erfarenhet och kunskap du redan besitter – bara i ett nytt sammanhang.</p>
+
+      <blockquote>
+        <p><strong>Exempel (Karriärbyte till kundtjänst):</strong><br/>
+        <em>"Kundtjänstmedarbetare har aldrig varit min officiella jobbtitel, men service har alltid varit kärnan i det jag gör. Som servitör på en av stadens populäraste restauranger har jag utvecklat min förmåga att betjäna kunder professionellt. Att svara på frågor, hantera önskemål och hjälpa varje kund på ett personligt sätt hör till mina starka sidor – och jag tror att dessa är nyckelkompetenser som gör att jag snabbt kan anpassa mig till kundtjänstrollen."</em></p>
+      </blockquote>
+
+      <h2>Olika typer av erfarenheter du kan lyfta fram</h2>
+      <p>Även om du inte har formell arbetslivserfarenhet finns det mycket du kan inkludera i ditt personliga brev:</p>
+
+      <h3>Sommarjobb</h3>
+      <p>Ett sommarjobb är ofta din första kontakt med arbetslivet. Beskriv vilka arbetsuppgifter du utfört, vad du lärt dig, och om du fick använda din sociala förmåga. Koppla det till den tjänst du nu söker.</p>
+
+      <h3>Ideellt engagemang och volontärarbete</h3>
+      <p>Har du varit tränare, ledare eller engagerad i en förening? Har du haft en praktikplats? Betona det som är relevant – att du kan ta ansvar, samarbeta och lära dig snabbt.</p>
+
+      <h3>Relevanta intressen och kurser</h3>
+      <p>En kurs utanför skolan, ett starkt hobby-intresse eller en idrottsaktivitet kan visa värdefulla egenskaper. Tränar du handboll? Det visar att du är en lagspelare. Har du gått en kurs i kreativt skrivande? Det visar ditt engagemang.</p>
+
+      <h2>Personligt brev för praktikanter utan erfarenhet</h2>
+      <p>Praktikanter förväntas inte ha erfarenhet, men de förväntas ha ett intresse för branschen och matchande färdigheter. Ett personligt brev för praktikanter bör visa upp engagemang och förklara varför just du förtjänar platsen framför andra kandidater.</p>
+
+      <blockquote>
+        <p><strong>Exempel (Mediepraktikant):</strong><br/>
+        <em>"Som praktikant på Loke Media kommer jag att tillföra kreativitet och ett ungdomligt perspektiv till ert team. Min passion är att skriva, och jag har precis avslutat en högskolekurs i kreativt skrivande. De senaste åren har jag sommarjobbat på lokaltidningen där jag skrivit kortare notiser och haft ansvar för sociala medier. Jag ser fram emot att använda denna erfarenhet som praktikant hos er."</em></p>
+      </blockquote>
+
+      <h2>Ingen erfarenhet men villighet att lära</h2>
+      <p>Att beskriva din vilja att utvecklas och ditt intresse av att lära dig är alltid en bra strategi när du saknar erfarenhet. Det fungerar bäst för nybörjartjänster, men om du söker en mer kvalificerad roll behöver du ge tydliga exempel på tillfällen då du haft nytta av din förmåga att snabbt lära dig nya saker.</p>
+      <p>Lyft fram personlighetsdrag som gör att du sticker ut jämfört med kandidater som redan har erfarenhet.</p>
+
+      <h2>Misstag att undvika</h2>
+      <p>När du inte har erfarenhet att presentera måste du anstränga dig extra. Undvik dessa vanliga misstag:</p>
+      <ul>
+        <li><strong>Dålig utformning:</strong> En proffsig layout kompenserar delvis för bristande erfarenhet. Se till att ditt brev har en tydlig överskrift med namn och kontaktuppgifter, och använd en snygg design.</li>
+        <li><strong>Stavfel och grammatiska fel:</strong> Sådana misstag signalerar brist på fokus och uppmärksamhet. Använd stavningskontroll och be gärna någon annan läsa igenom texten.</li>
+        <li><strong>Generiskt brev:</strong> Även utan erfarenhet bör du skräddarsy varje brev för det specifika företaget och jobbet. Läs jobbeskrivningen noggrant och anpassa ditt brev efter den.</li>
+      </ul>
+
+      <h2>Sammanfattning</h2>
+      <p>Även om du saknar erfarenhet finns det mycket du kan göra för att skriva ett starkt personligt brev:</p>
+      <ul>
+        <li><strong>Var entusiastisk</strong> och visa genuint intresse för jobbet.</li>
+        <li><strong>Lyft fram alla erfarenheter</strong> – sommarjobb, volontärarbete, kurser och intressen.</li>
+        <li><strong>Visa vilja att lära:</strong> Betona att du utvecklas snabbt och är redo att bidra.</li>
+        <li><strong>Skräddarsy varje brev</strong> efter det specifika jobbet du söker.</li>
+      </ul>
+    `,
+  },
+  "varfor-vill-du-jobba-har": {
+    title: "Varför vill du jobba här? Bra och dåliga svar",
+    date: "2026-02-10",
+    category: "Intervjutips",
+    excerpt:
+      "Lär dig svara på en av intervjuns klurigaste frågor. Vi går igenom tre dåliga svar att undvika och fem vinnande strategier med konkreta exempel.",
+    content: `
+      <p><em>"Varför vill du jobba här?"</em> Det är en av de vanligaste frågorna under en anställningsintervju, men också en av de klurigaste. Om du inte är förberedd kan det vara svårt att formulera ett svar som faktiskt imponerar på rekryteraren.</p>
+      <p>Frågan kan dyka upp i flera skepnader, som till exempel:</p>
+      <ul>
+        <li>Varför söker du dig till just vårt företag?</li>
+        <li>Vad är det som lockar med den här tjänsten?</li>
+        <li>Varför vill du ha det här jobbet?</li>
+      </ul>
+      <p>För att lyckas behöver du förstå varför arbetsgivaren ställer frågan. De vill veta om du har gjort din research, om du förstår företagskulturen och om din motivation sträcker sig längre än till bara lönekuvertet.</p>
+
+      <h2>Tre dåliga svar på frågan (och varför de faller platt)</h2>
+      <p>När vi pratar om "Varför vill du jobba här? Bra och dåliga svar", är det viktigt att börja med minorna du bör undvika. Här är tre svar som ofta leder till ett nej:</p>
+
+      <h3>1. "Jag behöver pengar."</h3>
+      <p>Självklart jobbar vi för lön, men att säga det rakt ut signalerar att du saknar engagemang för rollen. Arbetsgivaren räds att du lämnar så fort någon annan erbjuder en tusenlapp mer.</p>
+
+      <h3>2. "Jag måste bara ha ett jobb just nu."</h3>
+      <p>Detta utstrålar likgiltighet. Om du inte bryr dig om var du jobbar, antar arbetsgivaren att du inte heller kommer bry dig om hur du utför dina arbetsuppgifter.</p>
+
+      <h3>3. "Jag ser det här som en bra språngbräda."</h3>
+      <p>Att rekrytera är dyrt och tidskrävande. Om du redan i intervjun signalerar att du planerar att gå vidare till något "större och bättre", blir du en osäker investering.</p>
+
+      <h2>Fem bra svar på frågan "Varför vill du jobba här?"</h2>
+      <p>För att ge ett bra svar bör du flytta fokus från dina egna behov till företagets vision och hur du kan bidra. Här är fem vinnande strategier:</p>
+
+      <h3>1. Fokusera på företagets rykte och resultat</h3>
+      <p>Visa att du har koll på branschen. Istället för att prata om vad jobbet gör för dig, prata om vad företaget gör för världen eller sin nisch.</p>
+      <blockquote>
+        <p><strong>Exempel (Arkitekt):</strong> <em>"Jag har följt era projekt sedan studietiden. Era principer för modern byggnadsteknik har inspirerat mig i mina egna projekt, och jag vill arbeta i en miljö som håller så hög kvalitet över tid."</em></p>
+      </blockquote>
+
+      <h3>2. Visa hur du kan bidra till deras utmaningar</h3>
+      <p>Identifiera vad företaget behöver och förklara hur din kompetens löser deras problem.</p>
+      <blockquote>
+        <p><strong>Exempel (Snickare):</strong> <em>"Era avancerade renoveringsprojekt kräver både teknisk skicklighet och fingertoppskänsla för kundkontakt. Med min erfarenhet kan jag säkerställa att kunderna är 100 % nöjda med slutresultatet."</em></p>
+      </blockquote>
+
+      <h3>3. Matcha dina värderingar med företagets</h3>
+      <p>Läs på om deras "Mission Statement". Om ni delar värderingar skapar det en stark koppling direkt.</p>
+      <blockquote>
+        <p><strong>Exempel (Ingenjör):</strong> <em>"Jag beundrar ert engagemang i miljöfrågor, som er senaste kampanj för Östersjön. Som volontär inom miljöorganisationer vill jag använda min ingenjörskonst där den gör verklig nytta."</em></p>
+      </blockquote>
+
+      <h3>4. Lyft fram företagskulturen</h3>
+      <p>Människor trivs där de passar in. Om du gillar deras sätt att arbeta – säg det!</p>
+      <blockquote>
+        <p><strong>Exempel (Kundtjänst):</strong> <em>"Jag har förstått att ni satsar mycket på internutbildning och ger anställda mandat att faktiskt lösa kundens problem istället för att bara följa ett manus. Den sortens förtroendekultur vill jag vara en del av."</em></p>
+      </blockquote>
+
+      <h3>5. Betona teamkänsla och samarbete</h3>
+      <p>Ingen är en ö. Att vilja bidra till ett vinnande lag är alltid ett attraktivt svar.</p>
+      <blockquote>
+        <p><strong>Exempel (Lärare):</strong> <em>"Jag har sett hur ni arbetar med samverkan mellan lärare här. Möjligheten att dela lektionsplanering och utveckla idéer tillsammans för att hjälpa eleverna är precis den typen av arbetsmiljö jag söker."</em></p>
+      </blockquote>
+
+      <h2>Sammanfattning</h2>
+      <p>När du förbereder dig inför nästa intervju, kom ihåg kärnan i "Varför vill du jobba här? Bra och dåliga svar":</p>
+      <ul>
+        <li><strong>Dåliga svar</strong> handlar om dig och dina kortsiktiga behov.</li>
+        <li><strong>Bra svar</strong> handlar om företaget, deras värderingar och hur ni tillsammans kan nå framgång.</li>
+      </ul>
+      <p>Genom att göra din research och vara specifik visar du att du inte bara vill ha ett jobb – utan att du vill ha <em>just det här</em> jobbet.</p>
+    `,
+  },
+  "presentera-dig-sjalv": {
+    title: "Hur man presenterar sig själv (med exempel): En komplett guide",
+    date: "2026-02-10",
+    category: "Intervjutips",
+    excerpt:
+      "Lär dig hur man presenterar sig själv på ett roligt och professionellt sätt i intervjuer, mejl och telefonsamtal — med konkreta exempel.",
+    content: `
+      <p>En bra presentation sätter tonen för resten av intervjun och ger både arbetsgivaren och dig själv förtroende. Att veta hur man presenterar sig själv på rätt sätt är som inledningsscenen i en film – det är här publiken gör en snabb bedömning av vad som komma skall.</p>
+      <p>I boken <em>Blink</em> beskriver Malcolm Gladwell hur våra hjärnor gör blixtsnabba bedömningar. Ju mer relevant information du kan ge mottagarens rationella sinne direkt i början, desto snabbare skapas ett positivt och hållbart första intryck.</p>
+
+      <h2>5 gyllene regler för en lyckad presentation</h2>
+      <p>När du funderar på hur man presenterar sig själv effektivt, bör du fokusera på att styra samtalet i rätt riktning. Här är fem saker att ha i åtanke:</p>
+
+      <h3>1. Var relevant för din publik</h3>
+      <p>Planera inledningen i förväg. Om du inte träffar rätt kan åhörarna börja undra varför de lyssnar. Ge dem ett "fönster in i din värld".</p>
+
+      <h3>2. Fokusera på värde, inte titel</h3>
+      <p>Berätta inte bara vad du heter på visitkortet. Berätta vad du faktiskt gör och vad du kan bidra med.</p>
+
+      <h3>3. Dela unika fakta</h3>
+      <p>Precis som i ett CV bör du strö lite "magiskt stoft" över det du säger. Vad gör dig unik i den här specifika rollen?</p>
+
+      <h3>4. Var lyhörd och anpassningsbar</h3>
+      <p>Läs av rummet. Om du är på en intervju, anpassa ditt språk efter företagskulturen.</p>
+
+      <h3>5. Avsluta med en brygga</h3>
+      <p>Se till att din presentation leder naturligt vidare till ett samtal. Ge lyssnaren en "teaser" om vad ni borde diskutera härnäst.</p>
+
+      <h2>Hur man presenterar sig själv — exempel för olika situationer</h2>
+      <p>Beroende på om du sitter i en intervju, skriver ett mejl eller pratar i telefon krävs olika strategier. Här bryter vi ner det med konkreta exempel.</p>
+
+      <h3>1. Presentation under en anställningsintervju</h3>
+      <p>De flesta intervjuer börjar med den klassiska frågan: <em>"Berätta lite om dig själv"</em>. Här gäller det att vara kortfattad men effektfull.</p>
+      <blockquote>
+        <p><strong>Exempel (Bilmekaniker):</strong><br/>
+        <em>"Hej! Jag är en erfaren bilmekaniker besatt av veteranbilar. Jag har en unik förmåga att förlänga livet på de mest sällsynta modeller och har fixat över 3 000 problemfall under min karriär. Jag har även startat en av Sveriges största föreningar för klassiska sportbilar. Jag har jobbat med alla kända märken och har en kundkrets som gör branschen avundsjuk."</em></p>
+      </blockquote>
+
+      <h3>2. Presentation via e-post</h3>
+      <p>I ett mejl kan du vara något mer utförlig eftersom mottagaren läser i sin egen takt. Målet här är att få dem att vilja öppna ditt CV.</p>
+      <blockquote>
+        <p><strong>Exempel (Varumärkeschef):</strong><br/>
+        <em>"Bästa Maria, jag är varumärkeschefen som hjälpte min tidigare arbetsgivare att öka vinsttillväxten med 80 miljoner kronor (22 % på årsbasis). Mina kampanjer har vunnit flera branschpriser och jag vet att ni står inför en kreativ uppdatering av ert företag. Jag känner att jag är rätt person att driva denna förändring och hjälpa er att återknyta kontakten med era kunder."</em></p>
+      </blockquote>
+
+      <h3>3. Presentation för en rekryterare (via telefon)</h3>
+      <p>Här krävs entusiasm och tydlighet. Eftersom du inte syns, måste din röst förmedla att du är rätt person för jobbet.</p>
+      <blockquote>
+        <p><strong>Exempel (Butikschef):</strong><br/>
+        <em>"God morgon, jag heter Stina Larsson. Jag ringer angående tjänsten som butikschef. De senaste sju åren har jag ansvarat för en närbutikskedja i Malmö där jag bland annat öppnat tre nya butiker och skött all rekrytering. Jag tror att min erfarenhet av expansion skulle passa perfekt för er just nu. Får jag skicka över mitt CV till dig?"</em></p>
+      </blockquote>
+
+      <h2>Sammanfattning: Key Takeaways</h2>
+      <ul>
+        <li><strong>Var unik:</strong> Din presentation måste, precis som ditt CV, sticka ut från mängden.</li>
+        <li><strong>Fokusera på "varför":</strong> Förklara varför det är värt att prata med just dig.</li>
+        <li><strong>Håll det koncist:</strong> Visa inte nervositet genom att babbla. Pausa och lyssna på motpartens reaktioner.</li>
+        <li><strong>Led samtalet framåt:</strong> Se presentationen som startskottet för en dialog, inte en monolog.</li>
+      </ul>
+    `,
+  },
+  "styrkor-och-svagheter-jobbintervjun": {
+    title: "Styrkor och svagheter på jobbintervjun: Så svarar du som ett proffs",
+    date: "2026-02-10",
+    category: "Intervjutips",
+    excerpt:
+      "Lär dig hur du identifierar dina styrkor och svagheter, ger konkreta exempel på svar och undviker de vanligaste klichéerna på jobbintervjun.",
+    content: `
+      <p>Grattis, du har blivit kallad till intervju! Men mitt i glädjen kommer ofta nervositeten. Du vet att den oundvikliga frågan kommer förr eller senare: <em>"Vilka är dina främsta styrkor och svagheter?"</em></p>
+      <p>Många ser detta som en kuggfråga, men i själva verket är det din bästa chans att visa självinsikt och sälja in dig själv. I den här guiden går vi igenom hur du identifierar dina styrkor och svagheter, ger konkreta exempel på svar och hjälper dig att undvika de vanligaste klichéerna.</p>
+
+      <h2>Varför frågar rekryterare om styrkor och svagheter?</h2>
+      <p>Rekryteraren är inte ute efter att sätta dit dig. De vill förstå:</p>
+      <ul>
+        <li><strong>Självinsikt:</strong> Vet du vad du är bra på och var du behöver utvecklas?</li>
+        <li><strong>Matchning:</strong> Passar dina specifika styrkor för just den här rollen?</li>
+        <li><strong>Problemlösning:</strong> Hur hanterar du dina svagheter i vardagen?</li>
+      </ul>
+
+      <h2>5 exempel på styrkor (och hur du beskriver dem)</h2>
+      <p>När du pratar om dina styrkor räcker det inte med att bara nämna ett ord. Du behöver ge sammanhang. Använd gärna "STARR-metoden" (Situation, Task, Action, Result, Reflection) för att exemplifiera.</p>
+
+      <h3>1. Helhetsperspektiv</h3>
+      <p><strong>Svar:</strong> <em>"Min främsta styrka är att jag ser helheten. Istället för att bara lösa uppgiften framför mig, ser jag hur den påverkar andra avdelningar."</em></p>
+      <p><strong>Varför det funkar:</strong> Det visar att du förstår affärsnyttan och inte bara jobbar i ett vakuum.</p>
+
+      <h3>2. Social kompetens och brobygge</h3>
+      <p><strong>Svar:</strong> <em>"Jag är bra på att bygga relationer mellan olika team. Senast lyckades jag medla mellan produktion och marknad, vilket räddade en hel kampanj."</em></p>
+      <p><strong>Varför det funkar:</strong> Det konkretiserar ett luddigt begrepp till en faktisk ekonomisk fördel.</p>
+
+      <h3>3. Mångsidighet (Allroundspelare)</h3>
+      <p><strong>Svar:</strong> <em>"Jag trivs med att ha många bollar i luften och hoppar gärna in där det behövs, även utanför mitt kärnområde."</em></p>
+      <p><strong>Varför det funkar:</strong> Det visar på prestigelöshet och laganda.</p>
+
+      <h3>4. Detaljfokus</h3>
+      <p><strong>Svar:</strong> <em>"Som ekonom är min detaljorientering min största styrka. Jag drivs av att hitta de där små avvikelserna i budgeten innan de blir stora problem."</em></p>
+      <p><strong>Varför det funkar:</strong> Det kopplar styrkan direkt till yrkesrollen.</p>
+
+      <h3>5. Anpassningsförmåga</h3>
+      <p><strong>Svar:</strong> <em>"Jag navigerar snabbt i förändring. När förutsättningarna ändras, ställer jag om snarare än att låsa mig."</em></p>
+      <p><strong>Varför det funkar:</strong> I dagens snabba arbetsliv är flexibilitet hårdvaluta.</p>
+
+      <h2>5 exempel på svagheter (som faktiskt imponerar)</h2>
+      <p>Tricket med svagheter är att vara ärlig men visa på en lösning. Undvik svar som "jag jobbar för hårt" – det genomskådas direkt.</p>
+
+      <h3>1. Tala inför publik</h3>
+      <p><em>"Jag blir nervös vid stora presentationer. Därför förbereder jag mig extra noga och tar gärna hjälp av en kollega för att bolla upplägget."</em></p>
+
+      <h3>2. Struktur på skrivbordet</h3>
+      <p><em>"Jag kan bli rörig i mitt fysiska utrymme, men har löst det genom att arbeta helt digitalt och rensa min att-göra-lista varje kväll."</em></p>
+
+      <h3>3. Självkritik</h3>
+      <p><em>"Jag kan vara min egen hårdaste kritiker. Jag har dock lärt mig att 'bra nog' ofta är bättre än perfektion för att hålla deadlines."</em></p>
+
+      <h3>4. Otålighet vid byråkrati</h3>
+      <p><em>"Jag gillar när det går undan, så långsamma beslutsprocesser kan frustrera mig. Därför söker jag mig till mindre, snabbfotade bolag som detta."</em></p>
+
+      <h3>5. Riskskygghet</h3>
+      <p><em>"Jag föredrar trygga val framför risker. Jag övar dock på att våga lyfta mina idéer tidigare till chefen för att inte missa möjligheter."</em></p>
+
+      <h2>Hur hittar jag mina egna styrkor och svagheter?</h2>
+      <p>Om du har svårt att se dina egna mönster, prova dessa tre steg:</p>
+      <ol>
+        <li><strong>Rannsaka din erfarenhet:</strong> Titta på tidigare succéer. Vad gjorde du precis innan det gick bra? Där ligger dina styrkor.</li>
+        <li><strong>Fråga omgivningen:</strong> Be en tidigare kollega eller vän att nämna tre saker du är bäst på och en sak du kan förbättra.</li>
+        <li><strong>Analysera jobbannonsen:</strong> Vilka egenskaper efterfrågas? Matcha dina egna erfarenheter mot dessa.</li>
+      </ol>
+
+      <h2>Mjuka styrkor arbetsgivare älskar</h2>
+      <ul>
+        <li>Kreativitet &amp; Nyfikenhet</li>
+        <li>Engagemang &amp; Ärlighet</li>
+        <li>Tålamod &amp; Uppfinningsförmåga</li>
+      </ul>
+
+      <h2>Sammanfattning: Tre gyllene regler</h2>
+      <ol>
+        <li><strong>Anpassa alltid svaret:</strong> Din styrka ska vara relevant för tjänsten.</li>
+        <li><strong>Visa på utveckling:</strong> Din svaghet ska vara något du jobbar på eller har hittat strategier för.</li>
+        <li><strong>Var personlig:</strong> Skippa färdiga mallar och våga bjuda på en gnutta personlighet och humor.</li>
+      </ol>
+    `,
+  },
   "rekryterarens-5-ovantade-cv-tips": {
     title: "Rekryterarens 5 oväntade CV-tips som landar dig intervjun",
     date: "2025-01-28",
