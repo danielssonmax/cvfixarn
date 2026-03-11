@@ -58,7 +58,8 @@ const blogPosts = {
       <h2>Glöm inte den praktiska frågan: var ska du bo?</h2>
       <p>Det här är nog den del många skjuter upp lite för länge.</p>
       <p>Man tänker att man först ska få jobbet, och sedan lösa resten. Men i verkligheten hänger det ofta ihop. Om du redan tidigt har koll på hur boendesituationen kan se ut i den nya staden blir det lättare att söka jobb med självförtroende. Det blir också enklare att svara om arbetsgivaren frågar hur du tänker kring flytt.</p>
-      <p>Har du fått napp på ett jobb i en ny stad är det klokt att direkt börja kika på bostadsmarknaden. Ett enkelt sätt att hitta boende är att söka bland lediga lägenheter i området där du planerar att flytta.</p>
+      <p>Har du fått napp på ett jobb i en ny stad är det klokt att direkt börja kika på bostadsmarknaden. Ett enkelt sätt att hitta boende är att söka bland <a href="https://www.bostadscentralen.se/lediga-lagenheter" target="_blank" rel="noopener noreferrer">lediga lägenheter</a> i området där du planerar att flytta.</p>
+      <p>Kolla på platser så som <a href="https://www.bostadscentralen.se/lediga-lagenheter" target="_blank" rel="noopener noreferrer">Bostadscentralen</a>, <a href="https://www.bostadsportalen.nu" target="_blank" rel="noopener noreferrer">Bostadsportalen</a>, <a href="https://www.bostadshunden.se" target="_blank" rel="noopener noreferrer">Bostadshunden</a> eller <a href="https://www.privata-hyresvardar.se" target="_blank" rel="noopener noreferrer">Privata-hyresvardar.se</a> där det finns bostäder för uthyrning utan krav på kötid.</p>
       <p>Det handlar inte om att allt måste vara klart direkt. Men att ha en plan gör stor skillnad.</p>
 
       <h2>Så blir flytten inte ett hinder i rekryteringen</h2>
