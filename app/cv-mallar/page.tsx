@@ -3,31 +3,57 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { Breadcrumbs } from "@/components/breadcrumbs"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Professionella CV-mallar — Välj din design | CVfixaren",
+  description: "Utforska våra professionella CV-mallar och skapa ditt perfekta CV med CVfixaren. ATS-optimerade mallar för alla branscher och yrken.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/cv-mallar",
+  },
+  openGraph: {
+    title: "Professionella CV-mallar — Välj din design | CVfixaren",
+    description: "Utforska våra professionella CV-mallar och skapa ditt perfekta CV med CVfixaren.",
+    url: "https://www.cvfixaren.se/cv-mallar",
+  },
+}
 
 const templates = [
-  {
-    id: "elegant",
-    name: "Elegant CV Mall",
-    description:
-      "En modern och professionell CV-mall med en stilren lila design. Perfekt för kreativa yrken och moderna arbetsplatser.",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/elegant%20preview%20lila-GrO1ijYSfR6swfJFW1YLhcJNUFauui.png",
-  },
   {
     id: "standard",
     name: "Standard CV Mall",
     description:
       "En klassisk och professionell CV-mall med en tidlös design. Passar perfekt för traditionella branscher och företag.",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/standard%20preview-FpFDyr3gxAI9flujNHZGgXsY5aTm0u.png",
+    image: "/images/templates/cv-mall-standard.png",
+  },
+  {
+    id: "elegant",
+    name: "Minimalistisk CV Mall",
+    description:
+      "En ren och elegant CV-mall med centrerad layout. Perfekt för dig som vill ha en modern och stilren presentation.",
+    image: "/images/templates/cv-mall-minimalistisk.png",
   },
   {
     id: "lyxig",
-    name: "Lyxig CV Mall",
+    name: "Modern CV Mall",
     description:
-      "En unik och iögonfallande CV-mall med en distinkt orange design. Idealisk för att sticka ut från mängden.",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/lyxig%20preview%20orange-eEdf32ZOAWROS2ndtwKdHorB9aQoKg.png",
+      "En modern tvåkolumns CV-mall med en stilfull sidopanel. Idealisk för att sticka ut och visa din kreativitet.",
+    image: "/images/templates/cv-mall-modern.png",
+  },
+  {
+    id: "timeline",
+    name: "Timeline CV Mall",
+    description:
+      "En professionell CV-mall med tidslinje-layout som tydligt visar din karriärutveckling. Perfekt för erfarna kandidater.",
+    image: "/images/templates/cv-mall-timeline.png",
+  },
+  {
+    id: "executive",
+    name: "Executive CV Mall",
+    description:
+      "En exklusiv CV-mall med elegant typografi och subtila accenter. Idealisk för chefspositioner och senior-roller.",
+    image: "/images/templates/cv-mall-executive.png",
   },
 ]
 
@@ -37,10 +63,11 @@ export default function CVTemplatesPage() {
       <Header />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-12">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Våra CV-mallar</h1>
+          <Breadcrumbs items={[{ label: "CV-mallar", href: "/cv-mallar" }]} />
+          <div className="max-w-3xl mx-auto text-center mb-12 mt-8">
+            <h1 className="text-4xl font-bold mb-4">Professionella CV-mallar</h1>
             <p className="text-xl text-gray-600">
-              Välj bland våra professionellt designade CV-mallar för att skapa ett CV som sticker ut från mängden
+              Välj bland våra professionellt designade CV-mallar för att skapa ett CV som sticker ut från mängden. Alla mallar är ATS-optimerade och redo att användas direkt.
             </p>
           </div>
 
@@ -52,8 +79,8 @@ export default function CVTemplatesPage() {
               >
                 <div className="relative aspect-[3/4] w-full">
                   <Image
-                    src={template.image || "/placeholder.svg"}
-                    alt={`${template.name} förhandsvisning`}
+                    src={template.image}
+                    alt={`${template.name} — professionell CV-mall förhandsvisning`}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -74,9 +101,4 @@ export default function CVTemplatesPage() {
       <Footer />
     </div>
   )
-}
-
-export const metadata = {
-  title: "CV-mallar | CVfixaren",
-  description: "Utforska våra professionella CV-mallar och skapa ditt perfekta CV med CVfixaren.",
 }

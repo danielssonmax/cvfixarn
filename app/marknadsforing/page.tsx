@@ -2,9 +2,19 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 
-export const metadata = {
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
   title: "Marknadsföringspolicy | CVfixaren.se",
   description: "Läs om hur vi hanterar marknadsföring och kommunikation med våra användare på CVfixaren.se.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/marknadsforing",
+  },
+  openGraph: {
+    title: "Marknadsföringspolicy | CVfixaren.se",
+    description: "Läs om hur vi hanterar marknadsföring och kommunikation med våra användare.",
+    url: "https://www.cvfixaren.se/marknadsforing",
+  },
 }
 
 export default function MarknadsforingPage() {

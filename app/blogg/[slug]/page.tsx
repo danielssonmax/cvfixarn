@@ -3,12 +3,94 @@ import { Header } from "@/components/header"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Script from "next/script"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { sanitizeHTML } from "@/lib/sanitize"
 
 // This would typically come from a CMS or database
 const blogPosts = {
+  "soka-jobb-annan-stad": {
+    title: "Söka jobb i en annan stad? Så ökar du dina chanser att lyckas",
+    date: "2026-03-11",
+    category: "Karriärtips",
+    excerpt:
+      "Att söka jobb i en annan stad kan öppna helt nya möjligheter. Lär dig anpassa din ansökan, hantera flytten och övertyga arbetsgivare på distans.",
+    content: `
+      <p>Att söka jobb i en annan stad kan kännas som ett stort steg. Du lämnar det trygga, ger dig in på en ny arbetsmarknad och behöver ofta tänka på mer än bara själva ansökan. Samtidigt kan det vara ett av de smartaste dragen du gör för din karriär.</p>
+      <p>I många fall öppnar det upp betydligt fler möjligheter än om du bara söker lokalt. Fler tjänster, fler arbetsgivare och större chans att hitta en roll som faktiskt passar dig.</p>
+      <p>Men för att lyckas behöver du tänka lite bredare än bara CV och personligt brev.</p>
+
+      <h2>Varför det kan vara smart att söka jobb i andra städer</h2>
+      <p>Det är lätt att fastna i tanken att jobbet måste finnas nära där du redan bor. Men sanningen är att många hittar bättre möjligheter så fort de vågar lyfta blicken.</p>
+      <p>Det kan handla om:</p>
+      <ul>
+        <li>Fler lediga tjänster inom din bransch</li>
+        <li>Högre lönenivåer</li>
+        <li>Bättre utvecklingsmöjligheter</li>
+        <li>En chans att börja om i en ny miljö</li>
+        <li>Möjlighet att hitta arbetsgivare som passar dig bättre</li>
+      </ul>
+      <p>För vissa handlar det också om livskvalitet. Kanske vill du bort från en stressig storstad. Kanske vill du närmare familj. Eller så har du bara tröttnat på att vänta på rätt jobb där du redan är.</p>
+
+      <h2>Anpassa din ansökan när du söker på annan ort</h2>
+      <p>När du söker jobb i en annan stad är det viktigt att arbetsgivaren inte börjar tveka direkt. En vanlig oro hos rekryterare är om kandidaten verkligen är redo att flytta, hur snabbt personen kan börja och om avståndet kommer bli ett problem.</p>
+      <p>Därför behöver du vara tydlig.</p>
+      <p>Du behöver inte skriva en lång förklaring, men det ska framgå att du är seriös med din ansökan. Nämn gärna att du är öppen för flytt, att du aktivt söker boende eller att du redan har en plan för hur en övergång skulle kunna se ut.</p>
+      <p>Det här kan du få in naturligt i ditt personliga brev, till exempel:</p>
+      <blockquote>
+        <p><em>"Jag söker nu tjänster i Göteborg eftersom jag planerar att flytta till staden och ser goda möjligheter att etablera mig där både professionellt och privat."</em></p>
+      </blockquote>
+      <p>Det räcker ofta långt. Det visar att du har tänkt ett steg längre.</p>
+
+      <h2>Ditt CV behöver fortfarande göra grovjobbet</h2>
+      <p>Även om du söker jobb i en annan stad gäller samma grundregel som alltid: ditt CV måste snabbt visa varför du är relevant.</p>
+      <p>Det ska vara tydligt, enkelt att läsa och anpassat efter jobbet du söker. Många arbetsgivare använder dessutom system som sorterar ansökningar digitalt, så det hjälper att ha ett CV som är strukturerat på rätt sätt. Ett professionellt och ATS-anpassat CV är extra viktigt när du konkurrerar om jobb på distans eller på en ort där arbetsgivaren inte redan känner till dig.</p>
+      <p>Fokusera särskilt på:</p>
+      <ul>
+        <li>Relevant arbetslivserfarenhet</li>
+        <li>Resultat och ansvar, inte bara arbetsuppgifter</li>
+        <li>Kompetenser som matchar annonsen</li>
+        <li>En tydlig och professionell sammanfattning</li>
+      </ul>
+      <p>När avståndet är större behöver din ansökan ofta kännas ännu mer genomarbetad. Arbetsgivaren ska känna att du är värd att ta vidare.</p>
+
+      <h2>Glöm inte den praktiska frågan: var ska du bo?</h2>
+      <p>Det här är nog den del många skjuter upp lite för länge.</p>
+      <p>Man tänker att man först ska få jobbet, och sedan lösa resten. Men i verkligheten hänger det ofta ihop. Om du redan tidigt har koll på hur boendesituationen kan se ut i den nya staden blir det lättare att söka jobb med självförtroende. Det blir också enklare att svara om arbetsgivaren frågar hur du tänker kring flytt.</p>
+      <p>Har du fått napp på ett jobb i en ny stad är det klokt att direkt börja kika på bostadsmarknaden. Ett enkelt sätt att hitta boende är att söka bland lediga lägenheter i området där du planerar att flytta.</p>
+      <p>Det handlar inte om att allt måste vara klart direkt. Men att ha en plan gör stor skillnad.</p>
+
+      <h2>Så blir flytten inte ett hinder i rekryteringen</h2>
+      <p>Om en arbetsgivare tvekar kring att du bor i en annan stad, är det nästan alltid osäkerheten de reagerar på. Inte själva avståndet.</p>
+      <p>Du kan minska den osäkerheten genom att visa att du har tänkt igenom:</p>
+      <ul>
+        <li>När du kan flytta</li>
+        <li>Hur du löser boende första tiden</li>
+        <li>Om du kan börja på distans eller pendla tillfälligt</li>
+        <li>Hur flexibel du är kring startdatum</li>
+      </ul>
+      <p>Ju tydligare du är, desto mindre känns det som en risk för arbetsgivaren.</p>
+
+      <h2>Tänk långsiktigt, inte bara på nästa intervju</h2>
+      <p>Att söka jobb i en annan stad är inte bara ett sätt att få en ny anställning. Det kan också vara början på något större.</p>
+      <p>Kanske hamnar du på en plats där det finns fler arbetsgivare inom samma bransch. Kanske hittar du ett bättre nätverk. Kanske får du bättre balans mellan jobb och privatliv.</p>
+      <p>Därför är det smart att tänka helhet:</p>
+      <ul>
+        <li>Hur ser arbetsmarknaden ut i staden?</li>
+        <li>Hur ser hyrorna ut?</li>
+        <li>Hur långt är det till jobbet?</li>
+        <li>Trivs du med området?</li>
+        <li>Finns det möjlighet att växa där över tid?</li>
+      </ul>
+      <p>När du ser både jobbet och boendet som delar av samma beslut blir det lättare att fatta ett val som faktiskt håller.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Att söka jobb i andra städer kan kännas som ett stort steg, men det kan också vara exakt det som tar dig vidare. Nyckeln är att vara tydlig i din ansökan, visa att du är seriös med flytten och tänka praktiskt redan från början.</p>
+      <p>Ett starkt CV hjälper dig att bli kallad till intervju. En tydlig plan för flytt och boende gör det lättare att gå hela vägen.</p>
+      <p>Och när jobberbjudandet väl kommer är det skönt att redan veta hur du kan ta nästa steg.</p>
+    `,
+  },
   "personligt-brev-utan-erfarenhet": {
     title: "Hur man skriver ett personligt brev utan erfarenhet",
     date: "2026-02-10",
@@ -628,32 +710,77 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} | CVfixaren.se`,
     description: post.excerpt,
+    alternates: {
+      canonical: `https://www.cvfixaren.se/blogg/${resolvedParams.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
+      url: `https://www.cvfixaren.se/blogg/${resolvedParams.slug}`,
     },
   }
 }
 
+function getRelatedPosts(currentSlug: string) {
+  const currentPost = blogPosts[currentSlug as keyof typeof blogPosts]
+  if (!currentPost) return []
+
+  return Object.entries(blogPosts)
+    .filter(([slug, post]) => slug !== currentSlug && post.category === currentPost.category)
+    .slice(0, 3)
+    .map(([slug, post]) => ({ slug, title: post.title, excerpt: post.excerpt }))
+}
+
 export default async function BlogPost({ params }: Props) {
   const resolvedParams = await params
-  const post = blogPosts[resolvedParams.slug as keyof typeof blogPosts]
+  const slug = resolvedParams.slug
+  const post = blogPosts[slug as keyof typeof blogPosts]
 
   if (!post) {
     notFound()
   }
 
+  const relatedPosts = getRelatedPosts(slug)
+
   return (
     <div className="flex min-h-screen flex-col">
+      <Script
+        id="blogposting-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.excerpt,
+            datePublished: post.date,
+            dateModified: post.date,
+            author: {
+              "@type": "Organization",
+              name: "CVfixaren.se",
+              url: "https://www.cvfixaren.se",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "CVfixaren.se",
+              url: "https://www.cvfixaren.se",
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `https://www.cvfixaren.se/blogg/${slug}`,
+            },
+          }),
+        }}
+      />
       <Header />
       <main className="flex-1 bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <Breadcrumbs
             items={[
               { label: "Blogg", href: "/blogg" },
-              { label: post.title, href: `/blogg/${resolvedParams.slug}` },
+              { label: post.title, href: `/blogg/${slug}` },
             ]}
           />
 
@@ -663,16 +790,36 @@ export default async function BlogPost({ params }: Props) {
                 {post.category}
               </span>
               <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-              <time className="text-gray-500">{post.date}</time>
+              <div className="flex items-center gap-4 text-gray-500">
+                <time dateTime={post.date}>{post.date}</time>
+                <span>·</span>
+                <span>CVfixaren Redaktionen</span>
+              </div>
             </div>
 
             <div className="prose prose-gray max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHTML(post.content) }} />
 
             <div className="mt-12 pt-8 border-t">
-              <Link href="/cv-mall">
+              <Link href="/profil/skapa-cv">
                 <Button className="bg-[#00bf63] hover:bg-[#00a857] text-white">Skapa ditt CV nu</Button>
               </Link>
             </div>
+
+            {relatedPosts.length > 0 && (
+              <div className="mt-12 pt-8 border-t">
+                <h2 className="text-2xl font-bold mb-6">Relaterade artiklar</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {relatedPosts.map((related) => (
+                    <Link key={related.slug} href={`/blogg/${related.slug}`} className="group">
+                      <div className="bg-white rounded-lg p-5 border border-gray-100 hover:border-[#00bf63]/30 transition-colors h-full">
+                        <h3 className="font-semibold mb-2 group-hover:text-[#00bf63] transition-colors">{related.title}</h3>
+                        <p className="text-sm text-gray-500 line-clamp-2">{related.excerpt}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </article>
         </div>
       </main>

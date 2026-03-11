@@ -12,10 +12,16 @@ import { FileText, Layout, Shield, Zap, Download, CheckCircle, Star, Users, BarC
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "CVfixaren - Skapa ett CV gratis",
+  title: "Skapa ett gratis CV - Var en av de 2% som går vidare | CVfixaren",
   description: "Skapa ett professionellt och ATS-anpassat CV gratis med CVfixaren. Välj bland professionella mallar, fyll i din information och ladda ner ditt CV som PDF på bara några minuter.",
   alternates: {
     canonical: "https://www.cvfixaren.se",
+  },
+  openGraph: {
+    title: "Skapa ett gratis CV - Var en av de 2% som går vidare | CVfixaren",
+    description: "Skapa ett professionellt och ATS-anpassat CV gratis med CVfixaren. Välj bland professionella mallar, fyll i din information och ladda ner ditt CV som PDF på bara några minuter.",
+    url: "https://www.cvfixaren.se",
+    type: "website",
   },
 }
 
@@ -50,26 +56,33 @@ const faqItems = [
 
 const cvTemplates = [
   {
+    id: "standard",
+    name: "Standard",
+    imageSrc: "/images/templates/cv-mall-standard.png",
+    alt: "Standard CV-mall med professionell layout"
+  },
+  {
     id: "elegant",
-    name: "Elegant",
-    imageSrc: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/elegant%20preview%20lila-4oQxxFwA3ufQe4fOQ41tZnZdnSPPmt.png",
-    alt: "Elegant CV mall"
+    name: "Minimalistisk",
+    imageSrc: "/images/templates/cv-mall-minimalistisk.png",
+    alt: "Minimalistisk CV-mall med centrerad design"
   },
   {
     id: "lyxig",
-    name: "Lyxig",
-    imageSrc: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/lyxig%20preview%20svart-QDhvZHVFvTYWMCJcPak5CTCCcfSRyK.png",
-    alt: "Lyxig CV mall"
-  },
-  {
-    id: "standard",
-    name: "Standard",
-    imageSrc: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/standard%20preview-VSOYHTSzrlcj4bav3G6uSO8mLKamNL.png",
-    alt: "Standard CV mall"
+    name: "Modern",
+    imageSrc: "/images/templates/cv-mall-modern.png",
+    alt: "Modern CV-mall med sidopanel"
   }
 ]
 
 const blogPosts = [
+  {
+    title: "Söka jobb i en annan stad? Så ökar du dina chanser att lyckas",
+    description: "Att söka jobb i en annan stad kan öppna helt nya möjligheter. Lär dig anpassa din ansökan, hantera flytten och övertyga arbetsgivare på distans.",
+    date: "2026-03-11",
+    slug: "soka-jobb-annan-stad",
+    category: "Karriärtips",
+  },
   {
     title: "Hur man skriver ett personligt brev utan erfarenhet",
     description: "Saknar du arbetslivserfarenhet? Lär dig skriva ett övertygande personligt brev som visar din potential, motivation och vilja att lära.",
@@ -154,8 +167,91 @@ export default function HomePage() {
             "@type": "Organization",
             "name": "CVfixaren.se",
             "url": "https://www.cvfixaren.se",
-            "logo": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Cvfixaren-ebeQXxOTCrb79kvOYjGEuecJeiitvr.png",
-            "description": "CVfixaren.se hjälper dig att skriva ett optimalt CV som är anpassat för att ta sig förbi ATS systemen och landa dig drömjobbet. Våra CV-mallar är optimerade för att presentera dig professionellt utåt."
+            "logo": "https://www.cvfixaren.se/images/cv-hero-section.png",
+            "description": "CVfixaren.se hjälper dig att skapa ett professionellt och ATS-anpassat CV gratis. Välj bland professionella mallar, fyll i din information och ladda ner som PDF.",
+            "foundingDate": "2024",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "url": "https://www.cvfixaren.se/kontakt",
+              "availableLanguage": "Swedish"
+            }
+          })
+        }}
+      />
+      <Script
+        id="software-application-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "CVfixaren",
+            "url": "https://www.cvfixaren.se",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "SEK"
+            },
+            "description": "Gratis CV-byggare med professionella, ATS-optimerade mallar. Skapa och ladda ner ditt CV som PDF på minuter."
+          })
+        }}
+      />
+      <Script
+        id="faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqItems.map(item => ({
+              "@type": "Question",
+              "name": item.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.answer
+              }
+            }))
+          })
+        }}
+      />
+      <Script
+        id="howto-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": "Hur man skapar ett professionellt CV med CVfixaren",
+            "description": "Skapa ditt professionella CV i fyra enkla steg — klart på bara några minuter.",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Välj en mall",
+                "text": "Bläddra igenom vårt urval av professionella mallar och välj den som passar dig bäst."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Fyll i din information",
+                "text": "Lägg till dina personuppgifter, arbetslivserfarenhet, utbildning och färdigheter."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Anpassa designen",
+                "text": "Justera färger, typsnitt och layout för att göra ditt CV unikt."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 4,
+                "name": "Ladda ner och använd",
+                "text": "Ladda ner ditt färdiga CV i PDF-format och börja söka jobb!"
+              }
+            ]
           })
         }}
       />
@@ -164,7 +260,7 @@ export default function HomePage() {
         <section className="container px-4 py-16 md:py-24 pb-0">
           <div className="text-center space-y-4 mb-16">
             <h1 className={`${poppins.className} text-4xl font-bold tracking-tighter sm:text-4xl md:text-6xl`}>
-              Bara 2% av alla CV:n går vidare. Var en av dem.
+              Skapa ett gratis CV - Var en av de 2% som går vidare
             </h1>
             <p className={`${poppins.className} text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto`}>
               Använd våra expertgranskade CV-mallar som följer arbetsgivarnas önskemål. Enkelt, snabbt och
@@ -176,14 +272,55 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <div className="relative w-full max-w-[1800px] mx-auto aspect-[4/1] mb-0 mt-16">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Namnl%C3%B6s%20%282000%20x%20500%20px%29-Yxqjp3R1HILswifDnCFBvutjvd2434.png"
-              alt="CV mallar i olika stilar och färger"
-              fill
-              className="object-contain object-bottom"
-              priority
-            />
+          <div className="relative w-full max-w-[1400px] mx-auto mt-16 overflow-hidden">
+            <div className="flex justify-center items-end gap-4 md:gap-6 lg:gap-8 px-4">
+              <div className="hidden lg:block relative w-[180px] aspect-[3/4] opacity-80 hover:opacity-100 transition-all duration-300 hover:-translate-y-2 -mb-8 rounded-lg overflow-hidden shadow-lg">
+                <Image
+                  src="/images/templates/cv-mall-timeline.png"
+                  alt="Timeline CV-mall"
+                  fill
+                  className="object-cover"
+                  sizes="180px"
+                />
+              </div>
+              <div className="hidden md:block relative w-[200px] aspect-[3/4] opacity-90 hover:opacity-100 transition-all duration-300 hover:-translate-y-2 -mb-4 rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/templates/cv-mall-executive.png"
+                  alt="Executive CV-mall"
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
+              <div className="relative w-[220px] sm:w-[240px] md:w-[260px] aspect-[3/4] hover:-translate-y-2 transition-all duration-300 rounded-lg overflow-hidden shadow-2xl z-10">
+                <Image
+                  src="/images/templates/cv-mall-standard.png"
+                  alt="Standard CV-mall — mest populär"
+                  fill
+                  className="object-cover"
+                  sizes="260px"
+                  priority
+                />
+              </div>
+              <div className="hidden md:block relative w-[200px] aspect-[3/4] opacity-90 hover:opacity-100 transition-all duration-300 hover:-translate-y-2 -mb-4 rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/templates/cv-mall-minimalistisk.png"
+                  alt="Minimalistisk CV-mall"
+                  fill
+                  className="object-cover"
+                  sizes="200px"
+                />
+              </div>
+              <div className="hidden lg:block relative w-[180px] aspect-[3/4] opacity-80 hover:opacity-100 transition-all duration-300 hover:-translate-y-2 -mb-8 rounded-lg overflow-hidden shadow-lg">
+                <Image
+                  src="/images/templates/cv-mall-modern.png"
+                  alt="Modern CV-mall"
+                  fill
+                  className="object-cover"
+                  sizes="180px"
+                />
+              </div>
+            </div>
           </div>
         </section>
 

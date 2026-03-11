@@ -95,6 +95,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/blogg/soka-jobb-annan-stad`,
+      lastModified: new Date("2026-03-11"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/blogg/personligt-brev-utan-erfarenhet`,
       lastModified: new Date("2026-02-10"),
       changeFrequency: "monthly",

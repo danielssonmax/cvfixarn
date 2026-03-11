@@ -16,6 +16,8 @@ export default function RootLayout({
   return (
     <html lang="sv" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
         {/* Google Consent Mode - Default to denied */}
         <Script id="google-consent-default" strategy="beforeInteractive">
           {`
@@ -76,5 +78,13 @@ export const metadata = {
   metadataBase: new URL("https://www.cvfixaren.se"),
   alternates: {
     canonical: "./",
+  },
+  openGraph: {
+    siteName: "CVfixaren.se",
+    locale: "sv_SE",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image" as const,
   },
 }

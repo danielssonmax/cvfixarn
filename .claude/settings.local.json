@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/danie/Downloads/cvfixaren -type f -name robots* -o -name manifest*)"
+    ]
+  }
+}

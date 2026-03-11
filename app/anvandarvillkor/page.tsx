@@ -2,10 +2,20 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 
-export const metadata = {
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
   title: "Användarvillkor | CVfixaren.se",
   description:
     "Läs våra användarvillkor för att förstå dina rättigheter och skyldigheter när du använder CVfixaren.se.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/anvandarvillkor",
+  },
+  openGraph: {
+    title: "Användarvillkor | CVfixaren.se",
+    description: "Rättigheter och skyldigheter när du använder CVfixaren.se.",
+    url: "https://www.cvfixaren.se/anvandarvillkor",
+  },
 }
 
 export default function AnvandarvillkorPage() {

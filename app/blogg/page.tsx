@@ -7,17 +7,28 @@ import Link from "next/link"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Karriärblogg | CVfixaren.se",
+  title: "CV-tips & karriärråd — Blogg | CVfixaren",
   description:
     "Tips och råd för att skapa det perfekta CV:t, karriärutveckling och jobbsökande från CVfixaren.se experter.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/blogg",
+  },
   openGraph: {
-    title: "Karriärblogg | CVfixaren.se",
+    title: "CV-tips & karriärråd — Blogg | CVfixaren",
     description: "Tips och råd för att skapa det perfekta CV:t, karriärutveckling och jobbsökande.",
+    url: "https://www.cvfixaren.se/blogg",
   },
 }
 
 export default function BlogPage() {
   const blogPosts = [
+    {
+      title: "Söka jobb i en annan stad? Så ökar du dina chanser att lyckas",
+      description: "Att söka jobb i en annan stad kan öppna helt nya möjligheter. Lär dig anpassa din ansökan, hantera flytten och övertyga arbetsgivare på distans.",
+      date: "2026-03-11",
+      slug: "soka-jobb-annan-stad",
+      category: "Karriärtips",
+    },
     {
       title: "Hur man skriver ett personligt brev utan erfarenhet",
       description: "Saknar du arbetslivserfarenhet? Lär dig skriva ett övertygande personligt brev som visar din potential, motivation och vilja att lära.",

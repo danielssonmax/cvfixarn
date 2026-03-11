@@ -6,10 +6,20 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
-export const metadata = {
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
   title: "Kontakta oss | CVfixaren.se",
   description:
     "Har du frågor eller feedback? Kontakta oss på CVfixaren.se. Vi är här för att hjälpa dig med ditt CV-skapande.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/kontakt",
+  },
+  openGraph: {
+    title: "Kontakta oss | CVfixaren.se",
+    description: "Har du frågor eller feedback? Vi är här för att hjälpa dig.",
+    url: "https://www.cvfixaren.se/kontakt",
+  },
 }
 
 export default function KontaktPage() {

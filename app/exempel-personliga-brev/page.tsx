@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.cvfixaren.se/exempel-personliga-brev",
   },
+  openGraph: {
+    title: "Exempel på personliga brev per bransch och yrke (2026) | CVfixaren",
+    description: "Hitta gratis exempel på personliga brev för över 100 yrken och branscher.",
+    url: "https://www.cvfixaren.se/exempel-personliga-brev",
+  },
 }
 
 const categories = [

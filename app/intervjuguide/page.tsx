@@ -3,10 +3,20 @@ import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
-export const metadata = {
-  title: "Intervjuguide | CVfixaren.se",
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Intervjuguide — Förbered dig för jobbintervjun | CVfixaren",
   description:
-    "Förbered dig för din nästa jobbintervju med vår omfattande guide. Få tips, vanliga frågor och strategier för att göra ett starkt intryck.",
+    "Förbered dig för din nästa jobbintervju med vår omfattande guide. Vanliga intervjufrågor, STAR-metoden och strategier för att göra ett starkt intryck.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/intervjuguide",
+  },
+  openGraph: {
+    title: "Intervjuguide — Förbered dig för jobbintervjun | CVfixaren",
+    description: "Vanliga intervjufrågor, STAR-metoden och strategier för att göra ett starkt intryck.",
+    url: "https://www.cvfixaren.se/intervjuguide",
+  },
 }
 
 export default function IntervjuguidePage() {

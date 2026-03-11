@@ -1,0 +1,27 @@
+# CVfixaren.se
+> CVfixaren.se is a free Swedish CV builder that helps job seekers create professional, ATS-optimized resumes.
+
+## Key Pages
+- [Homepage](https://www.cvfixaren.se): Create your CV for free
+- [CV Templates](https://www.cvfixaren.se/cv-mallar): Browse professional CV templates
+- [ATS-Optimized Templates](https://www.cvfixaren.se/ats-anpassade-cv-mallar): ATS-friendly CV templates
+- [CV Examples](https://www.cvfixaren.se/cv-exempel): 50+ profession-specific CV examples
+- [Cover Letter Examples](https://www.cvfixaren.se/exempel-personliga-brev): Cover letter examples by profession
+- [Blog](https://www.cvfixaren.se/blogg): Career tips, interview guides, and CV advice
+- [Career Tips](https://www.cvfixaren.se/karriartips): Career development guidance
+- [Interview Guide](https://www.cvfixaren.se/intervjuguide): Interview preparation tips
+- [FAQ](https://www.cvfixaren.se/vanliga-fragor): Common questions about the service
+
+## Features
+- Free CV creation with professional templates
+- ATS-optimized formatting to pass applicant tracking systems
+- PDF export
+- Multiple design options (fonts, colors, layouts)
+- Swedish-language interface and content
+
+## Content Topics
+- CV writing tips and best practices
+- Cover letter guidance
+- Job interview preparation
+- Career development advice
+- ATS optimization strategies

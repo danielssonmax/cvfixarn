@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.cvfixaren.se/cv-exempel",
   },
+  openGraph: {
+    title: "CV-exempel för olika yrken och branscher (2026) | CVfixaren",
+    description: "Professionella CV-exempel för över 50 yrken och branscher. Hitta inspiration för ditt CV.",
+    url: "https://www.cvfixaren.se/cv-exempel",
+  },
 }
 
 const categories = [

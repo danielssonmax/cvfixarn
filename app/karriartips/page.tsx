@@ -3,9 +3,19 @@ import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import Link from "next/link"
 
-export const metadata = {
-  title: "Karriärtips | CVfixaren.se",
-  description: "Få värdefulla karriärtips och råd för att lyckas i din jobbsökning och professionella utveckling.",
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Karriärtips för jobbsökande — Guide 2026 | CVfixaren",
+  description: "Få värdefulla karriärtips och råd för att lyckas i din jobbsökning och professionella utveckling. CV-optimering, nätverkande och intervjuförberedelser.",
+  alternates: {
+    canonical: "https://www.cvfixaren.se/karriartips",
+  },
+  openGraph: {
+    title: "Karriärtips för jobbsökande — Guide 2026 | CVfixaren",
+    description: "Värdefulla karriärtips och råd för att lyckas i din jobbsökning.",
+    url: "https://www.cvfixaren.se/karriartips",
+  },
 }
 
 export default function KarriarTipsPage() {
