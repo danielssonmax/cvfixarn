@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/contexts/AuthContext"
-import { getGclidFromCookie, getGbraidFromCookie, getReferrer } from "@/lib/gclid-utils"
+import { getGclid, getGbraid, getReferrer } from "@/lib/gclid-utils"
 
 interface SignupPopupProps {
   isOpen: boolean
@@ -84,8 +84,8 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
       // Create row in premium table
       if (data.user) {
         try {
-          const gclid = getGclidFromCookie()
-          const gbraid = getGbraidFromCookie()
+          const gclid = getGclid()
+          const gbraid = getGbraid()
           const referer = getReferrer()
           
           const { data: premiumData, error: premiumError } = await supabase

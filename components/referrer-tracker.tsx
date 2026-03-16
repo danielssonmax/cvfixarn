@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect } from "react"
-import { captureReferrer } from "@/lib/gclid-utils"
+import { captureReferrer, captureGclidsFromUrl } from "@/lib/gclid-utils"
 
 export function ReferrerTracker() {
   useEffect(() => {
+    captureGclidsFromUrl()
     captureReferrer()
   }, [])
 
