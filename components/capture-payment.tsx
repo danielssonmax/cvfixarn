@@ -92,7 +92,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
           {/* Payment icons */}
           <div className="flex justify-center items-center gap-3 mt-4">
             <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/2560px-Mastercard-logo.svg.png"
+              src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg"
               alt="Mastercard"
               width={40}
               height={25}
@@ -100,7 +100,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
             />
             <span className="text-gray-300 font-light">|</span>
             <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png"
+              src="https://1000logos.net/wp-content/uploads/2021/11/VISA-logo.png"
               alt="Visa"
               width={50}
               height={16}
