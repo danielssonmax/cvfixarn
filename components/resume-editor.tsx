@@ -261,10 +261,14 @@ function SortableItem({
   const supportsPageBreaks = ['experience', 'education', 'courses', 'internship', 'certificates', 'achievements', 'references', 'awards', 'volunteering', 'licenses', 'custom'].includes(id)
 
   return (
-    <div ref={setNodeRef} style={style} className={isDragging ? 'opacity-0' : ''}>
-      <div className={`${showContent ? '' : 'border-b border-gray-200'} ${section.hidden ? "opacity-50" : ""} transition-all`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${isDragging ? 'opacity-0' : ''} ${showContent ? 'bg-white rounded-xl ring-1 ring-gray-200 shadow-sm my-3' : 'border-b border-gray-100'} transition-all`}
+    >
+      <div className={`${section.hidden ? "opacity-50" : ""} transition-all`}>
         <div
-          className="flex w-full items-center justify-between py-4 px-2 group hover:shadow-sm transition-all duration-200 cursor-pointer rounded-md"
+          className={`flex w-full items-center justify-between py-4 group transition-colors duration-200 cursor-pointer rounded-xl ${showContent ? 'px-4' : 'px-2 hover:bg-gray-50'}`}
           onClick={() => onToggle(id)}
         >
           <div className="flex items-center gap-3">
@@ -422,7 +426,7 @@ function SortableItem({
         </div>
       </div>
       {showContent && (
-        <div className="px-4 pb-4 space-y-3">
+        <div className="px-4 pb-5 space-y-3">
           {section.id === "personalInfo" && <PersonalInfo />}
           {section.id === "experience" && <Experience />}
           {section.id === "education" && <Education />}
@@ -2272,11 +2276,15 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           </div>
         )}
         
-      <div className="flex flex-1 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden" style={{ backgroundColor: '#16233a' }}>
 
         {/* Left side - Form */}
-        <div ref={formContainerRef} className={`w-full p-6 bg-white overflow-y-auto border-r border-gray-200 transition-all duration-300 ease-in-out h-full ${isFullscreen ? 'sm:w-0 sm:opacity-0 sm:overflow-hidden sm:p-0' : 'sm:w-1/2 sm:opacity-100'}`}>
-          <div className="space-y-4 max-w-2xl mx-auto">
+        <div
+          ref={formContainerRef}
+          className={`w-full px-5 py-6 sm:px-8 bg-white overflow-y-auto transition-all duration-300 ease-in-out h-full relative z-10 ${isFullscreen ? 'sm:w-0 sm:opacity-0 sm:overflow-hidden sm:p-0' : 'sm:w-1/2 sm:opacity-100'}`}
+          style={{ boxShadow: '10px 0 30px -14px rgba(8, 15, 30, 0.55)' }}
+        >
+          <div className="max-w-2xl mx-auto">
             {/* Main sections */}
             {!isMounted ? (
               // Server-side fallback: render sections without DnD
@@ -2290,10 +2298,10 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               // Sections that support page breaks (have items)
               const supportsPageBreaks = ['experience', 'education', 'courses', 'internship', 'certificates', 'achievements', 'references', 'awards', 'volunteering', 'licenses', 'custom'].includes(id)
               return (
-                    <div key={id}>
-                      <div className={`${isOpen ? '' : 'border-b border-gray-200'} ${section.hidden ? "opacity-50" : ""} transition-all`}>
+                    <div key={id} className={`${isOpen ? 'bg-white rounded-xl ring-1 ring-gray-200 shadow-sm my-3' : 'border-b border-gray-100'} transition-all`}>
+                      <div className={`${section.hidden ? "opacity-50" : ""} transition-all`}>
                         <div
-                          className="flex w-full items-center justify-between py-4 px-2 group hover:shadow-sm transition-all duration-200 cursor-pointer rounded-md"
+                          className={`flex w-full items-center justify-between py-4 group transition-colors duration-200 cursor-pointer rounded-xl ${isOpen ? 'px-4' : 'px-2 hover:bg-gray-50'}`}
                           onClick={() => toggleSection(id)}
                         >
                           <div className="flex items-center gap-3">
@@ -2347,7 +2355,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                         </div>
                       </div>
                       {isOpen && (
-                        <div className="px-4 pb-4 space-y-3">
+                        <div className="px-4 pb-5 space-y-3">
                       {section.id === "personalInfo" && <PersonalInfo />}
                       {section.id === "experience" && <Experience />}
                       {section.id === "education" && <Education />}
@@ -2407,8 +2415,8 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 </SortableContext>
                 <DragOverlay>
                   {activeId ? (
-                    <div className="bg-white border-b border-gray-200 shadow-lg rounded-lg">
-                      <div className="flex w-full items-center justify-between py-4 px-2">
+                    <div className="bg-white ring-1 ring-gray-200 shadow-xl rounded-xl">
+                      <div className="flex w-full items-center justify-between py-4 px-4">
                         <div className="flex items-center gap-3">
                           <GripVertical className="h-5 w-5 text-[#00bf63]" />
                           <span className="font-medium text-base text-gray-900">
@@ -2427,7 +2435,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               <div className="relative">
                 <button
                   type="button"
-                  className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-dashed border-gray-300 bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-medium"
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowMoreFieldsMenu(!showMoreFieldsMenu)
@@ -2488,7 +2496,10 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
         </div>
 
         {/* Right side - Preview */}
-        <div className={`hidden sm:flex w-full overflow-hidden flex-col transition-all duration-300 ease-in-out ${isFullscreen ? 'sm:w-full' : 'sm:w-1/2'}`} style={{ backgroundColor: '#f3f2ef' }}>
+        <div
+          className={`hidden sm:flex w-full overflow-hidden flex-col transition-all duration-300 ease-in-out ${isFullscreen ? 'sm:w-full' : 'sm:w-1/2'}`}
+          style={{ backgroundColor: '#16233a', boxShadow: 'inset 26px 0 34px -26px rgba(0, 0, 0, 0.7)' }}
+        >
           {/* Preview Header */}
         
           
@@ -2503,11 +2514,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             }}
           >
               {/* Zoom icon on hover */}
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+              <div className="absolute top-4 right-4 bg-white/10 ring-1 ring-white/20 backdrop-blur-md rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
                 {zoomLevel > 1.0 ? (
-                  <ZoomOut className="h-6 w-6 text-gray-700" />
+                  <ZoomOut className="h-6 w-6 text-white" />
                 ) : (
-                  <ZoomIn className="h-6 w-6 text-gray-700" />
+                  <ZoomIn className="h-6 w-6 text-white" />
                 )}
               </div>
               
@@ -2527,14 +2538,12 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               />
           </div>
           {/* Preview controls */}
-          <div className="bg-white border-t border-gray-200 w-full p-5 shadow-lg">
-            <div className="mb-3">
-            </div>
+          <div className="w-full px-4 py-3 border-t border-white/10" style={{ backgroundColor: '#111b2e' }}>
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="relative" ref={templateDropdownRef}>
                   <button
-                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex items-center gap-2 text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors font-medium"
                     onClick={(e) => {
                       e.stopPropagation()
                       setShowTemplateMenu(!showTemplateMenu)
@@ -2546,7 +2555,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                   </button>
 
                   {showTemplateMenu && (
-                    <div className="absolute bottom-full left-0 mb-2 w-[900px] bg-white rounded-xl shadow-xl border-2 border-gray-200 p-4 z-[999]">
+                    <div className="absolute bottom-full left-0 mb-2 w-[900px] bg-white rounded-xl shadow-2xl border border-gray-200 p-4 z-[999]">
                       <h3 className="text-xs font-semibold text-gray-700 mb-3">Välj en mall</h3>
                       <div className="overflow-x-auto pb-2">
                         <div className="flex gap-3 min-w-max">
@@ -2772,7 +2781,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 {/* Font selector */}
                 <div className="relative" ref={fontDropdownRef}>
                   <button
-                    className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex items-center gap-1 text-slate-300 hover:text-white px-2 py-2 rounded-lg hover:bg-white/10 transition-colors font-medium"
                     onClick={(e) => {
                       e.stopPropagation()
                       setShowFontMenu(!showFontMenu)
@@ -2784,7 +2793,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                   </button>
 
                   {showFontMenu && (
-                    <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999] max-h-64 overflow-y-auto">
+                    <div className="absolute bottom-full left-0 mb-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 p-2 space-y-1 z-[999] max-h-64 overflow-y-auto">
                       <div className="px-3 py-2 text-xs font-semibold text-gray-600 border-b border-gray-200 mb-1">
                         Typsnitt
                       </div>
@@ -2812,7 +2821,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 {/* Font size selector */}
                 <div className="relative" ref={fontSizeDropdownRef}>
                   <button
-                    className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex items-center gap-1 text-slate-300 hover:text-white px-2 py-2 rounded-lg hover:bg-white/10 transition-colors font-medium"
                     onClick={() => setShowFontSizeMenu(!showFontSizeMenu)}
                   >
                     <TextSize className="h-4 w-4" />
@@ -2821,7 +2830,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                   </button>
 
                   {showFontSizeMenu && (
-                    <div className="absolute bottom-full left-0 mb-2 w-32 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
+                    <div className="absolute bottom-full left-0 mb-2 w-32 bg-white rounded-xl shadow-2xl border border-gray-200 p-2 space-y-1 z-[999]">
                       <div className="px-3 py-2 text-xs font-semibold text-gray-600 border-b border-gray-200 mb-1">
                         Textstorlek
                       </div>
@@ -2844,7 +2853,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 {/* Line height selector */}
                 <div className="relative" ref={lineHeightDropdownRef}>
                   <button
-                    className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex items-center gap-1 text-slate-300 hover:text-white px-2 py-2 rounded-lg hover:bg-white/10 transition-colors font-medium"
                     onClick={() => setShowLineHeightMenu(!showLineHeightMenu)}
                   >
                     <List className="h-4 w-4" />
@@ -2853,7 +2862,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                   </button>
 
                   {showLineHeightMenu && (
-                    <div className="absolute bottom-full left-0 mb-2 w-32 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
+                    <div className="absolute bottom-full left-0 mb-2 w-32 bg-white rounded-xl shadow-2xl border border-gray-200 p-2 space-y-1 z-[999]">
                       <div className="px-3 py-2 text-xs font-semibold text-gray-600 border-b border-gray-200 mb-1">
                         Radavstånd
                       </div>
@@ -2876,15 +2885,15 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 {/* Color picker */}
                 <div className="relative" ref={colorPickerRef}>
                   <button
-                    className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex items-center gap-1 text-slate-300 hover:text-white px-2 py-2 rounded-lg hover:bg-white/10 transition-colors font-medium"
                     onClick={toggleColorPicker}
                   >
                     <Palette className="h-4 w-4" />
                     <span className="text-sm">Färg</span>
-                    <div className="w-6 h-6 rounded-md border-2 border-white shadow-sm" style={{ backgroundColor: selectedColor }} />
+                    <div className="w-6 h-6 rounded-md ring-2 ring-white/70 shadow-sm" style={{ backgroundColor: selectedColor }} />
                   </button>
                   {isColorPickerOpen && (
-                    <div className="absolute bottom-full right-0 mb-2 p-4 bg-white rounded-xl shadow-xl border-2 border-gray-200 z-[9999] w-72">
+                    <div className="absolute bottom-full right-0 mb-2 p-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] w-72">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Välj färg</h4>
                       <div className="grid grid-cols-6 gap-2 mb-4">
                         {["#000000", "#4A5568", "#2B6CB0", "#48BB78", "#9F7AEA", "#ED8936", "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899"].map((color) => (
@@ -2914,7 +2923,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               <div className="flex items-center gap-3">
                 {/* Fullscreen toggle */}
                 <button
-                  className="flex items-center justify-center text-gray-700 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-center text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
                   onClick={() => setIsFullscreen(!isFullscreen)}
                 >
                   {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}

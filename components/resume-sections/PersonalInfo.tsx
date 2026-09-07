@@ -1,12 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useFormContext } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, Plus, Trash2, MoreVertical } from "lucide-react"
+import { ImageIcon, Plus, Trash2, MoreVertical, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import { v4 as uuidv4 } from "uuid"
 import {
@@ -58,7 +58,22 @@ const PersonalInfo: React.FC = () => {
     ...BASE_OPTIONAL_FIELDS,
   ])
 
+  const [showMoreFieldsMenu, setShowMoreFieldsMenu] = useState(false)
+  const moreFieldsRef = useRef<HTMLDivElement>(null)
+
   const formData = watch()
+
+  // Close the "Fler fält" dropdown on an outside click
+  useEffect(() => {
+    if (!showMoreFieldsMenu) return
+    const handleClickOutside = (event: MouseEvent) => {
+      if (moreFieldsRef.current && !moreFieldsRef.current.contains(event.target as Node)) {
+        setShowMoreFieldsMenu(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [showMoreFieldsMenu])
 
   // Initialize form with default values if they don't exist
   useEffect(() => {
@@ -340,15 +355,53 @@ const PersonalInfo: React.FC = () => {
           )
         })}
 
-        <div className="flex flex-wrap gap-1">
-          {availableOptionalFields.map((field) => (
-            <Button key={field} type="button" variant="outline" className="h-8 px-2 text-xs" onClick={() => addOptionalField(field)}>
-              <Plus className="h-3 w-3 mr-1" /> {getFieldLabel(field)}
-            </Button>
-          ))}
-          <Button type="button" variant="outline" className="h-8 px-2 text-xs" onClick={() => addOptionalField("custom")}>
-            <Plus className="h-3 w-3 mr-1" /> Fritext
-          </Button>
+        {/* Extra fields, collapsed behind a single button */}
+        <div className="relative pt-2" ref={moreFieldsRef}>
+          <button
+            type="button"
+            className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-dashed border-gray-300 bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:border-gray-400 transition-colors text-sm font-medium"
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowMoreFieldsMenu(!showMoreFieldsMenu)
+            }}
+          >
+            <Plus className="h-4 w-4 text-[#00bf63]" />
+            <span>Fler fält</span>
+            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${showMoreFieldsMenu ? "rotate-180" : ""}`} />
+          </button>
+
+          {showMoreFieldsMenu && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 p-2 z-50 max-h-72 overflow-y-auto">
+              {availableOptionalFields.map((field) => (
+                <button
+                  key={field}
+                  type="button"
+                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md hover:bg-gray-50 transition-colors text-left"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    addOptionalField(field)
+                    setShowMoreFieldsMenu(false)
+                  }}
+                >
+                  <Plus className="h-4 w-4 text-[#00bf63] shrink-0" />
+                  <span className="text-sm text-gray-800">{getFieldLabel(field)}</span>
+                </button>
+              ))}
+              {/* Fritext stays available - a CV can carry several free-text rows */}
+              <button
+                type="button"
+                className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md hover:bg-gray-50 transition-colors text-left"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  addOptionalField("custom")
+                  setShowMoreFieldsMenu(false)
+                }}
+              >
+                <Plus className="h-4 w-4 text-[#00bf63] shrink-0" />
+                <span className="text-sm text-gray-800">Fritext</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

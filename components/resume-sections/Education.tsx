@@ -104,7 +104,7 @@ function SortableEducationItem({
         <div className="flex-1 -ml-1">
           {!isOpen && (
             <div
-              className="flex items-center justify-between w-full p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer rounded-md border border-gray-400"
+              className="flex items-center justify-between w-full p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer rounded-lg border border-gray-200 shadow-sm"
               onClick={() => onToggle(index)}
             >
               <div className="flex flex-col gap-1 flex-grow">
@@ -127,7 +127,7 @@ function SortableEducationItem({
 
           {isOpen && (
             <div
-              className="bg-white rounded-md p-6 space-y-5 relative border border-gray-400"
+              className="bg-white rounded-md p-6 space-y-5 relative border border-gray-200"
               style={{ paddingBottom: "56px" }}
             >
             {/* All the form fields - keeping the existing structure */}
@@ -434,7 +434,7 @@ export const Education: React.FC = () => {
         </SortableContext>
         <DragOverlay>
           {activeId && activeField ? (
-            <div className="bg-white rounded-md border border-gray-400 shadow-lg">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm shadow-lg">
               {activeField.isPageBreak ? (
                 <div className="mb-3 flex items-center gap-3 py-4 px-4 min-h-[60px]">
                   <GripVertical className="h-5 w-5 text-gray-400" />

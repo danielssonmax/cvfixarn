@@ -39,10 +39,33 @@ export function ResumePreview({
   const [isMounted, setIsMounted] = useState(false)
   const [pages, setPages] = useState<string[]>([])
   const measureRef = React.useRef<HTMLDivElement>(null)
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  // Scale the A4 page down so it always fits the width of its panel instead of
+  // being clipped by it. Combined with zoomLevel for click-to-zoom.
+  const [fitScale, setFitScale] = useState(1)
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const PAGE_WIDTH_PX = (210 / 25.4) * 96 // A4 width in CSS pixels
+    const HORIZONTAL_PADDING = 48
+
+    const measure = () => {
+      const available = el.clientWidth - HORIZONTAL_PADDING
+      if (available <= 0) return
+      setFitScale(Math.min(1, available / PAGE_WIDTH_PX))
+    }
+
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [isMounted])
 
   // Generate static HTML from CV data
   const cvHtml = useMemo(() => {
@@ -315,14 +338,14 @@ export function ResumePreview({
 
   if (!isMounted) {
     return (
-      <div className="flex items-center justify-center w-full h-full bg-gray-100">
-        <p className="text-gray-600">Laddar CV preview...</p>
+      <div className="flex items-center justify-center w-full h-full" style={{ backgroundColor: "#16233a" }}>
+        <p className="text-slate-400">Laddar CV preview...</p>
       </div>
     )
   }
 
   return (
-    <div className="w-full h-full overflow-auto" style={{ backgroundColor: "#f3f2ef", padding: "40px 20px" }}>
+    <div ref={scrollRef} className="w-full h-full overflow-auto" style={{ backgroundColor: "#16233a", padding: "44px 24px 56px" }}>
       <style dangerouslySetInnerHTML={{ __html: `
         /* Import Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -337,18 +360,18 @@ export function ResumePreview({
         .cv-pages-wrapper {
           max-width: 210mm;
           margin: 0 auto;
-          transform: scale(${zoomLevel});
-          transform-origin: top center;
         }
         
         .cv-preview-page {
           width: 210mm;
           height: 297mm;
           background: white;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          /* Lifts the page off the dark canvas */
+          box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.65), 0 4px 14px rgba(0, 0, 0, 0.3);
+          border-radius: 3px;
           padding: 18mm 15mm;
           box-sizing: border-box;
-          margin-bottom: 20px;
+          margin-bottom: 28px;
           overflow: hidden;
         }
         
@@ -1228,7 +1251,7 @@ export function ResumePreview({
       </div>
       
       {/* Visible pages */}
-      <div className="cv-pages-wrapper" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}>
+      <div className="cv-pages-wrapper" style={{ zoom: fitScale * (zoomLevel || 1) }}>
         {pages.length > 0 ? (
           pages.map((pageHtml, index) => (
             <div key={index} className="cv-preview-page">

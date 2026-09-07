@@ -57,7 +57,7 @@ export function Hobbies() {
       <div key={field.id} className="mb-3">
         {!isOpen && (
           <div
-            className="flex items-center justify-between w-full p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer rounded-md border border-gray-400"
+            className="flex items-center justify-between w-full p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer rounded-lg border border-gray-200 shadow-sm"
             onClick={() => setOpenFields([index])}
           >
             <div className="flex flex-col gap-1 flex-grow">
@@ -71,7 +71,7 @@ export function Hobbies() {
 
         {isOpen && (
           <div
-            className="bg-white rounded-md p-6 space-y-5 relative border border-gray-400"
+            className="bg-white rounded-md p-6 space-y-5 relative border border-gray-200"
             style={{ paddingBottom: "60px" }}
           >
             <div>

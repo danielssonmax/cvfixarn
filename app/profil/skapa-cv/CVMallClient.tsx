@@ -821,7 +821,7 @@ export default function CVMallClient() {
           </div>
 
           {/* Preview Content */}
-          <div className="flex-1 overflow-auto bg-gray-100">
+          <div className="flex-1 overflow-auto" style={{ backgroundColor: '#16233a' }}>
             <PreviewBridge
               form={form}
               selectedTemplate={mobileSelectedTemplate}
@@ -830,7 +830,7 @@ export default function CVMallClient() {
               lineHeight={mobileLineHeight}
               selectedColor={mobileSelectedColor}
               headerColor={mobileHeaderColor}
-              zoomLevel={0.6}
+              zoomLevel={1}
               sectionOrder={mobileSectionOrder}
               sections={mobileSectionOrder.map((id: string) => {
                 const titleMap: Record<string, string> = {
