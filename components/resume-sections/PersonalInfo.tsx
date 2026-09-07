@@ -27,6 +27,7 @@ type OptionalField = {
     | "civilStatus"
     | "website"
     | "linkedin"
+    | "other"
     | "custom"
   label: string
   value: string
@@ -37,18 +38,24 @@ type CustomFieldData = {
   value: string
 }
 
+// Order the optional fields are offered in, most commonly used first
+const BASE_OPTIONAL_FIELDS: OptionalField["type"][] = [
+  "linkedin",
+  "website",
+  "drivingLicense",
+  "birthDate",
+  "nationality",
+  "birthPlace",
+  "civilStatus",
+  "gender",
+  "other",
+]
+
 const PersonalInfo: React.FC = () => {
   const { register, watch, setValue, getValues } = useFormContext()
   const [optionalFields, setOptionalFields] = useState<Record<string, string>>({})
   const [availableOptionalFields, setAvailableOptionalFields] = useState<OptionalField["type"][]>([
-    "birthDate",
-    "birthPlace",
-    "drivingLicense",
-    "gender",
-    "nationality",
-    "civilStatus",
-    "website",
-    "linkedin",
+    ...BASE_OPTIONAL_FIELDS,
   ])
 
   const formData = watch()
@@ -81,7 +88,7 @@ const PersonalInfo: React.FC = () => {
     if (Object.keys(existingFields).length > 0 && Object.keys(optionalFields).length === 0) {
       setOptionalFields(existingFields)
       setAvailableOptionalFields(
-        availableOptionalFields.filter((field) => !(field in existingFields))
+        BASE_OPTIONAL_FIELDS.filter((field) => !(field in existingFields))
       )
     }
   }, [getValues])
@@ -95,16 +102,7 @@ const PersonalInfo: React.FC = () => {
         setOptionalFields(fields)
         
         // Update available fields - exclude custom fields and label fields
-        const baseAvailableFields: OptionalField["type"][] = [
-          "birthDate",
-          "birthPlace",
-          "drivingLicense",
-          "gender",
-          "nationality",
-          "civilStatus",
-          "website",
-          "linkedin",
-        ]
+        const baseAvailableFields: OptionalField["type"][] = [...BASE_OPTIONAL_FIELDS]
         
         const usedFields = Object.keys(fields).filter(key => 
           !key.startsWith('custom_') && !key.endsWith('_label')
@@ -136,7 +134,7 @@ const PersonalInfo: React.FC = () => {
       return
     }
     
-    let fieldKey = type
+    let fieldKey: string = type
     // For custom fields, generate a unique key
     if (type === "custom") {
       fieldKey = `custom_${uuidv4()}`
@@ -157,18 +155,20 @@ const PersonalInfo: React.FC = () => {
       gender: "Kön",
       nationality: "Nationalitet",
       civilStatus: "Civilstånd",
-      website: "Webbplats",
-      linkedin: "LinkedIn",
-      custom: "Anpassat fält",
+      website: "Webbsida",
+      linkedin: "LinkedIn profil",
+      other: "Övrigt",
+      custom: "Fritext",
     }
     return labels[type]
   }
 
   const removeOptionalField = (type: string) => {
-    const { [type]: removed, ...remainingFields } = optionalFields
+    const { [type]: removed, [`${type}_label`]: removedLabel, ...remainingFields } = optionalFields
     setOptionalFields(remainingFields)
-    if (type !== "custom") {
-      setAvailableOptionalFields([...availableOptionalFields, type as OptionalField["type"]])
+    if (!type.startsWith("custom_")) {
+      const next = [...availableOptionalFields, type as OptionalField["type"]]
+      setAvailableOptionalFields(BASE_OPTIONAL_FIELDS.filter((field) => next.includes(field)))
     }
     setValue(`personalInfo.optionalFields`, remainingFields)
   }
@@ -213,7 +213,7 @@ const PersonalInfo: React.FC = () => {
           </div>
           <div className="col-span-2">
             <Label className="block mb-2 text-sm font-normal text-gray-700" htmlFor="title">
-              Önskad tjänst
+              Roll
             </Label>
             <Input {...register("personalInfo.title")} id="title" className="!border-2 !border-transparent bg-gray-100 hover:bg-gray-200 focus:bg-white focus:!border-[#00bf63] focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none h-12 text-sm rounded-md transition-colors" />
           </div>
@@ -258,9 +258,13 @@ const PersonalInfo: React.FC = () => {
 
         {/* Optional fields */}
         {Object.entries(optionalFields).map(([fieldKey, value]) => {
+          // Label keys are stored alongside their field - they are not rows of their own
+          if (fieldKey.endsWith('_label')) return null
+
           const isCustomField = fieldKey.startsWith('custom_')
           const fieldType = isCustomField ? 'custom' : fieldKey
-          
+          const customLabel = optionalFields[`${fieldKey}_label`] || "Fritext"
+
           return (
             <div key={fieldKey}>
               <div className="flex items-center justify-between mb-2">
@@ -276,13 +280,16 @@ const PersonalInfo: React.FC = () => {
                           e.currentTarget.blur() // Blur the field to save
                         }
                       }}
-                      // onBlur={(e) => {
-                      //   const newLabel = e.currentTarget.textContent?.trim() || "Anpassat fält"
-                      //   // Store the label in a special key
-                      //   setValue(`personalInfo.optionalFields.${fieldKey}_label`, newLabel)
-                      //   // Remove border on blur
-                      //   e.currentTarget.style.borderBottomColor = 'transparent'
-                      // }}
+                      onBlur={(e) => {
+                        const newLabel = e.currentTarget.textContent?.trim() || "Fritext"
+                        e.currentTarget.textContent = newLabel
+                        // Store the label alongside the value
+                        const updatedFields = { ...optionalFields, [`${fieldKey}_label`]: newLabel }
+                        setOptionalFields(updatedFields)
+                        setValue(`personalInfo.optionalFields`, updatedFields)
+                        // Remove border on blur
+                        e.currentTarget.style.borderBottomColor = 'transparent'
+                      }}
                       style={{
                         background: 'transparent',
                         outline: 'none',
@@ -302,7 +309,7 @@ const PersonalInfo: React.FC = () => {
                       }}
                       onFocus={(e) => e.currentTarget.style.borderBottomColor = '#00bf63'}
                     >
-                      Anpassat fält
+                      {customLabel}
                     </span>
                   ) : (
                     getFieldLabel(fieldType as OptionalField["type"])
@@ -340,7 +347,7 @@ const PersonalInfo: React.FC = () => {
             </Button>
           ))}
           <Button type="button" variant="outline" className="h-8 px-2 text-xs" onClick={() => addOptionalField("custom")}>
-            <Plus className="h-3 w-3 mr-1" /> Anpassat fält
+            <Plus className="h-3 w-3 mr-1" /> Fritext
           </Button>
         </div>
       </div>

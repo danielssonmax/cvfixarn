@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from "react"
+import Link from "next/link"
+import Image from "next/image"
 import { useForm, FormProvider, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import PreviewBridge from "@/components/PreviewBridge"
@@ -73,6 +75,10 @@ import { Traits } from "@/components/resume-sections/Traits"
 import { Certificates } from "@/components/resume-sections/Certificates"
 import { Achievements } from "@/components/resume-sections/Achievements"
 import { Hobbies } from "@/components/resume-sections/Hobbies"
+import { Awards } from "@/components/resume-sections/Awards"
+import { Volunteering } from "@/components/resume-sections/Volunteering"
+import { Licenses } from "@/components/resume-sections/Licenses"
+import { CustomSection } from "@/components/resume-sections/CustomSection"
 import { templates } from "@/components/templates"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
@@ -138,10 +144,9 @@ interface FormData {
     name: string
     level: string
   }>
+  // Optional sections hold their entries as an array (profile holds an object)
   sections: {
-    [key: string]: {
-      hidden: boolean
-    }
+    [key: string]: any
   }
 }
 
@@ -253,7 +258,7 @@ function SortableItem({
   const showContent = isOpen && !isDragging
   
   // Sections that support page breaks (have items)
-  const supportsPageBreaks = ['experience', 'education', 'courses', 'internship', 'certificates', 'achievements', 'references'].includes(id)
+  const supportsPageBreaks = ['experience', 'education', 'courses', 'internship', 'certificates', 'achievements', 'references', 'awards', 'volunteering', 'licenses', 'custom'].includes(id)
 
   return (
     <div ref={setNodeRef} style={style} className={isDragging ? 'opacity-0' : ''}>
@@ -431,10 +436,23 @@ function SortableItem({
           {section.id === "traits" && <Traits />}
           {section.id === "certificates" && <Certificates />}
           {section.id === "achievements" && <Achievements />}
+          {section.id === "awards" && <Awards />}
+          {section.id === "volunteering" && <Volunteering />}
+          {section.id === "licenses" && <Licenses />}
+          {section.id === "custom" && <CustomSection />}
         </div>
       )}
     </div>
   )
+}
+
+// Optional sections keep their entries directly at sections.<id> (useFieldArray),
+// while CVs saved earlier nested them under sections.<id>.items. Read both shapes.
+const sectionItems = (sections: any, id: string, fallback?: any): any[] => {
+  const value = sections?.[id]
+  const items = Array.isArray(value) ? value : (Array.isArray(value?.items) ? value.items : [])
+  if (items.length > 0) return items
+  return Array.isArray(fallback) ? fallback : items
 }
 
 // Helper function to generate UUID
@@ -519,16 +537,20 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                   startYear: exp.startYear || "",
                   description: exp.description || ""
                 })),
-                references: currentFormData?.sections?.references?.items || localCV?.references || [],
+                references: sectionItems(currentFormData?.sections, 'references', localCV?.references),
                 personalInfo: {
                   ...(currentFormData?.personalInfo || localCV?.personal_info || {}),
                 },
-                certifications: currentFormData?.sections?.certificates?.items || localCV?.certificates || [],
-                courses: currentFormData?.sections?.courses?.items || localCV?.courses || [],
-                internships: currentFormData?.sections?.internship?.items || localCV?.internships || [],
-                achievements: currentFormData?.sections?.achievements?.items || localCV?.achievements || [],
-                traits: currentFormData?.sections?.traits?.items || localCV?.traits || [],
-                hobbies: currentFormData?.sections?.hobbies?.items || localCV?.hobbies || [],
+                certifications: sectionItems(currentFormData?.sections, 'certificates', localCV?.certificates),
+                courses: sectionItems(currentFormData?.sections, 'courses', localCV?.courses),
+                internships: sectionItems(currentFormData?.sections, 'internship', localCV?.internships),
+                achievements: sectionItems(currentFormData?.sections, 'achievements', localCV?.achievements),
+                traits: sectionItems(currentFormData?.sections, 'traits', localCV?.traits),
+                hobbies: sectionItems(currentFormData?.sections, 'hobbies', localCV?.hobbies),
+                awards: sectionItems(currentFormData?.sections, 'awards', localCV?.awards),
+                volunteering: sectionItems(currentFormData?.sections, 'volunteering', localCV?.volunteering),
+                licenses: sectionItems(currentFormData?.sections, 'licenses', localCV?.licenses),
+                custom: sectionItems(currentFormData?.sections, 'custom', localCV?.custom),
                 profile: currentFormData?.sections?.profile || localCV?.profile || null,
                 workExperience: [],
                 _settings: {
@@ -703,13 +725,17 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       languages: [],
       sections: {
         profile: { description: "" },
-        hobbies: { items: [] },
-        courses: { items: [] },
-        internship: { items: [] },
-        traits: { items: [] },
-        certificates: { items: [] },
-        achievements: { items: [] },
-        references: { items: [] },
+        hobbies: [],
+        courses: [],
+        internship: [],
+        traits: [],
+        certificates: [],
+        achievements: [],
+        references: [],
+        awards: [],
+        volunteering: [],
+        licenses: [],
+        custom: [],
         experience: { items: [] },
         education: { items: [] },
         skills: { items: [] },
@@ -733,18 +759,22 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
   // Never sync back to parent to prevent loops
 
   const titles: { [key: string]: string } = {
-    personalInfo: "Personuppgifter",
+    personalInfo: "Grundläggande uppgifter",
     education: "Utbildning",
-    experience: "Arbetslivserfarenhet",
+    experience: "Yrkeslivserfarenhet",
     skills: "Färdigheter",
     languages: "Språk",
     profile: "Personuppgifter",
     courses: "Kurser",
-    internship: "Praktik",
+    internship: "Praktikplatser",
     references: "Referenser",
     traits: "Egenskaper",
     certificates: "Certifikat",
     achievements: "Prestationer",
+    awards: "Utmärkelser",
+    volunteering: "Volontärarbete",
+    licenses: "Licenser",
+    custom: "Skräddarsytt fält",
   }
 
   // Smal prenumeration - endast sections (inte hela formuläret)
@@ -769,6 +799,8 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
   const [headerColor, setHeaderColor] = useState("#000000")
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
   const colorPickerRef = useRef<HTMLDivElement>(null)
+  const [showMoreFieldsMenu, setShowMoreFieldsMenu] = useState(false)
+  const moreFieldsDropdownRef = useRef<HTMLDivElement>(null)
 
   // Expose settings getters/setters to parent via ref
   useImperativeHandle(ref, () => ({
@@ -805,7 +837,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
 
   const [staticSectionSections, setStaticSectionSections] = useState([
     { id: "personalInfo", title: "Personuppgifter", component: PersonalInfo, removable: false, hidden: false },
-    { id: "experience", title: "Arbetslivserfarenhet", component: Experience, removable: true, hidden: false },
+    { id: "experience", title: "Yrkeslivserfarenhet", component: Experience, removable: true, hidden: false },
     { id: "education", title: "Utbildning", component: Education, removable: true, hidden: false },
     { id: "skills", title: "Färdigheter", component: Skills, removable: true, hidden: false },
     { id: "languages", title: "Språk", component: Languages, removable: true, hidden: false }
@@ -819,11 +851,15 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     { id: "profile", title: "Profil", component: Profile },
     { id: "courses", title: "Kurser", component: Courses },
     { id: "internship", title: "Praktik", component: Internship },
-    { id: "hobbies", title: "Fritidsaktiviteter", component: Hobbies },
+    { id: "hobbies", title: "Hobby", component: Hobbies },
     { id: "traits", title: "Egenskaper", component: Traits },
     { id: "certificates", title: "Certifikat", component: Certificates },
     { id: "achievements", title: "Prestationer", component: Achievements },
-    { id: "references", title: "Referenser", component: References }
+    { id: "awards", title: "Utmärkelser", component: Awards },
+    { id: "volunteering", title: "Volontärarbete", component: Volunteering },
+    { id: "licenses", title: "Licenser", component: Licenses },
+    { id: "references", title: "Referenser", component: References },
+    { id: "custom", title: "Skräddarsytt fält", component: CustomSection }
   ])
 
   useEffect(() => {
@@ -846,11 +882,18 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       ) {
         setShowTemplateMenu(false)
       }
+      if (
+        showMoreFieldsMenu &&
+        moreFieldsDropdownRef.current &&
+        !moreFieldsDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowMoreFieldsMenu(false)
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [showFontSizeMenu, showFontMenu, showLineHeightMenu, showTemplateMenu])
+  }, [showFontSizeMenu, showFontMenu, showLineHeightMenu, showTemplateMenu, showMoreFieldsMenu])
 
   // Removed overflow checking to prevent infinite loops
   // useEffect(() => {
@@ -1135,47 +1178,71 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               }
               
               // Restore references
-              const referencesData = cvData.references || cvData.sections?.references?.items || []
+              const referencesData = cvData.references || sectionItems(cvData?.sections, 'references')
               if (Array.isArray(referencesData) && referencesData.length > 0) {
-                form.setValue('sections.references.items', referencesData)
+                form.setValue('sections.references', referencesData)
               }
               
               // Restore certifications
-              const certsData = cvData.certifications || cvData.sections?.certificates?.items || []
+              const certsData = cvData.certifications || sectionItems(cvData?.sections, 'certificates')
               if (Array.isArray(certsData) && certsData.length > 0) {
-                form.setValue('sections.certificates.items', certsData)
+                form.setValue('sections.certificates', certsData)
               }
               
               // Restore courses
-              const coursesData = cvData.courses || cvData.sections?.courses?.items || []
+              const coursesData = cvData.courses || sectionItems(cvData?.sections, 'courses')
               if (Array.isArray(coursesData) && coursesData.length > 0) {
-                form.setValue('sections.courses.items', coursesData)
+                form.setValue('sections.courses', coursesData)
               }
               
               // Restore internships
-              const internshipsData = cvData.internships || cvData.sections?.internship?.items || []
+              const internshipsData = cvData.internships || sectionItems(cvData?.sections, 'internship')
               if (Array.isArray(internshipsData) && internshipsData.length > 0) {
-                form.setValue('sections.internship.items', internshipsData)
+                form.setValue('sections.internship', internshipsData)
               }
               
               // Restore achievements
-              const achievementsData = cvData.achievements || cvData.sections?.achievements?.items || []
+              const achievementsData = cvData.achievements || sectionItems(cvData?.sections, 'achievements')
               if (Array.isArray(achievementsData) && achievementsData.length > 0) {
-                form.setValue('sections.achievements.items', achievementsData)
+                form.setValue('sections.achievements', achievementsData)
               }
               
               // Restore traits
-              const traitsData = cvData.traits || cvData.sections?.traits?.items || []
+              const traitsData = cvData.traits || sectionItems(cvData?.sections, 'traits')
               if (Array.isArray(traitsData) && traitsData.length > 0) {
-                form.setValue('sections.traits.items', traitsData)
+                form.setValue('sections.traits', traitsData)
               }
               
               // Restore hobbies
-              const hobbiesData = cvData.hobbies || cvData.sections?.hobbies?.items || []
+              const hobbiesData = cvData.hobbies || sectionItems(cvData?.sections, 'hobbies')
               if (Array.isArray(hobbiesData) && hobbiesData.length > 0) {
-                form.setValue('sections.hobbies.items', hobbiesData)
+                form.setValue('sections.hobbies', hobbiesData)
               }
               
+              // Restore awards
+              const awardsData = cvData.awards || sectionItems(cvData?.sections, 'awards')
+              if (Array.isArray(awardsData) && awardsData.length > 0) {
+                form.setValue('sections.awards', awardsData)
+              }
+
+              // Restore volunteering
+              const volunteeringData = cvData.volunteering || sectionItems(cvData?.sections, 'volunteering')
+              if (Array.isArray(volunteeringData) && volunteeringData.length > 0) {
+                form.setValue('sections.volunteering', volunteeringData)
+              }
+
+              // Restore licenses
+              const licensesData = cvData.licenses || sectionItems(cvData?.sections, 'licenses')
+              if (Array.isArray(licensesData) && licensesData.length > 0) {
+                form.setValue('sections.licenses', licensesData)
+              }
+
+              // Restore custom section entries
+              const customData = cvData.custom || sectionItems(cvData?.sections, 'custom')
+              if (Array.isArray(customData) && customData.length > 0) {
+                form.setValue('sections.custom', customData)
+              }
+
               // Restore profile (handle both object and nested format)
               const profileData = cvData.profile || cvData.sections?.profile || null
               if (profileData) {
@@ -1196,6 +1263,22 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 if (cvData._settings.sectionOrder && Array.isArray(cvData._settings.sectionOrder)) {
                   setAddedSections(cvData._settings.sectionOrder)
                 }
+                // Restore renamed section headings (e.g. a renamed "Skräddarsytt fält")
+                if (cvData._settings.sectionNames && typeof cvData._settings.sectionNames === 'object') {
+                  const namesMap = cvData._settings.sectionNames as { [key: string]: string }
+                  setStaticSectionSections(prev =>
+                    prev.map(section => ({
+                      ...section,
+                      title: namesMap[section.id] || section.title
+                    }))
+                  )
+                  setOptionalSections(prev =>
+                    prev.map(section => ({
+                      ...section,
+                      title: namesMap[section.id] || section.title
+                    }))
+                  )
+                }
               }
 
               // Build section order from data if _settings.sectionOrder not present
@@ -1213,6 +1296,10 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 if (achievementsData.length > 0) detectedSections.push('achievements')
                 if (traitsData.length > 0) detectedSections.push('traits')
                 if (hobbiesData.length > 0) detectedSections.push('hobbies')
+                if (awardsData.length > 0) detectedSections.push('awards')
+                if (volunteeringData.length > 0) detectedSections.push('volunteering')
+                if (licensesData.length > 0) detectedSections.push('licenses')
+                if (customData.length > 0) detectedSections.push('custom')
                 setAddedSections(detectedSections)
               }
             }
@@ -1288,13 +1375,17 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             languages: savedCV.languages || [],
             sections: {
               profile: savedCV.profile || { description: '' },
-              courses: { items: savedCV.courses || [] },
-              internship: { items: savedCV.internships || [] },
-              certificates: { items: savedCV.certificates || [] },
-              achievements: { items: savedCV.achievements || [] },
-              references: { items: savedCV.references || [] },
-              traits: { items: savedCV.traits || [] },
-              hobbies: { items: savedCV.hobbies || [] },
+              courses: savedCV.courses || [],
+              internship: savedCV.internships || [],
+              certificates: savedCV.certificates || [],
+              achievements: savedCV.achievements || [],
+              references: savedCV.references || [],
+              traits: savedCV.traits || [],
+              hobbies: savedCV.hobbies || [],
+              awards: savedCV.awards || [],
+              volunteering: savedCV.volunteering || [],
+              licenses: savedCV.licenses || [],
+              custom: savedCV.custom || [],
             }
           })
           
@@ -1398,13 +1489,17 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       skills: formData.sections?.skills?.items || formData.skills || [],
       languages: formData.sections?.languages?.items || formData.languages || [],
       profile: formData.sections?.profile || null,
-      courses: formData.sections?.courses?.items || [],
-      internships: formData.sections?.internship?.items || [],
-      certificates: formData.sections?.certificates?.items || [],
-      achievements: formData.sections?.achievements?.items || [],
-      references: formData.sections?.references?.items || [],
-      traits: formData.sections?.traits?.items || [],
-      hobbies: formData.sections?.hobbies?.items || [],
+      courses: sectionItems(formData?.sections, 'courses'),
+      internships: sectionItems(formData?.sections, 'internship'),
+      certificates: sectionItems(formData?.sections, 'certificates'),
+      achievements: sectionItems(formData?.sections, 'achievements'),
+      references: sectionItems(formData?.sections, 'references'),
+      traits: sectionItems(formData?.sections, 'traits'),
+      hobbies: sectionItems(formData?.sections, 'hobbies'),
+      awards: sectionItems(formData?.sections, 'awards'),
+      volunteering: sectionItems(formData?.sections, 'volunteering'),
+      licenses: sectionItems(formData?.sections, 'licenses'),
+      custom: sectionItems(formData?.sections, 'custom'),
       section_order: addedSections,
       section_names: sectionNamesMap,
     }
@@ -1456,7 +1551,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             startYear: exp.startYear || "",
             description: exp.description || ""
           })),
-          references: currentFormData.sections?.references?.items || [],
+          references: sectionItems(currentFormData?.sections, 'references'),
           personalInfo: {
             ...currentFormData.personalInfo,
             email: currentFormData.personalInfo?.email || "",
@@ -1469,12 +1564,16 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             firstName: currentFormData.personalInfo?.firstName || "",
             postalCode: currentFormData.personalInfo?.postalCode || ""
           },
-          certifications: currentFormData.sections?.certificates?.items || [],
-          courses: currentFormData.sections?.courses?.items || [],
-          internships: currentFormData.sections?.internship?.items || [],
-          achievements: currentFormData.sections?.achievements?.items || [],
-          traits: currentFormData.sections?.traits?.items || [],
-          hobbies: currentFormData.sections?.hobbies?.items || [],
+          certifications: sectionItems(currentFormData?.sections, 'certificates'),
+          courses: sectionItems(currentFormData?.sections, 'courses'),
+          internships: sectionItems(currentFormData?.sections, 'internship'),
+          achievements: sectionItems(currentFormData?.sections, 'achievements'),
+          traits: sectionItems(currentFormData?.sections, 'traits'),
+          hobbies: sectionItems(currentFormData?.sections, 'hobbies'),
+          awards: sectionItems(currentFormData?.sections, 'awards'),
+          volunteering: sectionItems(currentFormData?.sections, 'volunteering'),
+          licenses: sectionItems(currentFormData?.sections, 'licenses'),
+          custom: sectionItems(currentFormData?.sections, 'custom'),
           profile: currentFormData.sections?.profile || null,
           workExperience: [],
           // Include settings so they persist across sessions
@@ -1487,6 +1586,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             selectedColor,
             headerColor,
             sectionOrder: addedSections,
+            sectionNames: sectionNamesMap,
           },
         }
         
@@ -1669,7 +1769,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           startYear: exp.startYear || "",
           description: exp.description || ""
         })),
-        references: currentValues.sections?.references?.items || [],
+        references: sectionItems(currentValues?.sections, 'references'),
         personalInfo: {
           ...currentValues.personalInfo,
           email: currentValues.personalInfo?.email || "",
@@ -1682,12 +1782,16 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           firstName: currentValues.personalInfo?.firstName || "",
           postalCode: currentValues.personalInfo?.postalCode || ""
         },
-        certifications: currentValues.sections?.certificates?.items || [],
-        courses: currentValues.sections?.courses?.items || [],
-        internships: currentValues.sections?.internship?.items || [],
-        achievements: currentValues.sections?.achievements?.items || [],
-        traits: currentValues.sections?.traits?.items || [],
-        hobbies: currentValues.sections?.hobbies?.items || [],
+        certifications: sectionItems(currentValues?.sections, 'certificates'),
+        courses: sectionItems(currentValues?.sections, 'courses'),
+        internships: sectionItems(currentValues?.sections, 'internship'),
+        achievements: sectionItems(currentValues?.sections, 'achievements'),
+        traits: sectionItems(currentValues?.sections, 'traits'),
+        hobbies: sectionItems(currentValues?.sections, 'hobbies'),
+        awards: sectionItems(currentValues?.sections, 'awards'),
+        volunteering: sectionItems(currentValues?.sections, 'volunteering'),
+        licenses: sectionItems(currentValues?.sections, 'licenses'),
+        custom: sectionItems(currentValues?.sections, 'custom'),
         profile: currentValues.sections?.profile || null,
         workExperience: [],
         _settings: {
@@ -1699,6 +1803,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           selectedColor,
           headerColor,
           sectionOrder: addedSections,
+          sectionNames: sectionNamesMap,
         },
       }
 
@@ -1819,13 +1924,17 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
         languages: currentValues.sections?.languages?.items || currentValues.languages || [],
         sections: {
           profile: currentValues.sections?.profile,
-          courses: { items: currentValues.sections?.courses?.items || [] },
-          internship: { items: currentValues.sections?.internship?.items || [] },
-          certificates: { items: currentValues.sections?.certificates?.items || [] },
-          achievements: { items: currentValues.sections?.achievements?.items || [] },
-          references: { items: currentValues.sections?.references?.items || [] },
-          traits: { items: currentValues.sections?.traits?.items || [] },
-          hobbies: { items: currentValues.sections?.hobbies?.items || [] },
+          courses: sectionItems(currentValues?.sections, 'courses'),
+          internship: sectionItems(currentValues?.sections, 'internship'),
+          certificates: sectionItems(currentValues?.sections, 'certificates'),
+          achievements: sectionItems(currentValues?.sections, 'achievements'),
+          references: sectionItems(currentValues?.sections, 'references'),
+          traits: sectionItems(currentValues?.sections, 'traits'),
+          hobbies: sectionItems(currentValues?.sections, 'hobbies'),
+          awards: sectionItems(currentValues?.sections, 'awards'),
+          volunteering: sectionItems(currentValues?.sections, 'volunteering'),
+          licenses: sectionItems(currentValues?.sections, 'licenses'),
+          custom: sectionItems(currentValues?.sections, 'custom'),
         }
       }
       
@@ -2039,17 +2148,25 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     <FormProvider {...form}>
       <div className="flex flex-col h-screen">
         {/* Header */}
-        <header className="text-white px-6 py-4 grid grid-cols-3 items-center" style={{ backgroundColor: '#1d1d20' }}>
-          <div className="flex justify-start items-center">
+        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 grid grid-cols-3 items-center">
+          <div className="flex justify-start items-center gap-3 sm:gap-4">
+            <Link href="/" className="flex items-center shrink-0" aria-label="Till startsidan">
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Cvfixaren-ebeQXxOTCrb79kvOYjGEuecJeiitvr.png"
+                alt="CVfixaren"
+                width={150}
+                height={50}
+                className="h-7 w-auto"
+                priority
+              />
+            </Link>
             <button
               onClick={() => router.push('/profil')}
-              className="flex items-center gap-2 text-white text-sm font-medium px-4 py-2 rounded-md transition-all"
-              style={{ border: '0.5px solid white', outline: 'none', background: 'none' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-sm font-medium px-3 py-2 rounded-md border border-gray-200 transition-colors"
+              style={{ outline: 'none', background: 'none' }}
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Mina CV</span>
+              <span className="hidden sm:inline">Mina CV</span>
             </button>
           </div>
           
@@ -2057,7 +2174,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           <div className="flex justify-center items-center gap-2">
             <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
               {isSavingChanges ? (
-                <Save className="h-4 w-4 text-white animate-pulse" />
+                <Save className="h-4 w-4 text-gray-400 animate-pulse" />
               ) : (
                 <CheckCircle2 className="h-4 w-4 text-[#00bf63]" />
               )}
@@ -2086,7 +2203,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                         if (cvName.trim() === "") setCvName("cv.pdf")
                       }
                     }}
-                    className="bg-transparent text-white text-base font-medium text-center outline-none px-2 py-1"
+                    className="bg-transparent text-gray-900 text-base font-medium text-center outline-none px-2 py-1"
                     style={{ 
                       border: 'none',
                       width: '100%'
@@ -2113,7 +2230,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                     setIsEditingName(true)
                     setTimeout(() => nameInputRef.current?.focus(), 0)
                   }}
-                  className="text-white text-base font-medium hover:text-gray-300 transition-colors px-2"
+                  className="text-gray-900 text-base font-medium hover:text-[#00bf63] transition-colors px-2"
                   style={{ border: 'none', outline: 'none', background: 'none', width: '100%', textAlign: 'center' }}
                 >
                   {cvName}
@@ -2125,12 +2242,12 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           <div className="flex justify-end items-center gap-3">
             {user && pathname !== "/profil/skapa-cv" && (
               <button
-                className="text-white text-sm font-medium px-4 py-2 rounded-md transition-all hover:bg-white/10"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium px-4 py-2 rounded-md border border-gray-200 hover:bg-gray-100 transition-colors"
                 onClick={async () => {
                   await supabase.auth.signOut()
                   window.location.href = '/'
                 }}
-                style={{ border: '0.5px solid white', outline: 'none', background: 'none' }}
+                style={{ outline: 'none', background: 'none' }}
               >
                 Logga ut
               </button>
@@ -2171,7 +2288,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               // Don't render hidden sections
               if (section.hidden) return null
               // Sections that support page breaks (have items)
-              const supportsPageBreaks = ['experience', 'education', 'courses', 'internship', 'certificates', 'achievements', 'references'].includes(id)
+              const supportsPageBreaks = ['experience', 'education', 'courses', 'internship', 'certificates', 'achievements', 'references', 'awards', 'volunteering', 'licenses', 'custom'].includes(id)
               return (
                     <div key={id}>
                       <div className={`${isOpen ? '' : 'border-b border-gray-200'} ${section.hidden ? "opacity-50" : ""} transition-all`}>
@@ -2244,6 +2361,10 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                       {section.id === "traits" && <Traits />}
                       {section.id === "certificates" && <Certificates />}
                       {section.id === "achievements" && <Achievements />}
+                      {section.id === "awards" && <Awards />}
+                      {section.id === "volunteering" && <Volunteering />}
+                      {section.id === "licenses" && <Licenses />}
+                      {section.id === "custom" && <CustomSection />}
                     </div>
                       )}
                     </div>
@@ -2301,20 +2422,45 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               </DndContext>
             )}
 
-            {/* Available sections to add */}
-            <div className="mt-6 space-y-3">
-              <div className="flex flex-wrap gap-2">
-                {availableOptionalSections.filter(Boolean).map((section: any) => (
-            <Button 
-                    key={section.id}
-                    variant="outline"
-                    className="h-9 px-3 text-sm"
-                    onClick={() => handleAddSection(section.id)}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    {section.title}
-            </Button>
-                ))}
+            {/* Available sections to add - collapsed behind a single button */}
+            <div className="mt-6" ref={moreFieldsDropdownRef}>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors text-sm font-medium"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowMoreFieldsMenu(!showMoreFieldsMenu)
+                  }}
+                >
+                  <Plus className="h-4 w-4 text-[#00bf63]" />
+                  <span>Visa fler fält</span>
+                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${showMoreFieldsMenu ? "rotate-180" : ""}`} />
+                </button>
+
+                {showMoreFieldsMenu && (
+                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl shadow-xl border border-gray-200 p-2 z-50 max-h-80 overflow-y-auto">
+                    {availableOptionalSections.filter(Boolean).length === 0 ? (
+                      <p className="px-3 py-3 text-sm text-gray-500 text-center">Alla fält är redan tillagda</p>
+                    ) : (
+                      availableOptionalSections.filter(Boolean).map((section: any) => (
+                        <button
+                          key={section.id}
+                          type="button"
+                          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md hover:bg-gray-50 transition-colors text-left"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleAddSection(section.id)
+                            setShowMoreFieldsMenu(false)
+                          }}
+                        >
+                          <Plus className="h-4 w-4 text-[#00bf63] shrink-0" />
+                          <span className="text-sm text-gray-800">{section.title}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -2433,7 +2579,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                                       <div className="w-5 h-5 rounded-full bg-gray-300"></div>
                                     </div>
                                     <div>
-                                      <div className="font-bold text-[5px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Arbetslivserfarenhet</div>
+                                      <div className="font-bold text-[5px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Yrkeslivserfarenhet</div>
                                       <div className="text-[5px] space-y-0.5">
                                         <div>
                                           <div className="font-semibold">Projektledare</div>
@@ -2474,7 +2620,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                                     </div>
                                     <div className="flex-1 p-1 space-y-1">
                                       <div>
-                                        <div className="font-bold text-[4px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Arbetslivserfarenhet</div>
+                                        <div className="font-bold text-[4px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Yrkeslivserfarenhet</div>
                                         <div className="text-[4px] space-y-0.5">
                                           <div>
                                             <div className="font-semibold">Senior UX Designer</div>
@@ -2504,7 +2650,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                                     <div className="text-gray-500 text-[4px]">sofia@email.se • Stockholm</div>
                                     <div className="border-t border-gray-200 pt-1 mt-1 text-left space-y-1">
                                       <div>
-                                        <div className="font-bold text-[5px] uppercase text-gray-400 mb-0.5">Arbetslivserfarenhet</div>
+                                        <div className="font-bold text-[5px] uppercase text-gray-400 mb-0.5">Yrkeslivserfarenhet</div>
                                         <div className="text-[5px] space-y-0.5">
                                           <div>
                                             <div className="font-semibold">Marketing Manager</div>
@@ -2538,7 +2684,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                                     <div className="text-gray-500 text-[4px]">michael@email.se • +46 70 123 45 67</div>
                                     <div className="space-y-1">
                                       <div>
-                                        <div className="font-bold text-[5px] uppercase text-gray-800 border-b-2 border-gray-800 pb-0.5 mb-0.5">Arbetslivserfarenhet</div>
+                                        <div className="font-bold text-[5px] uppercase text-gray-800 border-b-2 border-gray-800 pb-0.5 mb-0.5">Yrkeslivserfarenhet</div>
                                         <div className="text-[5px] space-y-0.5">
                                           <div>
                                             <div className="font-semibold">CEO & Founder</div>
@@ -2571,7 +2717,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                                     </div>
                                     <div className="text-gray-500 text-[4px]">lisa@email.se • Göteborg</div>
                                     <div>
-                                      <div className="font-bold text-[5px] uppercase text-blue-500 mb-0.5">Arbetslivserfarenhet</div>
+                                      <div className="font-bold text-[5px] uppercase text-blue-500 mb-0.5">Yrkeslivserfarenhet</div>
                                       <div className="relative pl-2 border-l-2 border-blue-500 space-y-1">
                                         <div className="relative">
                                           <div className="absolute -left-[5px] top-0 w-1.5 h-1.5 rounded-full bg-blue-500 border border-white"></div>

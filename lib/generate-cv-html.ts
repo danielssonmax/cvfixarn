@@ -78,6 +78,7 @@ export function generateCVHtml(data: any, sectionOrder: string[], sections: any[
       civilStatus: "Civilstånd",
       website: "Webbplats",
       linkedin: "LinkedIn",
+      other: "Övrigt",
     }
     return labels[type] || type
   }
@@ -93,6 +94,7 @@ export function generateCVHtml(data: any, sectionOrder: string[], sections: any[
       civilStatus: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
       website: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
       linkedin: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>`,
+      other: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
     }
     return icons[type] || ''
   }
@@ -128,11 +130,13 @@ export function generateCVHtml(data: any, sectionOrder: string[], sections: any[
             if (value && String(value).trim() !== '') {
               // Check if this is a custom field
               const isCustomField = fieldKey.startsWith('custom_')
+              const customLabel = safeText((safePersonalInfo.optionalFields as any)[`${fieldKey}_label`])
+              const customPrefix = customLabel && customLabel !== 'Fritext' ? `${customLabel}: ` : ''
               
               if (isCustomField) {
                 // Custom fields show neutral icon (info circle) without label
                 const customIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
-                html += `<span class="cv-contact-item">${customIcon}${value}</span>`
+                html += `<span class="cv-contact-item">${customIcon}${customPrefix}${value}</span>`
               } else {
                 // Standard fields show icon instead of label
                 const icon = getFieldIcon(fieldKey)
@@ -352,6 +356,106 @@ export function generateCVHtml(data: any, sectionOrder: string[], sections: any[
           html += `</div>`
           if (achIssuer) html += `<p class="cv-item-company">${achIssuer}</p>`
           if (achDesc) html += `<div class="cv-item-description">${achDesc}</div>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
+      case 'awards':
+        if (!hasArrayContent(data?.sections?.awards)) break
+        html += `<div class="cv-section"><h2 class="cv-section-title">${sectionToUse.title || 'UTMÄRKELSER'}</h2>`
+        data.sections.awards.forEach((award: any) => {
+          if (award && award.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+
+          if (!hasContent(award)) return
+          const awardTitle = safeText(award.title)
+          const awardDate = safeText(award.date || award.year)
+          const awardIssuer = safeText(award.issuer)
+          const awardDesc = stripHTML(award.description)
+
+          html += `<div class="cv-item cv-experience-item" data-keep><div class="cv-item-header">`
+          if (awardTitle) html += `<h3 class="cv-item-title">${awardTitle}</h3>`
+          if (awardDate) html += `<span class="cv-item-date">${awardDate}</span>`
+          html += `</div>`
+          if (awardIssuer) html += `<p class="cv-item-company">${awardIssuer}</p>`
+          if (awardDesc) html += `<div class="cv-item-description">${awardDesc}</div>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
+      case 'volunteering':
+        if (!hasArrayContent(data?.sections?.volunteering)) break
+        html += `<div class="cv-section"><h2 class="cv-section-title">${sectionToUse.title || 'VOLONTÄRARBETE'}</h2>`
+        data.sections.volunteering.forEach((vol: any) => {
+          if (vol && vol.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+
+          if (!hasContent(vol)) return
+          const volTitle = safeText(vol.title)
+          const volDate = safeText(dateRange(vol.startDate, vol.startYear, vol.endDate, vol.endYear, vol.current))
+          const volOrg = safeText(vol.company || vol.organization)
+          const volLocation = safeText(vol.location)
+          const volDesc = stripHTML(vol.description)
+
+          html += `<div class="cv-item cv-experience-item" data-keep><div class="cv-item-header">`
+          if (volTitle) html += `<h3 class="cv-item-title">${volTitle}</h3>`
+          if (volDate) html += `<span class="cv-item-date">${volDate}</span>`
+          html += `</div>`
+          if (volOrg) html += `<p class="cv-item-company">${volOrg}</p>`
+          if (volLocation) html += `<p class="cv-item-location">${volLocation}</p>`
+          if (volDesc) html += `<div class="cv-item-description">${volDesc}</div>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
+      case 'licenses':
+        if (!hasArrayContent(data?.sections?.licenses)) break
+        html += `<div class="cv-section"><h2 class="cv-section-title">${sectionToUse.title || 'LICENSER'}</h2>`
+        data.sections.licenses.forEach((license: any) => {
+          if (license && license.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+
+          if (!hasContent(license)) return
+          const licenseName = safeText(license.name)
+          const licenseDate = safeText(license.date || license.year)
+          const licenseIssuer = safeText(license.issuer)
+
+          html += `<div class="cv-item cv-experience-item" data-keep><div class="cv-item-header">`
+          if (licenseName) html += `<h3 class="cv-item-title">${licenseName}</h3>`
+          if (licenseDate) html += `<span class="cv-item-date">${licenseDate}</span>`
+          html += `</div>`
+          if (licenseIssuer) html += `<p class="cv-item-company">${licenseIssuer}</p>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
+      case 'custom':
+        if (!hasArrayContent(data?.sections?.custom)) break
+        html += `<div class="cv-section"><h2 class="cv-section-title">${sectionToUse.title || 'ÖVRIGT'}</h2>`
+        data.sections.custom.forEach((entry: any) => {
+          if (entry && entry.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+
+          if (!hasContent(entry)) return
+          const entryTitle = safeText(entry.title)
+          const entryDesc = stripHTML(entry.description)
+
+          html += `<div class="cv-item cv-experience-item" data-keep><div class="cv-item-header">`
+          if (entryTitle) html += `<h3 class="cv-item-title">${entryTitle}</h3>`
+          html += `</div>`
+          if (entryDesc) html += `<div class="cv-item-description">${entryDesc}</div>`
           html += `</div>`
         })
         html += `</div>`

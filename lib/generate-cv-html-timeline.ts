@@ -75,6 +75,7 @@ export function generateCVHtmlTimeline(data: any, sectionOrder: string[], sectio
       civilStatus: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
       website: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
       linkedin: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>`,
+      other: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
     }
     return icons[type] || ''
   }
@@ -118,9 +119,11 @@ export function generateCVHtmlTimeline(data: any, sectionOrder: string[], sectio
       if (fieldKey.endsWith('_label')) continue
       if (value && String(value).trim() !== '') {
         const isCustomField = fieldKey.startsWith('custom_')
+        const customLabel = safeText((safePersonalInfo.optionalFields as any)[`${fieldKey}_label`])
+        const customPrefix = customLabel && customLabel !== 'Fritext' ? `${customLabel}: ` : ''
         if (isCustomField) {
           const customIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
-          optionalItems.push(`${customIcon}${value}`)
+          optionalItems.push(`${customIcon}${customPrefix}${value}`)
         } else {
           const icon = getFieldIcon(fieldKey)
           optionalItems.push(`${icon}${value}`)
@@ -393,6 +396,113 @@ export function generateCVHtmlTimeline(data: any, sectionOrder: string[], sectio
         html += `</div>`
         break
         
+      case 'awards':
+        if (!hasArrayContent(data?.sections?.awards)) break
+        html += `<div class="cv-section-timeline">`
+        html += `<h2 class="cv-section-title-timeline">${sectionToUse.title || 'UTMÄRKELSER'}</h2>`
+        data.sections.awards.forEach((award: any) => {
+          if (award && award.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+          if (!hasContent(award)) return
+
+          const awardTitle = safeText(award.title)
+          const awardDate = safeText(award.date || award.year)
+          const awardIssuer = safeText(award.issuer)
+          const awardDesc = stripHTML(award.description)
+          const awardMeta = [awardIssuer, awardDate].filter(v => v && v.trim() !== '').join(' - ')
+
+          html += `<div class="cv-item-timeline" data-keep>`
+          if (awardTitle) html += `<h3 class="cv-item-title-timeline">${awardTitle}</h3>`
+          if (awardMeta) html += `<p class="cv-timeline-subtitle">${awardMeta}</p>`
+          if (awardDesc) html += `<p class="cv-item-description">${awardDesc}</p>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
+      case 'volunteering':
+        if (!hasArrayContent(data?.sections?.volunteering)) break
+        html += `<div class="cv-section-timeline">`
+        html += `<h2 class="cv-section-title-timeline">${sectionToUse.title || 'VOLONTÄRARBETE'}</h2>`
+        html += `<div class="cv-timeline">`
+        data.sections.volunteering.forEach((vol: any) => {
+          if (vol && vol.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+          if (!hasContent(vol)) return
+
+          const volTitle = safeText(vol.title)
+          const volOrg = safeText(vol.company || vol.organization)
+          const volLocation = safeText(vol.location)
+          const volDesc = stripHTML(vol.description)
+          const volDates = dateRange(vol.startDate, vol.startYear, vol.endDate, vol.endYear, vol.current)
+
+          html += `<div class="cv-timeline-item" data-keep>`
+          html += `<div class="cv-timeline-marker"></div>`
+          html += `<div class="cv-timeline-content">`
+          if (volDates) html += `<span class="cv-timeline-date">${volDates}</span>`
+          if (volTitle) html += `<h3 class="cv-timeline-title">${volTitle}</h3>`
+          if (volOrg || volLocation) {
+            const orgLocation = [volOrg, volLocation].filter(v => v && v.trim() !== '').join(' - ')
+            html += `<p class="cv-timeline-subtitle">${orgLocation}</p>`
+          }
+          if (volDesc) html += `<p class="cv-item-description">${volDesc}</p>`
+          html += `</div>`
+          html += `</div>`
+        })
+        html += `</div>`
+        html += `</div>`
+        break
+
+      case 'licenses':
+        if (!hasArrayContent(data?.sections?.licenses)) break
+        html += `<div class="cv-section-timeline">`
+        html += `<h2 class="cv-section-title-timeline">${sectionToUse.title || 'LICENSER'}</h2>`
+        data.sections.licenses.forEach((license: any) => {
+          if (license && license.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+          if (!hasContent(license)) return
+
+          const licenseName = safeText(license.name)
+          const licenseDate = safeText(license.date || license.year)
+          const licenseIssuer = safeText(license.issuer)
+          const licenseMeta = [licenseIssuer, licenseDate].filter(v => v && v.trim() !== '').join(' - ')
+
+          html += `<div class="cv-item-timeline" data-keep>`
+          if (licenseName) html += `<h3 class="cv-item-title-timeline">${licenseName}</h3>`
+          if (licenseMeta) html += `<p class="cv-timeline-subtitle">${licenseMeta}</p>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
+      case 'custom':
+        if (!hasArrayContent(data?.sections?.custom)) break
+        html += `<div class="cv-section-timeline">`
+        html += `<h2 class="cv-section-title-timeline">${sectionToUse.title || 'ÖVRIGT'}</h2>`
+        data.sections.custom.forEach((entry: any) => {
+          if (entry && entry.isPageBreak === true) {
+            html += `<div class="cv-page-break"></div>`
+            return
+          }
+          if (!hasContent(entry)) return
+
+          const entryTitle = safeText(entry.title)
+          const entryDesc = stripHTML(entry.description)
+
+          html += `<div class="cv-item-timeline" data-keep>`
+          if (entryTitle) html += `<h3 class="cv-item-title-timeline">${entryTitle}</h3>`
+          if (entryDesc) html += `<p class="cv-item-description">${entryDesc}</p>`
+          html += `</div>`
+        })
+        html += `</div>`
+        break
+
       case 'references':
         html += `<div class="cv-section-timeline">`
         html += `<h2 class="cv-section-title-timeline">${sectionToUse.title || 'REFERENSER'}</h2>`

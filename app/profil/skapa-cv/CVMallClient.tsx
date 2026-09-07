@@ -836,7 +836,7 @@ export default function CVMallClient() {
                 const titleMap: Record<string, string> = {
                   personalInfo: "Personuppgifter",
                   profile: "Profil",
-                  experience: "Arbetslivserfarenhet",
+                  experience: "Yrkeslivserfarenhet",
                   education: "Utbildning",
                   skills: "Färdigheter",
                   languages: "Språk",
@@ -847,6 +847,10 @@ export default function CVMallClient() {
                   certificates: "Certifikat",
                   achievements: "Prestationer",
                   hobbies: "Hobbies",
+                  awards: "Utmärkelser",
+                  volunteering: "Volontärarbete",
+                  licenses: "Licenser",
+                  custom: "Skräddarsytt fält",
                 }
                 return { id, title: titleMap[id] || id, hidden: false }
               })}
