@@ -15,6 +15,11 @@ const nextConfig = {
   // by path at runtime, which webpack rewrites into something that no longer
   // exists ("Setting up fake worker failed").
   serverExternalPackages: ['pdfjs-dist', 'mammoth'],
+  // Belt and braces for the CV import: make sure pdf.js's worker build is
+  // actually shipped with the function, whatever tracing decides.
+  outputFileTracingIncludes: {
+    '/api/import-cv': ['./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'],
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Exclude Node.js modules from client-side bundle

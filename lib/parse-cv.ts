@@ -90,7 +90,8 @@ const LINKEDIN_RE = /(?:https?:\/\/)?(?:[\w-]+\.)?linkedin\.com\/(?:in|pub)\/[\w
 const URL_RE = /(?:https?:\/\/)?(?:www\.)?[\w-]{2,}\.(?:se|com|net|org|io|dev|nu|eu|co\.uk)(?:\/[\w\-./%?=&#]*)?/i
 // Swedish postal code plus city, e.g. "411 38 Göteborg". [^\S\n] rather than
 // \s so the city can never be picked up from the following line.
-const POSTAL_RE = /\b(\d{3}[^\S\n]?\d{2})[^\S\n]+([A-ZÅÄÖ][\wÅÄÖåäö-]+(?:[^\S\n]+[A-ZÅÄÖ][\wÅÄÖåäö-]+)?)/
+const POSTAL_RE =
+  /\b(\d{3}[^\S\n]?\d{2})[^\S\n]*,?[^\S\n]*([A-ZÅÄÖ][\wÅÄÖåäö-]+(?:[^\S\n]+[A-ZÅÄÖ][\wÅÄÖåäö-]+)?)/
 const PHONE_RE = /(?:\+\d{1,3}[\s-]?)?(?:\(?0\)?[\s-]?)?\d{2,4}[\s-]?\d{2,3}[\s-]?\d{2}[\s-]?\d{2,3}/
 
 // Word boundaries matter here: without them "jun" matches inside
@@ -472,20 +473,34 @@ function buildEntry(
 
 // ---------------------------------------------------------------- lists
 
-function splitList(lines: string[]): string[] {
+/** A level suffix, e.g. the "- Avancerad" in "API-integrationer - Avancerad". */
+const HAS_LEVEL_RE = /\s[-–—:]\s/
+
+/**
+ * Split a list section into individual values.
+ *
+ * Skill and language chips are often laid out several to a row, which the
+ * extractor marks with a tab. Commas are a separator too - but only when the
+ * line has no level suffixes, because a skill written as
+ * "Avancerad systemvana, Officepaketet - Avancerad" legitimately contains one.
+ */
+function splitList(lines: string[], maxLength = 70): string[] {
   const out: string[] = []
   for (const line of lines) {
-    const pieces = line.split(/[,;•·|]|\s{3,}/)
-    for (const piece of pieces) {
-      const value = piece.replace(/^[-–—*\s]+/, "").trim()
-      if (value.length >= 2 && value.length <= 45) out.push(value)
+    const byColumn = line.split(/\t|\s{3,}/)
+    for (const column of byColumn) {
+      const pieces = HAS_LEVEL_RE.test(column) ? [column] : column.split(/[,;•·|]/)
+      for (const piece of pieces) {
+        const value = piece.replace(/^[-–—*\s]+/, "").trim()
+        if (value.length >= 2 && value.length <= maxLength) out.push(value)
+      }
     }
   }
   return Array.from(new Set(out))
 }
 
 function parseSkills(lines: string[]) {
-  return splitList(lines)
+  return splitList(lines, 90)
     .map((raw) => {
       const m = raw.split(/\s+[-–—:]\s+/)
       if (m.length === 2) {
@@ -494,14 +509,17 @@ function parseSkills(lines: string[]) {
       }
       return { name: raw, level: "" }
     })
-    .filter((s) => s.name.length >= 2)
+    // The cap belongs on the skill itself; a long name plus its level should not
+    // push a perfectly good skill over the limit.
+    .filter((s) => s.name.length >= 2 && s.name.length <= 70)
     .slice(0, 30)
 }
 
 function parseLanguages(lines: string[]) {
   const out: Array<{ name: string; proficiency: string }> = []
   for (const line of lines) {
-    for (const piece of line.split(/[,;•·|]/)) {
+    // "Svenska - Modersmål⇥Engelska - Flytande" is two chips on one row.
+    for (const piece of line.split(/\t|\s{3,}|[,;•·|]/)) {
       const value = piece.replace(/^[-–—*\s]+/, "").trim()
       if (!value) continue
       const parts = value.split(/\s+[-–—:(]\s*/)

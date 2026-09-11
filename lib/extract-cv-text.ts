@@ -150,6 +150,19 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
   // The legacy build runs in Node without a web worker.
   const pdfjs: any = await import("pdfjs-dist/legacy/build/pdf.mjs")
 
+  // In Node, pdf.js pulls in its worker with a runtime `import("./pdf.worker.mjs")`.
+  // That relative specifier is invisible to Next's output file tracing, so on a
+  // serverless deploy the file is missing and loading fails with
+  //   Setting up fake worker failed: "Cannot find module .../pdf.worker.mjs"
+  // Handing pdf.js the worker through globalThis skips that lookup entirely, and
+  // the bare specifier below is traced and bundled like any normal import.
+  // This has to happen before the first getDocument() - pdf.js memoises the
+  // worker lookup, so a miss would stick for the life of the process.
+  const globalScope = globalThis as any
+  if (!globalScope.pdfjsWorker) {
+    globalScope.pdfjsWorker = await import("pdfjs-dist/legacy/build/pdf.worker.mjs")
+  }
+
   const doc = await pdfjs.getDocument({
     data: new Uint8Array(buffer),
     // No worker, no font fetching, no eval - we only want the text layer.
