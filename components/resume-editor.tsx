@@ -178,6 +178,45 @@ interface ResumeEditorProps {
   form?: any
 }
 
+// Short guidance shown under a section heading while it is open, so the user
+// knows what belongs in it and how much to write.
+const SECTION_HINTS: { [key: string]: string } = {
+  personalInfo:
+    "Fyll i namn, kontaktuppgifter och den roll du söker. Foto är frivilligt \u2013 ta med det bara om det är vanligt i din bransch.",
+  profile:
+    "Sammanfatta dig själv på tre till fem meningar. Lyft fram din erfarenhet, dina starkaste sidor och vad du vill bidra med.",
+  experience:
+    "Ange minst dina två senaste arbetsplatser, gärna fler. Undvik helst arbeten som ligger mer än fem år tillbaka i tiden.",
+  education:
+    "Börja med din senaste utbildning. Har du läst på högskola eller yrkesutbildning behöver du sällan ta med grundskolan.",
+  skills:
+    "Välj sex till tio färdigheter som är relevanta för tjänsten du söker. Blanda gärna tekniska kunskaper med personliga styrkor.",
+  languages:
+    "Ta med de språk du faktiskt kan använda i arbetet och var ärlig med nivån. Svenska och engelska är nästan alltid värda att ange.",
+  courses:
+    "Ta med kurser som stärker din ansökan, helst sådana du gått de senaste åren. Ange kursnamn, arrangör och årtal.",
+  internship:
+    "Praktik räknas som erfarenhet. Beskriv vad du gjorde och vad du lärde dig, precis som för ett vanligt arbete.",
+  hobbies:
+    "Några få intressen räcker. Välj sådana som säger något om dig \u2013 exempelvis lagarbete, uthållighet eller eget skapande.",
+  traits:
+    "Välj fem till sex egenskaper som beskriver dig i arbetslivet. Se till att de stöds av det du skrivit i resten av ditt CV.",
+  certificates:
+    "Ta med certifikat som fortfarande är aktuella och relevanta för rollen. Ange utfärdare och årtal så blir de lättare att verifiera.",
+  achievements:
+    "Konkreta resultat gör störst intryck. Beskriv vad du åstadkom och sätt gärna siffror på det.",
+  references:
+    "Ange två personer som kan intyga hur du är att arbeta med, eller lämna avsnittet tomt så står det att referenser ges på begäran. Fråga alltid personerna först.",
+  awards:
+    "Utmärkelser visar att andra har uppmärksammat ditt arbete. Ange vem som delade ut den och när.",
+  volunteering:
+    "Ideellt arbete visar engagemang och ansvarstagande, och är särskilt värdefullt om du har luckor i ditt CV.",
+  licenses:
+    "Ta med licenser och behörigheter som krävs eller är meriterande för tjänsten, till exempel körkort, truckkort eller branschcertifikat.",
+  custom:
+    "Byt namn på rubriken till något som passar dig, till exempel Publikationer, Projekt eller Uppdrag.",
+}
+
 // SortableItem component defined OUTSIDE to avoid closure issues
 function SortableItem({ 
   id, 
@@ -268,11 +307,11 @@ function SortableItem({
     >
       <div className={`${section.hidden ? "opacity-50" : ""} transition-all`}>
         <div
-          className={`flex w-full items-center justify-between py-4 group transition-colors duration-200 cursor-pointer rounded-xl ${showContent ? 'px-4' : 'px-2 hover:bg-gray-50'}`}
+          className={`flex w-full items-start justify-between gap-2 py-4 group transition-colors duration-200 cursor-pointer rounded-xl ${showContent ? 'px-4' : 'px-2 hover:bg-gray-50'}`}
           onClick={() => onToggle(id)}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-5">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="w-5 shrink-0 pt-0.5">
               {mounted && id !== 'personalInfo' && (
                 <div 
                   {...attributes} 
@@ -284,6 +323,7 @@ function SortableItem({
                 </div>
               )}
             </div>
+            <div className="min-w-0">
             {isRenaming ? (
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <span
@@ -372,8 +412,14 @@ function SortableItem({
                 {section.title}
               </span>
             )}
+            {showContent && SECTION_HINTS[id] && (
+              <p className="mt-1.5 text-[13px] leading-relaxed text-gray-500">
+                {SECTION_HINTS[id]}
+              </p>
+            )}
+            </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {section.removable && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -2281,7 +2327,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
         {/* Left side - Form */}
         <div
           ref={formContainerRef}
-          className={`w-full px-5 py-6 sm:px-8 bg-white overflow-y-auto transition-all duration-300 ease-in-out h-full relative z-10 ${isFullscreen ? 'sm:w-0 sm:opacity-0 sm:overflow-hidden sm:p-0' : 'sm:w-1/2 sm:opacity-100'}`}
+          className={`w-full px-5 py-6 sm:px-7 bg-white overflow-y-auto transition-all duration-300 ease-in-out h-full relative z-10 ${isFullscreen ? 'sm:w-0 sm:opacity-0 sm:overflow-hidden sm:p-0' : 'sm:w-1/2 xl:w-[38%] xl:min-w-[576px] xl:shrink-0 2xl:w-[35%] 2xl:max-w-[720px] sm:opacity-100'}`}
           style={{ boxShadow: '10px 0 30px -14px rgba(8, 15, 30, 0.55)' }}
         >
           <div className="max-w-2xl mx-auto">
@@ -2301,16 +2347,23 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                     <div key={id} className={`${isOpen ? 'bg-white rounded-xl ring-1 ring-gray-200 shadow-sm my-3' : 'border-b border-gray-100'} transition-all`}>
                       <div className={`${section.hidden ? "opacity-50" : ""} transition-all`}>
                         <div
-                          className={`flex w-full items-center justify-between py-4 group transition-colors duration-200 cursor-pointer rounded-xl ${isOpen ? 'px-4' : 'px-2 hover:bg-gray-50'}`}
+                          className={`flex w-full items-start justify-between gap-2 py-4 group transition-colors duration-200 cursor-pointer rounded-xl ${isOpen ? 'px-4' : 'px-2 hover:bg-gray-50'}`}
                           onClick={() => toggleSection(id)}
                         >
-                          <div className="flex items-center gap-3">
-                            <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-600 active:text-[#00bf63] transition-colors" />
-                            <span className={`font-medium text-base transition-colors ${isOpen ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'}`}>
-                              {section.title}
-                            </span>
+                          <div className="flex items-start gap-3 min-w-0">
+                            <GripVertical className="h-5 w-5 shrink-0 mt-0.5 text-gray-400 hover:text-gray-600 active:text-[#00bf63] transition-colors" />
+                            <div className="min-w-0">
+                              <span className={`font-medium text-base transition-colors ${isOpen ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                                {section.title}
+                              </span>
+                              {isOpen && SECTION_HINTS[id] && (
+                                <p className="mt-1.5 text-[13px] leading-relaxed text-gray-500">
+                                  {SECTION_HINTS[id]}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1 shrink-0">
                         {section.removable && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -2497,7 +2550,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
 
         {/* Right side - Preview */}
         <div
-          className={`hidden sm:flex w-full overflow-hidden flex-col transition-all duration-300 ease-in-out ${isFullscreen ? 'sm:w-full' : 'sm:w-1/2'}`}
+          className={`hidden sm:flex w-full overflow-hidden flex-col transition-all duration-300 ease-in-out ${isFullscreen ? 'sm:w-full' : 'sm:w-1/2 xl:w-auto xl:flex-1'}`}
           style={{ backgroundColor: '#16233a', boxShadow: 'inset 26px 0 34px -26px rgba(0, 0, 0, 0.7)' }}
         >
           {/* Preview Header */}

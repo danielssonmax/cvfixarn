@@ -172,7 +172,7 @@ function SortableInternshipItem({
                 </div>
               </div>
 
-              <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 items-end">
                 <div>
                   <Label className="block mb-2 text-sm font-normal text-gray-700">Startdatum</Label>
                   <div className="grid grid-cols-2 gap-2">
@@ -241,7 +241,7 @@ function SortableInternshipItem({
                     </select>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 col-span-2">
                   <Switch
                     checked={field.current}
                     onCheckedChange={(checked) => {
