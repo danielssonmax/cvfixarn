@@ -1507,6 +1507,85 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
 
   // Build CV data from form
   const formData = useWatch({ control: form.control })
+
+  // ---- CV completeness ------------------------------------------------
+  // Filling in every field of the visible base sections gets the user to 80%.
+  // Each extra section they add is worth another 10%, so two of them - say
+  // Prestationer and Referenser - complete the bar.
+  const cvProgress = useMemo(() => {
+    const filled = (value: any) => (typeof value === "string" ? value.trim() !== "" : !!value)
+    const hasText = (html: any) => String(html ?? "").replace(/<[^>]*>/g, "").trim() !== ""
+    const entries = (list: any) => (Array.isArray(list) ? list.filter((e: any) => e && !e.isPageBreak) : [])
+
+    // A base section the user has deleted should not be held against them
+    const isVisible = (id: string) =>
+      addedSections.includes(id) && staticSectionSections.find((sec) => sec.id === id)?.hidden !== true
+
+    const checks: boolean[] = []
+
+    const info = formData?.personalInfo || {}
+    checks.push(
+      filled(info.firstName),
+      filled(info.lastName),
+      filled(info.title),
+      filled(info.email),
+      filled(info.phone),
+      filled(info.location),
+    )
+
+    if (isVisible("experience")) {
+      const items = entries(formData?.workExperience)
+      checks.push(
+        items.some((e: any) => filled(e.title)),
+        items.some((e: any) => filled(e.company)),
+        items.some((e: any) => filled(e.startYear) || filled(e.startDate)),
+        items.some((e: any) => hasText(e.description)),
+      )
+    }
+
+    if (isVisible("education")) {
+      const items = entries(formData?.education)
+      checks.push(
+        items.some((e: any) => filled(e.degree)),
+        items.some((e: any) => filled(e.school)),
+        items.some((e: any) => filled(e.startYear) || filled(e.startDate)),
+      )
+    }
+
+    if (isVisible("skills")) {
+      const named = entries(formData?.skills).filter((e: any) => filled(e.name))
+      checks.push(named.length > 0, named.length >= 3)
+    }
+
+    if (isVisible("languages")) {
+      checks.push(entries(formData?.languages).some((e: any) => filled(e.name)))
+    }
+
+    const done = checks.filter(Boolean).length
+    const base = checks.length > 0 ? (done / checks.length) * 80 : 0
+
+    const extraSections = addedSections.filter(
+      (id) => !basicSections.includes(id) && staticSectionSections.find((sec) => sec.id === id)?.hidden !== true,
+    )
+    const bonus = Math.min(extraSections.length, 2) * 10
+
+    return {
+      percent: Math.round(base + bonus),
+      extraCount: extraSections.length,
+      baseComplete: checks.length > 0 && done === checks.length,
+    }
+  }, [formData, addedSections, staticSectionSections, basicSections])
+
+  const progressMessage = (() => {
+    if (cvProgress.percent >= 100) return "Ditt CV är komplett \u2013 snyggt jobbat!"
+    if (cvProgress.baseComplete) {
+      return cvProgress.extraCount >= 1
+        ? "Alla fält är ifyllda. Lägg till ett extra avsnitt till, till exempel Prestationer eller Referenser, för att nå 100 %."
+        : "Alla fält är ifyllda. Lägg till två extra avsnitt, till exempel Prestationer eller Referenser, för att nå 100 %."
+    }
+    if (cvProgress.percent >= 40) return "Bra jobbat \u2013 fortsätt fylla i så blir ditt CV starkare."
+    return "Fyll i dina uppgifter så växer ditt CV fram."
+  })()
   
   // Memoize section names separately to avoid re-creating cvData when sections change
   const sectionNamesMap = useMemo(() => {
@@ -2331,6 +2410,30 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           style={{ boxShadow: '10px 0 30px -14px rgba(8, 15, 30, 0.55)' }}
         >
           <div className="max-w-2xl mx-auto">
+            {/* Completeness meter */}
+            <div className="mb-6">
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-sm font-medium text-gray-900">Färdigställt</span>
+                <span className="text-sm font-semibold text-[#00bf63] tabular-nums">
+                  {cvProgress.percent} %
+                </span>
+              </div>
+              <div
+                className="h-2 w-full rounded-full bg-gray-100 overflow-hidden"
+                role="progressbar"
+                aria-valuenow={cvProgress.percent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Hur färdigt ditt CV är"
+              >
+                <div
+                  className="h-full rounded-full bg-[#00bf63] transition-[width] duration-500 ease-out"
+                  style={{ width: `${cvProgress.percent}%` }}
+                />
+              </div>
+              <p className="mt-2 text-[13px] leading-relaxed text-gray-500">{progressMessage}</p>
+            </div>
+
             {/* Main sections */}
             {!isMounted ? (
               // Server-side fallback: render sections without DnD
