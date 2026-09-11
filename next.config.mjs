@@ -11,6 +11,10 @@ const nextConfig = {
   },
   // Transpile ESM packages
   transpilePackages: ['@react-pdf/renderer'],
+  // Leave the CV parsers out of the server bundle: pdf.js resolves its worker
+  // by path at runtime, which webpack rewrites into something that no longer
+  // exists ("Setting up fake worker failed").
+  serverExternalPackages: ['pdfjs-dist', 'mammoth'],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Exclude Node.js modules from client-side bundle

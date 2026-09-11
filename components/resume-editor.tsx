@@ -31,6 +31,7 @@ import {
   MoreVertical,
   Pencil,
   List,
+  Upload,
 } from "lucide-react"
 import {
   DndContext,
@@ -79,6 +80,8 @@ import { Awards } from "@/components/resume-sections/Awards"
 import { Volunteering } from "@/components/resume-sections/Volunteering"
 import { Licenses } from "@/components/resume-sections/Licenses"
 import { CustomSection } from "@/components/resume-sections/CustomSection"
+import { CvImportDialog } from "@/components/cv-import-dialog"
+import { buildCvFileName, isDerivedCvName, DEFAULT_CV_FILENAME } from "@/lib/cv-filename"
 import { templates } from "@/components/templates"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
@@ -851,6 +854,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
   const colorPickerRef = useRef<HTMLDivElement>(null)
   const [showMoreFieldsMenu, setShowMoreFieldsMenu] = useState(false)
   const moreFieldsDropdownRef = useRef<HTMLDivElement>(null)
+  const [isImportOpen, setIsImportOpen] = useState(false)
 
   // Expose settings getters/setters to parent via ref
   useImperativeHandle(ref, () => ({
@@ -877,8 +881,10 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
   const lineHeightDropdownRef = useRef<HTMLDivElement>(null)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(1.0)
-  const [cvName, setCvName] = useState("cv.pdf")
+  const [cvName, setCvName] = useState(DEFAULT_CV_FILENAME)
   const [isEditingName, setIsEditingName] = useState(false)
+  // Once the user names the CV themselves we stop deriving it from the fields.
+  const hasCustomCvNameRef = useRef(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
   const [isSavingChanges, setIsSavingChanges] = useState(false)
   const [currentVersion, setCurrentVersion] = useState<number>(0)
@@ -1202,29 +1208,40 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               if (cvData.personalInfo) {
                 form.setValue('personalInfo', cvData.personalInfo)
               }
+
+              // A title the user typed themselves must survive; one we generated
+              // should keep tracking the fields.
+              hasCustomCvNameRef.current = !isDerivedCvName(
+                savedCV.title || '',
+                buildCvFileName(
+                  cvData.personalInfo?.firstName,
+                  cvData.personalInfo?.lastName,
+                  cvData.personalInfo?.title,
+                ),
+              )
               
               // Restore experience — handle both new format (experience) and old format (workExperience, sections.experience)
               const experienceData = cvData.experience || cvData.workExperience || cvData.sections?.experience?.items || []
               if (Array.isArray(experienceData) && experienceData.length > 0) {
-                form.setValue('sections.experience.items', experienceData)
+                form.setValue('workExperience', experienceData)
               }
               
               // Restore education — handle both flat and nested
               const educationData = cvData.education || cvData.sections?.education?.items || []
               if (Array.isArray(educationData) && educationData.length > 0) {
-                form.setValue('sections.education.items', educationData)
+                form.setValue('education', educationData)
               }
               
               // Restore skills
               const skillsData = cvData.skills || cvData.sections?.skills?.items || []
               if (Array.isArray(skillsData) && skillsData.length > 0) {
-                form.setValue('sections.skills.items', skillsData)
+                form.setValue('skills', skillsData)
               }
               
               // Restore languages
               const languagesData = cvData.languages || cvData.sections?.languages?.items || []
               if (Array.isArray(languagesData) && languagesData.length > 0) {
-                form.setValue('sections.languages.items', languagesData)
+                form.setValue('languages', languagesData)
               }
               
               // Restore references
@@ -1311,7 +1328,32 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                 if (cvData._settings.selectedColor) setSelectedColor(cvData._settings.selectedColor)
                 if (cvData._settings.headerColor) setHeaderColor(cvData._settings.headerColor)
                 if (cvData._settings.sectionOrder && Array.isArray(cvData._settings.sectionOrder)) {
-                  setAddedSections(cvData._settings.sectionOrder)
+                  const order: string[] = cvData._settings.sectionOrder
+                  setAddedSections(order)
+                  // The preview is handed staticSectionSections for its headings,
+                  // so optional sections that came back from the database have to
+                  // be registered there too - otherwise it falls back to the raw
+                  // id and prints "PROFILE" instead of "Profil".
+                  setStaticSectionSections((prev) => {
+                    const byId = new Map(prev.map((section) => [section.id, { ...section, hidden: false }]))
+                    for (const id of order) {
+                      if (byId.has(id)) continue
+                      const optional = optionalSections.find((section) => section.id === id)
+                      if (optional) {
+                        byId.set(id, {
+                          id: optional.id,
+                          title: optional.title,
+                          component: optional.component,
+                          removable: true,
+                          hidden: false,
+                        })
+                      }
+                    }
+                    // Keep anything the order does not mention (e.g. a hidden base section)
+                    const ordered = order.map((id) => byId.get(id)).filter(Boolean) as typeof prev
+                    const extras = prev.filter((section) => !order.includes(section.id))
+                    return [...ordered, ...extras]
+                  })
                 }
                 // Restore renamed section headings (e.g. a renamed "Skräddarsytt fält")
                 if (cvData._settings.sectionNames && typeof cvData._settings.sectionNames === 'object') {
@@ -1373,7 +1415,17 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       loadedCV = savedCV
       if (savedCV) {
         // Restore settings FIRST (before form data)
-        if (savedCV.cv_name) setCvName(savedCV.cv_name)
+        if (savedCV.cv_name) {
+          setCvName(savedCV.cv_name)
+          hasCustomCvNameRef.current = !isDerivedCvName(
+            savedCV.cv_name,
+            buildCvFileName(
+              savedCV.personal_info?.firstName,
+              savedCV.personal_info?.lastName,
+              savedCV.personal_info?.title,
+            ),
+          )
+        }
         if (savedCV.selected_template) setSelectedTemplate(savedCV.selected_template)
         if (savedCV.selected_font) {
           setSelectedFont(savedCV.selected_font)
@@ -1576,6 +1628,99 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     }
   }, [formData, addedSections, staticSectionSections, basicSections])
 
+
+  /**
+   * Drop a parsed CV into the editor. Sections are rebuilt in one pass rather
+   * than by calling handleAddSection repeatedly, which would read a stale
+   * addedSections from its closure and lose sections.
+   */
+  const applyImportedCv = useCallback(
+    (data: any) => {
+      if (!data) return
+
+      const info = data.personalInfo || {}
+      const existingPhoto = form.getValues("personalInfo.photo") || ""
+      form.setValue("personalInfo", {
+        firstName: info.firstName || "",
+        lastName: info.lastName || "",
+        title: info.title || "",
+        email: info.email || "",
+        phone: info.phone || "",
+        address: info.address || "",
+        postalCode: info.postalCode || "",
+        location: info.location || "",
+        summary: "",
+        photo: existingPhoto, // an uploaded PDF never carries a usable photo
+        optionalFields: info.optionalFields || {},
+      })
+
+      if (data.workExperience?.length) form.setValue("workExperience", data.workExperience)
+      if (data.education?.length) form.setValue("education", data.education)
+      if (data.skills?.length) form.setValue("skills", data.skills)
+      if (data.languages?.length) form.setValue("languages", data.languages)
+      for (const [id, value] of Object.entries(data.sections || {})) {
+        form.setValue(`sections.${id}`, value as any)
+      }
+
+      // Rebuild the section list: imported sections first, then anything the
+      // user already had that the import did not touch.
+      const order: string[] = []
+      const push = (id: string) => {
+        if (!order.includes(id)) order.push(id)
+      }
+      push("personalInfo")
+      if (data.sections?.profile) push("profile")
+      if (data.workExperience?.length) push("experience")
+      if (data.education?.length) push("education")
+      if (data.skills?.length) push("skills")
+      if (data.languages?.length) push("languages")
+      for (const id of data.detectedSections || []) {
+        if (optionalSections.some((section) => section.id === id)) push(id)
+      }
+      for (const id of addedSections) push(id)
+
+      setStaticSectionSections((prev) => {
+        const byId = new Map(prev.map((section) => [section.id, { ...section, hidden: false }]))
+        for (const id of order) {
+          if (byId.has(id)) continue
+          const optional = optionalSections.find((section) => section.id === id)
+          if (optional) {
+            byId.set(id, {
+              id: optional.id,
+              title: optional.title,
+              component: optional.component,
+              removable: true,
+              hidden: false,
+            })
+          }
+        }
+        return order.map((id) => byId.get(id)).filter(Boolean) as typeof prev
+      })
+      setAddedSections(order)
+      setOpenSections(["personalInfo"])
+      formContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+
+      toast({
+        title: "CV importerat",
+        description: "Vi har fyllt i fälten. Gå igenom dem och justera det som behövs.",
+      })
+    },
+    [form, addedSections, optionalSections],
+  )
+
+  // Keep the file name in step with the name and role fields, e.g.
+  // "Erik_Johansson_CV_Systemutvecklare.pdf", unless the user renamed it.
+  const watchedFirstName = useWatch({ control: form.control, name: "personalInfo.firstName" })
+  const watchedLastName = useWatch({ control: form.control, name: "personalInfo.lastName" })
+  const watchedRole = useWatch({ control: form.control, name: "personalInfo.title" })
+
+  useEffect(() => {
+    if (hasCustomCvNameRef.current) return
+    if (isEditingName) return // never pull text out from under the cursor
+    const derived = buildCvFileName(watchedFirstName, watchedLastName, watchedRole)
+    setCvName((current) => (current === derived ? current : derived))
+  }, [watchedFirstName, watchedLastName, watchedRole, isEditingName])
+
   const progressMessage = (() => {
     if (cvProgress.percent >= 100) return "Ditt CV är komplett \u2013 snyggt jobbat!"
     if (cvProgress.baseComplete) {
@@ -1638,6 +1783,8 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
 
   // Track if we've loaded initial data
   const hasLoadedFromDBRef = useRef(false)
+  // Only warn once per run of failures, otherwise every keystroke toasts.
+  const autosaveFailedRef = useRef(false)
   
   // Autosave function with debounce
   const handleAutosave = useCallback(async (data: any) => {
@@ -1746,15 +1893,40 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           return
         }
         
-        if (!response.ok) {
+        if (!response.ok || !result.success) {
+          // Silently dropping this is how a broken save goes unnoticed until the
+          // user reloads and finds their work gone.
+          console.error('Autosave failed:', result?.error || response.status)
+          if (!autosaveFailedRef.current) {
+            autosaveFailedRef.current = true
+            toast({
+              title: "Kunde inte spara",
+              description: "Ändringarna sparades inte. Kontrollera din anslutning \u2013 vi försöker igen automatiskt.",
+              variant: "destructive",
+            })
+          }
           return
         }
-        
-        if (result.success && result.cv) {
+
+        autosaveFailedRef.current = false
+        if (result.cv) {
           // Save successful
           setCurrentVersion(result.cv.version)
         }
+        // The server adjusts the title when another CV already uses it.
+        if (result.title && result.title !== cvName) {
+          setCvName(result.title)
+        }
       } catch (error) {
+        console.error('Autosave request failed:', error)
+        if (!autosaveFailedRef.current) {
+          autosaveFailedRef.current = true
+          toast({
+            title: "Kunde inte spara",
+            description: "Ändringarna sparades inte. Kontrollera din anslutning – vi försöker igen automatiskt.",
+            variant: "destructive",
+          })
+        }
       }
     } catch (error) {
     } finally {
@@ -2003,6 +2175,26 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       setIsSaving(false)
     }
   }
+
+  /**
+   * Finish renaming. Clearing the field hands the name back to the fields it is
+   * derived from rather than freezing it on the default.
+   */
+  const commitCvName = useCallback(() => {
+    setIsEditingName(false)
+    const values = form.getValues('personalInfo')
+    const derived = buildCvFileName(values?.firstName, values?.lastName, values?.title)
+    const trimmed = cvName.trim()
+
+    if (trimmed === "") {
+      hasCustomCvNameRef.current = false
+      setCvName(derived)
+      return
+    }
+
+    setCvName(trimmed)
+    hasCustomCvNameRef.current = trimmed !== derived
+  }, [cvName, form])
 
   const handleDownloadClick = () => {
     console.log('🔽 Download clicked, user:', user ? 'logged in' : 'not logged in', 'isSubscribed:', isSubscribed)
@@ -2322,15 +2514,9 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                     type="text"
                     value={cvName}
                     onChange={(e) => setCvName(e.target.value)}
-                    onBlur={() => {
-                      setIsEditingName(false)
-                      if (cvName.trim() === "") setCvName("cv.pdf")
-                    }}
+                    onBlur={commitCvName}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        setIsEditingName(false)
-                        if (cvName.trim() === "") setCvName("cv.pdf")
-                      }
+                      if (e.key === 'Enter') commitCvName()
                     }}
                     className="bg-transparent text-gray-900 text-base font-medium text-center outline-none px-2 py-1"
                     style={{ 
@@ -2410,6 +2596,23 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           style={{ boxShadow: '10px 0 30px -14px rgba(8, 15, 30, 0.55)' }}
         >
           <div className="max-w-2xl mx-auto">
+            {/* Import an existing CV */}
+            <button
+              type="button"
+              onClick={() => setIsImportOpen(true)}
+              className="w-full mb-5 flex items-center gap-3 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-left transition-colors hover:border-[#00bf63] hover:bg-green-50/40"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#00bf63]/10">
+                <Upload className="h-4 w-4 text-[#00bf63]" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-medium text-gray-900">Har du redan ett CV?</span>
+                <span className="block text-[13px] leading-relaxed text-gray-500">
+                  Ladda upp det som PDF eller Word så fyller vi i fälten åt dig.
+                </span>
+              </span>
+            </button>
+
             {/* Completeness meter */}
             <div className="mb-6">
               <div className="flex items-baseline justify-between mb-2">
@@ -3089,6 +3292,12 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
           </div>
         </div>
       </div>
+
+      <CvImportDialog
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onImport={applyImportedCv}
+      />
 
       {/* Preview Dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
