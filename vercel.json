@@ -3,7 +3,15 @@
     "app/api/export-pdf/route.ts": {
       "maxDuration": 60,
       "memory": 3008
+    },
+    "app/api/cron/abandoned-cv/route.ts": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/abandoned-cv",
+      "schedule": "0 * * * *"
+    }
+  ]
 }
-

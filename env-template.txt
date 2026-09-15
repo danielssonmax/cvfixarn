@@ -24,3 +24,30 @@ UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token_here
 # iScraper Configuration (för LinkedIn-import)
 ISCRAPER_API_KEY=your_iscraper_api_key_here
 ISCRAPER_BASE_URL=https://api.proapis.com/iscraper/v4/profile-details
+
+# Resend (transaktions- och livscykelmail)
+RESEND_API_KEY=re_your_resend_api_key_here
+# Måste vara en verifierad avsändardomän i Resend, annars nekas utskicket
+RESEND_FROM_EMAIL=CVfixaren <no-reply@cvfixaren.se>
+# Valfritt: dit svar på mailen går
+RESEND_REPLY_TO=support@cvfixaren.se
+
+# Cron (Vercel skickar automatiskt "Authorization: Bearer $CRON_SECRET")
+CRON_SECRET=generate_a_long_random_string_here
+
+# Signerar avregistreringslänkar. Faller tillbaka på SUPABASE_SERVICE_ROLE_KEY
+# om den inte är satt, men en egen hemlighet är att föredra.
+EMAIL_TOKEN_SECRET=generate_another_long_random_string_here
+
+# Påminnelse om påbörjat CV (alla valfria - värdena nedan är standard)
+# Skicka först när kontot är minst så här gammalt:
+ABANDONED_CV_MIN_AGE_HOURS=4
+# ...och aldrig till konton äldre än så här. Skyddar mot att första körningen
+# mailar hela historiken av icke-betalande användare.
+ABANDONED_CV_MAX_AGE_HOURS=72
+# Max antal mail per körning
+ABANDONED_CV_BATCH_LIMIT=40
+# Paus mellan utskick i ms (Resend tillåter ca 2 req/s)
+ABANDONED_CV_THROTTLE_MS=550
+# Sätt till "true" för att logga utan att skicka
+ABANDONED_CV_DRY_RUN=false
