@@ -5,6 +5,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import type { Metadata } from "next"
+import { CV_THEMES } from "@/lib/cv-templates/themes"
 
 export const metadata: Metadata = {
   title: "Professionella CV-mallar — Välj din design | CVfixaren",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   },
 }
 
-const templates = [
+const baseTemplates = [
   {
     id: "standard",
     name: "Standard CV Mall",
@@ -56,6 +57,18 @@ const templates = [
     image: "/images/templates/cv-mall-executive.png",
   },
 ]
+
+// De tio temabaserade mallarna delar standardgeneratorn och skiljer sig i CSS
+// (lib/cv-templates/themes.ts), så listan härleds därifrån i stället för att
+// dupliceras här.
+const themedTemplates = CV_THEMES.map((theme) => ({
+  id: theme.id,
+  name: `${theme.name} CV Mall`,
+  description: theme.description + ".",
+  image: `/images/templates/cv-mall-${theme.id}.png`,
+}))
+
+const templates = [...baseTemplates, ...themedTemplates]
 
 export default function CVTemplatesPage() {
   return (

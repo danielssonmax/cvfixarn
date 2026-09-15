@@ -4,6 +4,7 @@ import { generateCVHtmlModern } from '@/lib/generate-cv-html-modern'
 import { generateCVHtmlMinimalist } from '@/lib/generate-cv-html-minimalist'
 import { generateCVHtmlExecutive } from '@/lib/generate-cv-html-executive'
 import { generateCVHtmlTimeline } from '@/lib/generate-cv-html-timeline'
+import { buildCvThemeCss, cvThemeClass } from '@/lib/cv-templates/themes'
 
 interface CVThumbnailProps {
   cvData: any
@@ -783,6 +784,9 @@ export function CVThumbnail({ cvData }: CVThumbnailProps) {
           color: #374151;
           font-weight: 500;
         }
+
+        /* Theme layer. Empty string for the five original templates. */
+        ${buildCvThemeCss(template, { headerColor })}
       `, [selectedFont, fontSize, lineHeight, textColor, headerColor, template])
 
   return (
@@ -791,7 +795,7 @@ export function CVThumbnail({ cvData }: CVThumbnailProps) {
       <style key={`cv-thumbnail-${cvId}`} dangerouslySetInnerHTML={{ __html: thumbnailCSS }} />
       
       <div className="cv-thumbnail-wrapper">
-        <div className="cv-thumbnail-page" dangerouslySetInnerHTML={{ __html: cvHtml }} />
+        <div className={`cv-thumbnail-page ${cvThemeClass(template)}`} dangerouslySetInnerHTML={{ __html: cvHtml }} />
       </div>
     </div>
   )

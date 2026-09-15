@@ -83,6 +83,8 @@ import { CustomSection } from "@/components/resume-sections/CustomSection"
 import { CvImportDialog } from "@/components/cv-import-dialog"
 import { buildCvFileName, isDerivedCvName, DEFAULT_CV_FILENAME } from "@/lib/cv-filename"
 import { templates } from "@/components/templates"
+import { CV_THEME_IDS, getCvTheme, isCvTheme } from "@/lib/cv-templates/themes"
+import { CvThemePreview } from "@/components/cv-theme-preview"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/AuthContext"
@@ -1972,6 +1974,14 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
         setSelectedColor('#3B82F6')
         setHeaderColor('#3B82F6')
       }
+
+      // Themed templates carry their own font and accent colour so the user
+      // sees the design as intended; the colour picker still overrides it after.
+      const theme = getCvTheme(id)
+      if (theme) {
+        setSelectedFont(theme.font)
+        setHeaderColor(theme.accent)
+      }
     },
     [onSelectTemplate]
   )
@@ -2919,7 +2929,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                       <div className="overflow-x-auto pb-2">
                         <div className="flex gap-3 min-w-max">
                         {templates
-                          .filter((template) => ["default", "modern", "minimalist", "executive", "timeline"].includes(template.id))
+                          .filter((template) => ["default", "modern", "minimalist", "executive", "timeline", ...CV_THEME_IDS].includes(template.id))
                           .map((template) => (
                             <button
                               key={template.id}
@@ -3114,8 +3124,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                                     </div>
                                   </div>
                                 )}
+                                {isCvTheme(template.id) && (
+                                  <CvThemePreview theme={getCvTheme(template.id)!} />
+                                )}
                               </div>
-                              
+
                               {/* Template name */}
                               <div className="text-center w-full">
                                 <div className="font-semibold text-[11px] text-gray-900">{template.name}</div>

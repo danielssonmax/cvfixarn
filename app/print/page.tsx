@@ -6,6 +6,7 @@ import { generateCVHtmlModern } from '@/lib/generate-cv-html-modern'
 import { generateCVHtmlMinimalist } from '@/lib/generate-cv-html-minimalist'
 import { generateCVHtmlExecutive } from '@/lib/generate-cv-html-executive'
 import { generateCVHtmlTimeline } from '@/lib/generate-cv-html-timeline'
+import { buildCvThemeCss, cvThemeClass } from '@/lib/cv-templates/themes'
 
 export default function PrintPage() {
   const [cvData, setCvData] = useState<any>(null)
@@ -102,6 +103,11 @@ export default function PrintPage() {
   const lineHeight = cvData?.lineHeight || '1.5'
   const headerColor = cvData?.headerColor || '#000000'
   const textColor = cvData?.textColor || '#000000'
+
+  // Theme layer. Both are "" for the five original templates, so their PDF
+  // output is byte-for-byte what it was before.
+  const themeClass = cvThemeClass(cvData?.selectedTemplate)
+  const themeCss = buildCvThemeCss(cvData?.selectedTemplate, { headerColor })
 
   return (
     <>
@@ -988,9 +994,12 @@ export default function PrintPage() {
           margin-bottom: 6px;
           font-weight: 500;
         }
+
+        /* Theme layer. Empty string for the five original templates. */
+        ${themeCss}
       `}} />
-      
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+
+      <div className={themeClass} dangerouslySetInnerHTML={{ __html: htmlContent }} />
       
       <script 
         src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"

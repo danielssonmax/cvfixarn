@@ -19,6 +19,7 @@ import jsPDF from "jspdf"
 import { supabase } from "@/lib/supabase"
 import { useSearchParams } from "next/navigation"
 import PreviewBridge from "@/components/PreviewBridge"
+import { CV_THEMES } from "@/lib/cv-templates/themes"
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
   ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -138,13 +139,15 @@ export default function CVMallClient() {
   // Font options
   const fonts = ["Poppins", "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Playfair Display", "Merriweather", "Raleway", "Nunito", "Source Sans Pro", "Oswald", "Lora", "PT Sans", "Ubuntu", "Crimson Text", "Libre Baskerville", "Fira Sans", "Work Sans", "Noto Sans", "Trebuchet MS", "Arial Black"]
 
-  // Template options
+  // Template options. The five originals each have their own generator; the
+  // rest are themes over the standard generator (lib/cv-templates/themes.ts).
   const templates = [
     { id: "default", name: "Klassisk" },
     { id: "modern", name: "Modern" },
     { id: "minimalist", name: "Minimalistisk" },
     { id: "executive", name: "Executive" },
     { id: "timeline", name: "Tidslinje" },
+    ...CV_THEMES.map((theme) => ({ id: theme.id, name: theme.name })),
   ]
 
   // Font size mapping

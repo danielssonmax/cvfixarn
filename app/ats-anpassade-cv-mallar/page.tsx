@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Section } from "@/components/section"
 import { CheckCircle, Shield, Zap } from "lucide-react"
 import type { Metadata } from "next"
+import { CV_THEMES } from "@/lib/cv-templates/themes"
 
 export const metadata: Metadata = {
   title: "ATS-anpassade CV-mallar: Rekryterar-vänligt format (2026) | CVfixaren",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   },
 }
 
-const templates = [
+const baseTemplates = [
   {
     id: "standard",
     name: "Standard CV Mall",
@@ -58,6 +59,18 @@ const templates = [
     image: "/images/templates/cv-mall-executive.png",
   },
 ]
+
+// De tio temabaserade mallarna delar standardgeneratorn och skiljer sig i CSS
+// (lib/cv-templates/themes.ts), så listan härleds därifrån i stället för att
+// dupliceras här.
+const themedTemplates = CV_THEMES.map((theme) => ({
+  id: theme.id,
+  name: `${theme.name} CV Mall`,
+  description: theme.description + ".",
+  image: `/images/templates/cv-mall-${theme.id}.png`,
+}))
+
+const templates = [...baseTemplates, ...themedTemplates]
 
 export default function ATSCVTemplatesPage() {
   return (

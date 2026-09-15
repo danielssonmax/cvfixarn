@@ -1,8 +1,12 @@
 import dynamic from 'next/dynamic'
+import { CV_THEMES } from '@/lib/cv-templates/themes'
 
 const DefaultTemplate = dynamic(() => import('./default-template').then(mod => mod.DefaultTemplate))
 
-export const templates = [
+/**
+ * The five original templates. Each has its own generator in lib/generate-cv-html*.ts.
+ */
+const baseTemplates = [
   {
     id: "default",
     name: "Standard",
@@ -39,3 +43,18 @@ export const templates = [
     component: DefaultTemplate, // Placeholder - HTML genereras i generate-cv-html-timeline.ts
   },
 ]
+
+/**
+ * The themed templates. These share the standard generator and differ only in
+ * CSS, so they are derived from the theme list rather than hand-listed here —
+ * adding a theme in lib/cv-templates/themes.ts is enough to make it appear.
+ */
+const themedTemplates = CV_THEMES.map((theme) => ({
+  id: theme.id,
+  name: theme.name,
+  description: theme.description,
+  preview: `/images/templates/cv-mall-${theme.id}.png`,
+  component: DefaultTemplate, // Placeholder - HTML genereras i generate-cv-html.ts + tema-CSS
+}))
+
+export const templates = [...baseTemplates, ...themedTemplates]

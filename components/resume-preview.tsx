@@ -6,6 +6,7 @@ import { generateCVHtmlModern } from "@/lib/generate-cv-html-modern"
 import { generateCVHtmlMinimalist } from "@/lib/generate-cv-html-minimalist"
 import { generateCVHtmlExecutive } from "@/lib/generate-cv-html-executive"
 import { generateCVHtmlTimeline } from "@/lib/generate-cv-html-timeline"
+import { buildCvThemeCss, cvThemeClass } from "@/lib/cv-templates/themes"
 
 interface Template { id: string; name: string }
 interface ResumePreviewProps {
@@ -83,8 +84,17 @@ export function ResumePreview({
     if (selectedTemplate === 'timeline') {
       return generateCVHtmlTimeline(data, sectionOrder, sections)
     }
+    // The new themes fall through here on purpose: they reuse the standard
+    // markup and differ only in CSS (see lib/cv-templates/themes.ts).
     return generateCVHtml(data, sectionOrder, sections)
   }, [data, sectionOrder, sections, selectedTemplate])
+
+  // Theme layer. Both are "" for the five original templates.
+  const themeClass = cvThemeClass(selectedTemplate)
+  const themeCss = useMemo(
+    () => buildCvThemeCss(selectedTemplate, { headerColor }),
+    [selectedTemplate, headerColor]
+  )
 
   // Split content into A4 pages
   useEffect(() => {
@@ -1243,10 +1253,14 @@ export function ResumePreview({
           margin-bottom: 6px;
           font-weight: 500;
         }
+
+        /* Theme layer. Empty string for the five original templates, so their
+           rendering above is untouched. */
+        ${themeCss}
       `}} />
-      
+
       {/* Hidden container for measuring */}
-      <div className="cv-measure-container">
+      <div className={`cv-measure-container ${themeClass}`}>
         <div ref={measureRef} dangerouslySetInnerHTML={{ __html: cvHtml }} />
       </div>
       
@@ -1254,12 +1268,12 @@ export function ResumePreview({
       <div className="cv-pages-wrapper" style={{ zoom: fitScale * (zoomLevel || 1) }}>
         {pages.length > 0 ? (
           pages.map((pageHtml, index) => (
-            <div key={index} className="cv-preview-page">
+            <div key={index} className={`cv-preview-page ${themeClass}`}>
               <div dangerouslySetInnerHTML={{ __html: pageHtml }} />
             </div>
           ))
         ) : (
-          <div className="cv-preview-page">
+          <div className={`cv-preview-page ${themeClass}`}>
             <div className="cv-container" dangerouslySetInnerHTML={{ __html: cvHtml }} />
           </div>
         )}
