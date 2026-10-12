@@ -18,10 +18,37 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ["ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"],
-        heading: ["ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"],
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"],
+        heading: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"],
       },
       colors: {
+        // Brand green. DEFAULT is the CTA fill; 700+ are for green text on
+        // white, where the base green is too light to pass contrast.
+        brand: {
+          50: "#effdf5",
+          100: "#d8f8e6",
+          200: "#b2efcd",
+          DEFAULT: "#00bf63",
+          600: "#00a857",
+          700: "#00874a",
+          800: "#006b3b",
+        },
+        // Navy ink, taken from the editor's preview canvas so the marketing
+        // site and the editor read as one product.
+        ink: {
+          50: "#f5f7fa",
+          100: "#e9edf3",
+          200: "#d3dae5",
+          300: "#a9b5c7",
+          400: "#7b8aa3",
+          500: "#56657f",
+          600: "#3d4b64",
+          700: "#2a3850",
+          800: "#1c2a42",
+          DEFAULT: "#16233a",
+          900: "#16233a",
+          950: "#0e182a",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -55,6 +82,13 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      boxShadow: {
+        // Navy-tinted elevation instead of neutral black.
+        soft: "0 1px 2px rgb(22 35 58 / 0.05), 0 4px 12px -2px rgb(22 35 58 / 0.06)",
+        lift: "0 1px 2px rgb(22 35 58 / 0.06), 0 12px 32px -8px rgb(22 35 58 / 0.18)",
+        float: "0 2px 6px rgb(22 35 58 / 0.06), 0 24px 60px -16px rgb(22 35 58 / 0.28)",
+        page: "0 1px 2px rgb(22 35 58 / 0.08), 0 18px 40px -14px rgb(22 35 58 / 0.35)",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -91,6 +125,20 @@ module.exports = {
       },
       fontSize: {
         dynamic: "var(--dynamic-font-size)",
+      },
+      keyframes: {
+        "collapsible-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-collapsible-content-height)" },
+        },
+        "collapsible-up": {
+          from: { height: "var(--radix-collapsible-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "collapsible-down": "collapsible-down 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
+        "collapsible-up": "collapsible-up 0.2s ease-out",
       },
     },
   },

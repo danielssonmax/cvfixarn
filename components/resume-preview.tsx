@@ -54,10 +54,12 @@ export function ResumePreview({
     if (!el) return
 
     const PAGE_WIDTH_PX = (210 / 25.4) * 96 // A4 width in CSS pixels
-    const HORIZONTAL_PADDING = 48
 
     const measure = () => {
-      const available = el.clientWidth - HORIZONTAL_PADDING
+      // Padding is responsive (tighter on phones), so read it from the element
+      const style = getComputedStyle(el)
+      const horizontalPadding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+      const available = el.clientWidth - horizontalPadding
       if (available <= 0) return
       setFitScale(Math.min(1, available / PAGE_WIDTH_PX))
     }
@@ -355,7 +357,7 @@ export function ResumePreview({
   }
 
   return (
-    <div ref={scrollRef} className="w-full h-full overflow-auto" style={{ backgroundColor: "#16233a", padding: "44px 24px 56px" }}>
+    <div ref={scrollRef} className="w-full h-full overflow-auto overscroll-contain px-3 pb-10 pt-5 sm:px-6 sm:pb-14 sm:pt-11" style={{ backgroundColor: "#16233a" }}>
       <style dangerouslySetInnerHTML={{ __html: `
         /* Import Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');

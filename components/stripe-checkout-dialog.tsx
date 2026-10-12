@@ -60,12 +60,12 @@ export default function StripeCheckoutDialog({ isOpen, onClose, onSubscriptionSu
         </DialogHeader>
         {error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center space-y-4 overflow-y-auto px-6 pb-6">
-            <AlertTriangle className="h-8 w-8 text-yellow-500" />
+            <AlertTriangle className="h-8 w-8 text-amber-500" />
             <p className="text-gray-600">{error}</p>
           </div>
         ) : clientSecret && stripePromise ? (
           <div className="flex-1 min-h-0 px-6 pb-6">
-            <div className="h-[70vh] max-h-[500px] overflow-y-auto rounded-md border border-gray-200">
+            <div className="h-[70dvh] max-h-[560px] overflow-y-auto rounded-xl border border-ink-100">
               <EmbeddedCheckoutProvider
                 stripe={stripePromise}
                 options={{ clientSecret }}
@@ -76,7 +76,7 @@ export default function StripeCheckoutDialog({ isOpen, onClose, onSubscriptionSu
           </div>
         ) : (
           <div className="flex justify-center items-center h-64 px-6 pb-6">
-            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-brand" />
           </div>
         )}
       </DialogContent>

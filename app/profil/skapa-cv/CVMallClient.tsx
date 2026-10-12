@@ -9,7 +9,7 @@ import { loadStripe } from "@stripe/stripe-js"
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
-import { X, Eye, LayoutIcon, Type, TextIcon as TextSize, Palette, ChevronDown, Check } from "lucide-react"
+import { Check } from "lucide-react"
 import { createCheckoutSession, checkSubscriptionStatus } from "@/app/actions/stripe"
 import { useAuth } from "@/contexts/AuthContext"
 import CapturePayment from "@/components/capture-payment"
@@ -18,8 +18,6 @@ import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 import { supabase } from "@/lib/supabase"
 import { useSearchParams } from "next/navigation"
-import PreviewBridge from "@/components/PreviewBridge"
-import { CV_THEMES } from "@/lib/cv-templates/themes"
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
   ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -80,90 +78,11 @@ export default function CVMallClient() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [isLoadingCV, setIsLoadingCV] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const [showMobilePreview, setShowMobilePreview] = useState(false)
-  // Template settings for mobile preview
-  const [mobileSelectedTemplate, setMobileSelectedTemplate] = useState(selectedTemplate)
-  const [mobileSelectedFont, setMobileSelectedFont] = useState("Poppins")
-  const [mobileFontSize, setMobileFontSize] = useState("M")
-  const [mobileFontSizePixels, setMobileFontSizePixels] = useState("16px")
-  const [mobileLineHeight, setMobileLineHeight] = useState("1.5")
-  const [mobileSelectedColor, setMobileSelectedColor] = useState("#000000")
-  const [mobileHeaderColor, setMobileHeaderColor] = useState("#000000")
-  const [mobileSectionOrder, setMobileSectionOrder] = useState<string[]>(["personalInfo", "profile", "experience", "education", "skills", "languages"])
-  const [showMobileTemplateMenu, setShowMobileTemplateMenu] = useState(false)
-  const [showMobileFontMenu, setShowMobileFontMenu] = useState(false)
-  const [showMobileFontSizeMenu, setShowMobileFontSizeMenu] = useState(false)
-  const [showMobileLineHeightMenu, setShowMobileLineHeightMenu] = useState(false)
-  const [showMobileColorMenu, setShowMobileColorMenu] = useState(false)
   const hasLoadedData = useRef(false)
   const editorRef = useRef<ResumeEditorHandle>(null)
   const editId = searchParams.get('edit')
   const checkoutSuccess = searchParams.get('checkout')
   const isNewUser = searchParams.get('new') === 'true'
-
-  // Sync mobile template with selectedTemplate when it changes
-  useEffect(() => {
-    setMobileSelectedTemplate(selectedTemplate)
-  }, [selectedTemplate])
-
-  // Open mobile preview and initialize from editor's current settings
-  const openMobilePreview = () => {
-    const settings = editorRef.current?.getSettings()
-    if (settings) {
-      setMobileSelectedTemplate(settings.selectedTemplate)
-      setMobileSelectedFont(settings.selectedFont)
-      setMobileFontSize(settings.fontSize)
-      setMobileFontSizePixels(settings.fontSizePixels)
-      setMobileLineHeight(settings.lineHeight)
-      setMobileSelectedColor(settings.selectedColor)
-      setMobileHeaderColor(settings.headerColor)
-      setMobileSectionOrder(settings.addedSections)
-    }
-    setShowMobilePreview(true)
-  }
-
-  // Close mobile preview and sync settings back to the editor
-  const closeMobilePreview = () => {
-    editorRef.current?.updateSettings({
-      selectedTemplate: mobileSelectedTemplate,
-      selectedFont: mobileSelectedFont,
-      fontSize: mobileFontSize,
-      fontSizePixels: mobileFontSizePixels,
-      lineHeight: mobileLineHeight,
-      selectedColor: mobileSelectedColor,
-      headerColor: mobileHeaderColor,
-    })
-    setShowMobilePreview(false)
-  }
-
-  // Font options
-  const fonts = ["Poppins", "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Playfair Display", "Merriweather", "Raleway", "Nunito", "Source Sans Pro", "Oswald", "Lora", "PT Sans", "Ubuntu", "Crimson Text", "Libre Baskerville", "Fira Sans", "Work Sans", "Noto Sans", "Trebuchet MS", "Arial Black"]
-
-  // Template options. The five originals each have their own generator; the
-  // rest are themes over the standard generator (lib/cv-templates/themes.ts).
-  const templates = [
-    { id: "default", name: "Klassisk" },
-    { id: "modern", name: "Modern" },
-    { id: "minimalist", name: "Minimalistisk" },
-    { id: "executive", name: "Executive" },
-    { id: "timeline", name: "Tidslinje" },
-    ...CV_THEMES.map((theme) => ({ id: theme.id, name: theme.name })),
-  ]
-
-  // Font size mapping
-  const fontSizeMap: Record<string, string> = {
-    "XS": "12px",
-    "S": "14px",
-    "M": "16px",
-    "L": "18px",
-    "XL": "20px",
-  }
-
-  const handleMobileFontSizeChange = (size: string) => {
-    setMobileFontSize(size)
-    setMobileFontSizePixels(fontSizeMap[size] || "16px")
-    setShowMobileFontSizeMenu(false)
-  }
 
   // Track purchase conversion when redirected from successful Stripe checkout
   useEffect(() => {
@@ -655,225 +574,19 @@ export default function CVMallClient() {
         onOpenLogin={() => setPopupMode("login")}
       />
 
-      {/* Mobile Preview Dialog */}
-      <Dialog open={showMobilePreview} onOpenChange={(open) => { if (!open) closeMobilePreview() }}>
-        <DialogContent className="max-w-full w-full h-[90vh] p-0 flex flex-col">
-          <DialogHeader className="px-4 pt-4 pb-3 border-b">
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-lg font-semibold">Förhandsgranska CV</DialogTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeMobilePreview}
-                className="h-6 w-6"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </DialogHeader>
-          
-          {/* Controls Bar - overflow-visible so dropdowns are not clipped */}
-          <div className="px-4 py-3 bg-white border-b border-gray-200 overflow-visible">
-            <div className="flex items-center gap-2 min-w-max">
-              {/* Template Selector */}
-              <div className="relative">
-                <button
-                  className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setShowMobileTemplateMenu(!showMobileTemplateMenu)
-                  }}
-                >
-                  <LayoutIcon className="h-4 w-4" />
-                  <span className="text-xs">{templates.find(t => t.id === mobileSelectedTemplate)?.name || "Mall"}</span>
-                  <ChevronDown className={`h-3 w-3 transition-transform ${showMobileTemplateMenu ? "rotate-180" : ""}`} />
-                </button>
-                {showMobileTemplateMenu && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
-                    {templates.map((template) => (
-                      <button
-                        key={template.id}
-                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors ${
-                          mobileSelectedTemplate === template.id ? "bg-gray-100" : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setMobileSelectedTemplate(template.id)
-                          setShowMobileTemplateMenu(false)
-                        }}
-                      >
-                        <span className="text-sm">{template.name}</span>
-                        {mobileSelectedTemplate === template.id && <Check className="h-4 w-4 text-green-500 ml-auto" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Font Selector */}
-              <div className="relative">
-                <button
-                  className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setShowMobileFontMenu(!showMobileFontMenu)
-                  }}
-                >
-                  <Type className="h-4 w-4" />
-                  <span className="text-xs">{mobileSelectedFont}</span>
-                  <ChevronDown className={`h-3 w-3 transition-transform ${showMobileFontMenu ? "rotate-180" : ""}`} />
-                </button>
-                {showMobileFontMenu && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
-                    {fonts.slice(0, 10).map((font) => (
-                      <button
-                        key={font}
-                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors ${
-                          mobileSelectedFont === font ? "bg-gray-100" : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setMobileSelectedFont(font)
-                          setShowMobileFontMenu(false)
-                        }}
-                        style={{ fontFamily: font }}
-                      >
-                        <span className="text-sm">{font}</span>
-                        {mobileSelectedFont === font && <Check className="h-4 w-4 text-green-500 ml-auto" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Font Size Selector */}
-              <div className="relative">
-                <button
-                  className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200"
-                  onClick={() => setShowMobileFontSizeMenu(!showMobileFontSizeMenu)}
-                >
-                  <TextSize className="h-4 w-4" />
-                  <span className="text-xs">{mobileFontSize}</span>
-                  <ChevronDown className={`h-3 w-3 transition-transform ${showMobileFontSizeMenu ? "rotate-180" : ""}`} />
-                </button>
-                {showMobileFontSizeMenu && (
-                  <div className="absolute top-full left-0 mt-2 w-32 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-2 space-y-1 z-[999]">
-                    {["XS", "S", "M", "L", "XL"].map((size) => (
-                      <button
-                        key={size}
-                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors ${
-                          mobileFontSize === size ? "bg-gray-100" : ""
-                        }`}
-                        onClick={() => handleMobileFontSizeChange(size)}
-                      >
-                        <span className="text-sm">{size}</span>
-                        {mobileFontSize === size && <Check className="h-4 w-4 text-green-500 ml-auto" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Color Selector */}
-              <div className="relative">
-                <button
-                  className="flex items-center gap-1 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200"
-                  onClick={() => setShowMobileColorMenu(!showMobileColorMenu)}
-                >
-                  <Palette className="h-4 w-4" />
-                  <div className="w-4 h-4 rounded border border-gray-300" style={{ backgroundColor: mobileSelectedColor }} />
-                </button>
-                {showMobileColorMenu && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border-2 border-gray-200 p-3 z-[999]">
-                    <div className="text-xs font-semibold text-gray-600 mb-2">Textfärg</div>
-                    <div className="grid grid-cols-6 gap-2 mb-3">
-                      {["#000000", "#374151", "#6B7280", "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#F97316", "#14B8A6", "#6366F1"].map((color) => (
-                        <button
-                          key={color}
-                          className={`w-8 h-8 rounded border-2 ${
-                            mobileSelectedColor === color ? "border-gray-900" : "border-gray-200"
-                          }`}
-                          style={{ backgroundColor: color }}
-                          onClick={() => {
-                            setMobileSelectedColor(color)
-                            setShowMobileColorMenu(false)
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <div className="text-xs font-semibold text-gray-600 mb-2">Headerfärg</div>
-                    <div className="grid grid-cols-6 gap-2">
-                      {["#000000", "#374151", "#6B7280", "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#F97316", "#14B8A6", "#6366F1"].map((color) => (
-                        <button
-                          key={color}
-                          className={`w-8 h-8 rounded border-2 ${
-                            mobileHeaderColor === color ? "border-gray-900" : "border-gray-200"
-                          }`}
-                          style={{ backgroundColor: color }}
-                          onClick={() => {
-                            setMobileHeaderColor(color)
-                            setShowMobileColorMenu(false)
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Preview Content */}
-          <div className="flex-1 overflow-auto" style={{ backgroundColor: '#16233a' }}>
-            <PreviewBridge
-              form={form}
-              selectedTemplate={mobileSelectedTemplate}
-              selectedFont={mobileSelectedFont}
-              fontSizePixels={mobileFontSizePixels}
-              lineHeight={mobileLineHeight}
-              selectedColor={mobileSelectedColor}
-              headerColor={mobileHeaderColor}
-              zoomLevel={1}
-              sectionOrder={mobileSectionOrder}
-              sections={mobileSectionOrder.map((id: string) => {
-                const titleMap: Record<string, string> = {
-                  personalInfo: "Personuppgifter",
-                  profile: "Profil",
-                  experience: "Yrkeslivserfarenhet",
-                  education: "Utbildning",
-                  skills: "Färdigheter",
-                  languages: "Språk",
-                  courses: "Kurser",
-                  internship: "Praktik",
-                  references: "Referenser",
-                  traits: "Egenskaper",
-                  certificates: "Certifikat",
-                  achievements: "Prestationer",
-                  hobbies: "Hobbies",
-                  awards: "Utmärkelser",
-                  volunteering: "Volontärarbete",
-                  licenses: "Licenser",
-                  custom: "Skräddarsytt fält",
-                }
-                return { id, title: titleMap[id] || id, hidden: false }
-              })}
-              templates={templates}
-              onSelectTemplate={setMobileSelectedTemplate}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Payment Success Dialog */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md" aria-describedby="conversion-description">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center text-green-600">
-              🎉 Grattis!
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50">
+              <Check className="h-6 w-6 text-brand-700" strokeWidth={2.5} />
+            </span>
+            <DialogTitle className="mt-3 text-2xl text-center">
+              Grattis!
             </DialogTitle>
           </DialogHeader>
-          <div id="conversion" className="py-6 text-center">
-            <p id="conversion-description" className="text-lg text-gray-800 mb-6">
+          <div id="conversion" className="pt-2 text-center">
+            <p id="conversion-description" className="text-base text-ink-600 mb-6">
               Du är ett steg närmare ditt nya jobb! Ladda ner ditt nya CV nu
             </p>
             <Button
@@ -881,7 +594,8 @@ export default function CVMallClient() {
                 setShowSuccessDialog(false)
                 downloadPDF()
               }}
-              className="w-full bg-[#00bf63] hover:bg-[#00a052] text-white font-semibold py-3 px-6 rounded-md"
+              size="lg"
+              className="w-full"
             >
               Ladda ner CV
             </Button>
@@ -900,11 +614,8 @@ export default function CVMallClient() {
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent className="sm:max-w-[480px] p-0 gap-0">
           <div className="p-6">
-            <DialogHeader className="flex flex-row items-center justify-between space-y-0 p-0 mb-6">
-              <DialogTitle className="text-xl font-semibold">Betalning</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowPaymentDialog(false)}>
-                <X className="h-4 w-4" />
-              </Button>
+            <DialogHeader className="mb-6 p-0 pr-8">
+              <DialogTitle className="text-xl">Betalning</DialogTitle>
             </DialogHeader>
             {isLoadingPayment ? (
               <div className="flex items-center justify-center p-4">
@@ -925,16 +636,6 @@ export default function CVMallClient() {
         </DialogContent>
       </Dialog>
 
-      {/* Mobile Preview Button - Only visible on mobile, fixed at bottom */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 flex justify-center shadow-lg">
-        <Button
-          onClick={openMobilePreview}
-          className="w-full max-w-xs bg-[#00bf63] hover:bg-[#00a052] text-white font-semibold flex items-center justify-center gap-2"
-        >
-          <Eye className="h-4 w-4" />
-          Förhandsgranska
-        </Button>
-      </div>
     </div>
   )
 }

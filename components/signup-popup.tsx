@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Check } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/contexts/AuthContext"
@@ -147,24 +148,24 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md p-0 border-0 !duration-0 !animate-none data-[state=open]:!animate-none data-[state=closed]:!animate-none !rounded-2xl overflow-hidden">
         <DialogTitle className="sr-only">Skapa ditt CV</DialogTitle>
-        <div className="w-full bg-white shadow-xl ring-1 ring-black/5 p-6">
+        <div className="w-full bg-white p-6 sm:p-7">
           {/* Header */}
-          <h1 className="text-lg font-semibold text-gray-900">Skapa ditt CV</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="pr-8 text-xl font-bold tracking-tight text-ink">Skapa ditt CV</h1>
+          <p className="mt-1.5 text-sm leading-relaxed text-ink-500">
             Ladda ned ditt CV som PDF, spara och redigera när som helst—allt på ett ställe.
           </p>
 
           {magicLinkSent ? (
             <div className="mt-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800 font-medium mb-1">
+              <div role="status" className="rounded-xl border border-brand-200 bg-brand-50 p-4">
+                <p className="text-sm text-brand-800 font-medium mb-1">
                   Inloggningslänk skickad!
                 </p>
-                <p className="text-xs text-green-700">
+                <p className="text-xs text-brand-700">
                   Vi hittade ett befintligt konto med <strong>{email}</strong>. Kolla din e-post och klicka på länken för att logga in.
                 </p>
               </div>
-              <p className="mt-4 text-xs text-gray-500 leading-relaxed text-center">
+              <p className="mt-4 text-center text-xs leading-relaxed text-ink-400">
                 Hittar du inte mejlet? Kolla skräpposten eller försök igen.
               </p>
             </div>
@@ -172,9 +173,12 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
             <>
               {/* Email field */}
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-800">E-post</label>
+                <label htmlFor="auth-email" className="block text-sm font-medium text-ink-700">E-post</label>
                 <input
+                  id="auth-email"
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   placeholder="namn@exempel.se"
                   autoFocus
                   value={email}
@@ -185,16 +189,16 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
                     }
                   }}
                   disabled={isLoading}
-                  className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2.5 text-[15px] outline-none focus:ring-4 focus:ring-gray-200 focus:border-gray-700 disabled:opacity-50"
+                  className="mt-1.5 h-12 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-base text-ink outline-none placeholder:text-ink-300 hover:border-ink-300 focus:border-brand focus:ring-4 focus:ring-brand/15 focus-visible:outline-none disabled:opacity-50"
                 />
                 
                 {error && (
-                  <p className="mt-2 text-sm text-red-600">{error}</p>
+                  <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>
                 )}
                 
                 {/* CTA */}
                 <button
-                  className="mt-3 w-full rounded-md bg-[#00bf63] px-4 py-2.5 text-white font-semibold hover:brightness-110 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-3 h-12 w-full rounded-xl bg-brand px-4 text-base font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2),0_6px_16px_-6px_rgb(0_191_99/0.5)] hover:bg-brand-600 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleSignup}
                   disabled={isLoading}
                 >
@@ -203,32 +207,32 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
               </div>
 
               {/* Value props */}
-              <ul className="mt-4 space-y-2 text-sm text-gray-600">
+              <ul className="mt-5 space-y-2 text-sm text-ink-600">
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" strokeWidth={2.5} />
                   Ladda ned som PDF
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" strokeWidth={2.5} />
                   Spara och redigera ditt CV
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" strokeWidth={2.5} />
                   Välj mellan flera professionella mallar
                 </li>
               </ul>
 
               {/* Info text instead of terms checkbox */}
-              <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+              <p className="mt-4 text-xs leading-relaxed text-ink-400">
                 Genom att fortsätta godkänner du våra villkor. 
               </p>
 
               {/* Login link */}
-              <p className="mt-4 text-sm text-gray-600 text-center">
+              <p className="mt-5 border-t border-ink-100 pt-4 text-center text-sm text-ink-500">
                 Har du redan ett konto?{" "}
                 <a 
                   href="#" 
-                  className="font-medium underline hover:no-underline"
+                  className="font-semibold text-ink underline underline-offset-2 hover:text-brand-700"
                   onClick={(e) => {
                     e.preventDefault()
                     onClose()

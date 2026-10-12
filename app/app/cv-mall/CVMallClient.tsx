@@ -11,7 +11,7 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { X, Home, Mail, CreditCard } from "lucide-react"
+import { Home, Mail, CreditCard } from "lucide-react"
 import Image from "next/image"
 import RichTextEditor from "@/components/rich-text-editor"
 import { createCheckoutSession, checkSubscriptionStatus } from "@/app/actions/stripe"
@@ -270,9 +270,6 @@ export default function CVMallClient({ searchParams }: { searchParams: { templat
           <div className="p-6">
             <DialogHeader className="flex flex-row items-center justify-between space-y-0 p-0">
               <DialogTitle className="text-xl font-semibold">Skapa ditt CV</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowPaymentPopup(false)}>
-                <X className="h-4 w-4" />
-              </Button>
             </DialogHeader>
 
             <div className="mt-6 space-y-4">
@@ -349,9 +346,6 @@ export default function CVMallClient({ searchParams }: { searchParams: { templat
           <div className="p-6">
             <DialogHeader className="flex flex-row items-center justify-between space-y-0 p-0 mb-6">
               <DialogTitle className="text-xl font-semibold">Betalning</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowPaymentDialog(false)}>
-                <X className="h-4 w-4" />
-              </Button>
             </DialogHeader>
             {isLoadingPayment ? (
               <div className="flex items-center justify-center p-4">

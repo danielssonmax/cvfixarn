@@ -7,6 +7,14 @@ import { sanitizeHTML } from "@/lib/sanitize"
 import { CookieConsent } from "@/components/cookie-consent"
 import { ReferrerTracker } from "@/components/referrer-tracker"
 import { Analytics } from "@vercel/analytics/next"
+import { Plus_Jakarta_Sans } from "next/font/google"
+
+const fontSans = Plus_Jakarta_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-sans",
+})
 
 export default function RootLayout({
   children,
@@ -14,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="sv" suppressHydrationWarning>
+    <html lang="sv" className={fontSans.variable} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />

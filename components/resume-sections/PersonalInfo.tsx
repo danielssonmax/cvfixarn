@@ -191,11 +191,11 @@ const PersonalInfo: React.FC = () => {
   return (
     <div className="space-y-2">
       <div className="grid gap-2">
-        <div className="grid grid-cols-[140px_1fr_1fr] gap-2">
+        <div className="grid grid-cols-[96px_1fr] gap-2 lg:grid-cols-[140px_1fr_1fr]">
             <div className="row-span-2">
               <Label className="block mb-2 text-sm font-normal text-gray-700">Foto</Label>
             <div
-              className="w-[120px] h-[120px] bg-gray-100 rounded-md flex items-center justify-center border-2 border-transparent cursor-pointer hover:bg-gray-200 transition-colors"
+              className="w-[88px] h-[88px] lg:w-[120px] lg:h-[120px] bg-gray-100 rounded-md flex items-center justify-center border-2 border-transparent cursor-pointer hover:bg-gray-200 transition-colors"
               onClick={() => document.getElementById("photo-upload")?.click()}
             >
               {formData.personalInfo.photo ? (

@@ -24,21 +24,21 @@ export const metadata: Metadata = {
 
 const baseTemplates = [
   {
-    id: "standard",
+    id: "default",
     name: "Standard CV Mall",
     description:
       "En klassisk och professionell CV-mall optimerad för ATS-system. Tydlig struktur som garanterar att din information läses korrekt.",
     image: "/images/templates/cv-mall-standard.png",
   },
   {
-    id: "elegant",
+    id: "minimalist",
     name: "Minimalistisk CV Mall",
     description:
       "En ren och elegant mall med centrerad layout. ATS-vänlig design som ändå sticker ut visuellt hos rekryteraren.",
     image: "/images/templates/cv-mall-minimalistisk.png",
   },
   {
-    id: "lyxig",
+    id: "modern",
     name: "Modern CV Mall",
     description:
       "En modern tvåkolumns CV-mall som balanserar visuell design med ATS-kompatibilitet. Perfekt för kreativa branscher.",

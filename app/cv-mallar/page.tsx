@@ -22,21 +22,21 @@ export const metadata: Metadata = {
 
 const baseTemplates = [
   {
-    id: "standard",
+    id: "default",
     name: "Standard CV Mall",
     description:
       "En klassisk och professionell CV-mall med en tidlös design. Passar perfekt för traditionella branscher och företag.",
     image: "/images/templates/cv-mall-standard.png",
   },
   {
-    id: "elegant",
+    id: "minimalist",
     name: "Minimalistisk CV Mall",
     description:
       "En ren och elegant CV-mall med centrerad layout. Perfekt för dig som vill ha en modern och stilren presentation.",
     image: "/images/templates/cv-mall-minimalistisk.png",
   },
   {
-    id: "lyxig",
+    id: "modern",
     name: "Modern CV Mall",
     description:
       "En modern tvåkolumns CV-mall med en stilfull sidopanel. Idealisk för att sticka ut och visa din kreativitet.",

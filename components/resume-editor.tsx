@@ -83,9 +83,8 @@ import { CustomSection } from "@/components/resume-sections/CustomSection"
 import { CvImportDialog } from "@/components/cv-import-dialog"
 import { buildCvFileName, isDerivedCvName, DEFAULT_CV_FILENAME } from "@/lib/cv-filename"
 import { templates } from "@/components/templates"
-import { CV_THEME_IDS, getCvTheme, isCvTheme } from "@/lib/cv-templates/themes"
-import { CvThemePreview } from "@/components/cv-theme-preview"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { CV_THEME_IDS, getCvTheme } from "@/lib/cv-templates/themes"
+import { TemplatePicker, templatePreviewSrc } from "@/components/template-picker"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "@/components/ui/use-toast"
@@ -106,6 +105,15 @@ import {
 } from "@/lib/cv-storage"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useDebouncedAutosave } from "@/hooks/use-debounced-autosave"
+
+// Every template the picker offers: the five originals plus the CSS themes.
+const PICKER_TEMPLATES = templates.filter((template) =>
+  ["default", "modern", "minimalist", "executive", "timeline", ...CV_THEME_IDS].includes(template.id),
+)
+
+const COLOR_SWATCHES = ["#000000", "#4A5568", "#2B6CB0", "#48BB78", "#9F7AEA", "#ED8936", "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899"]
+const FONT_SIZES = ["XS", "S", "M", "L", "XL"]
+const LINE_HEIGHTS = ["1.0", "1.15", "1.5", "1.75", "2.0"]
 
 interface FormData {
   personalInfo: {
@@ -2010,8 +2018,34 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
   // Uppdatera useEffect för att logga när komponenten monteras
   useEffect(() => {}, [])
 
-  const [showPreview, setShowPreview] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+
+  // Phone-only full-screen preview (the side preview is hidden below `sm`)
+  type MobileTool = "template" | "font" | "size" | "color"
+  const [showMobilePreview, setShowMobilePreview] = useState(false)
+  const [mobileTool, setMobileTool] = useState<MobileTool>("template")
+  const openMobilePreview = (tool: MobileTool = "template") => {
+    setMobileTool(tool)
+    setShowMobilePreview(true)
+  }
+
+  useEffect(() => {
+    if (!showMobilePreview) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowMobilePreview(false)
+    }
+    // If the window grows past the phone breakpoint, the side preview takes over
+    const media = window.matchMedia("(min-width: 640px)")
+    const onResize = () => {
+      if (media.matches) setShowMobilePreview(false)
+    }
+    document.addEventListener("keydown", onKeyDown)
+    media.addEventListener("change", onResize)
+    return () => {
+      document.removeEventListener("keydown", onKeyDown)
+      media.removeEventListener("change", onResize)
+    }
+  }, [showMobilePreview])
 
   const ActionButton = ({ 
     icon: Icon, 
@@ -2479,9 +2513,9 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     <FormProvider {...form}>
       <div className="flex flex-col h-screen">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 grid grid-cols-3 items-center">
-          <div className="flex justify-start items-center gap-3 sm:gap-4">
-            <Link href="/" className="flex items-center shrink-0" aria-label="Till startsidan">
+        <header className="relative z-20 flex h-14 shrink-0 items-center gap-2 border-b border-ink-100 bg-white px-3 sm:h-16 sm:gap-4 sm:px-6">
+          <div className="flex flex-1 basis-0 items-center gap-3 sm:gap-4">
+            <Link href="/" className="hidden shrink-0 items-center sm:flex" aria-label="Till startsidan">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Cvfixaren-ebeQXxOTCrb79kvOYjGEuecJeiitvr.png"
                 alt="CVfixaren"
@@ -2493,30 +2527,31 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             </Link>
             <button
               onClick={() => router.push('/profil')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-sm font-medium px-3 py-2 rounded-md border border-gray-200 transition-colors"
-              style={{ outline: 'none', background: 'none' }}
+              aria-label="Tillbaka till Mina CV"
+              className="flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm font-medium text-ink-500 ring-1 ring-inset ring-ink-100 hover:bg-ink-50 hover:text-ink sm:px-3"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Mina CV</span>
             </button>
           </div>
-          
+
           {/* Editable CV Name */}
-          <div className="flex justify-center items-center gap-2">
-            <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+          <div className="flex min-w-0 items-center justify-center gap-2">
+            <div className="h-4 w-4 shrink-0" title={isSavingChanges ? "Sparar…" : "Sparat"}>
               {isSavingChanges ? (
-                <Save className="h-4 w-4 text-gray-400 animate-pulse" />
+                <Save className="h-4 w-4 text-ink-300 animate-pulse" />
               ) : (
-                <CheckCircle2 className="h-4 w-4 text-[#00bf63]" />
+                <CheckCircle2 className="h-4 w-4 text-brand-700" />
               )}
             </div>
-            <div style={{ 
-              position: 'relative', 
-              display: 'inline-block', 
-              width: `${Math.max(80, cvName.length * 8.5 + 16)}px`,
-              maxWidth: '300px',
-              transition: 'width 0.2s'
-            }}>
+            <div
+              className="relative inline-block min-w-0"
+              style={{
+                width: `${Math.max(80, cvName.length * 8.5 + 16)}px`,
+                maxWidth: 'min(300px, 100%)',
+                transition: 'width 0.2s',
+              }}
+            >
               {isEditingName ? (
                 <>
                   <input
@@ -2528,24 +2563,16 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') commitCvName()
                     }}
-                    className="bg-transparent text-gray-900 text-base font-medium text-center outline-none px-2 py-1"
-                    style={{ 
-                      border: 'none',
-                      width: '100%'
-                    }}
+                    aria-label="CV-namn"
+                    className="w-full border-none bg-transparent px-2 py-1 text-center text-[15px] font-semibold text-ink outline-none focus-visible:outline-none sm:text-base"
                     autoFocus
                   />
-                  <div 
+                  <div
+                    className="absolute bottom-0 left-1/2 h-0.5 -translate-x-1/2 rounded-full bg-brand"
                     style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      height: '2px',
-                      backgroundColor: '#00bf63',
                       width: `${Math.max(60, cvName.length * 8.5 + 8)}px`,
-                      maxWidth: '280px',
-                      transition: 'width 0.2s'
+                      maxWidth: '100%',
+                      transition: 'width 0.2s',
                     }}
                   />
                 </>
@@ -2555,45 +2582,43 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                     setIsEditingName(true)
                     setTimeout(() => nameInputRef.current?.focus(), 0)
                   }}
-                  className="text-gray-900 text-base font-medium hover:text-[#00bf63] transition-colors px-2"
-                  style={{ border: 'none', outline: 'none', background: 'none', width: '100%', textAlign: 'center' }}
+                  title="Byt namn på CV:t"
+                  className="w-full truncate rounded-md px-2 py-1 text-center text-[15px] font-semibold text-ink hover:bg-ink-50 sm:text-base"
                 >
                   {cvName}
                 </button>
               )}
             </div>
           </div>
-          
-          <div className="flex justify-end items-center gap-3">
+
+          <div className="flex flex-1 basis-0 items-center justify-end gap-3">
             {user && pathname !== "/profil/skapa-cv" && (
               <button
-                className="text-gray-600 hover:text-gray-900 text-sm font-medium px-4 py-2 rounded-md border border-gray-200 hover:bg-gray-100 transition-colors"
+                className="hidden h-9 items-center rounded-lg px-4 text-sm font-medium text-ink-500 ring-1 ring-inset ring-ink-100 hover:bg-ink-50 hover:text-ink sm:flex"
                 onClick={async () => {
                   await supabase.auth.signOut()
                   window.location.href = '/'
                 }}
-                style={{ outline: 'none', background: 'none' }}
               >
                 Logga ut
               </button>
             )}
             <button
-              className="btn-sweep-glow bg-[#00bf63] text-white px-4 py-2 rounded-md hover:bg-[#00a857] transition-colors font-medium text-sm flex items-center gap-2"
+              className="btn-sweep-glow hidden h-10 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2)] hover:bg-brand-600 active:translate-y-px disabled:opacity-70 sm:flex"
               onClick={handleDownloadClick}
               disabled={isDownloading}
-              style={{ border: 'none', outline: 'none' }}
             >
               <Download className="h-4 w-4" />
-              {isDownloading ? "Laddar..." : "Ladda ned"}
+              <span>{isDownloading ? "Laddar..." : "Ladda ned"}</span>
             </button>
           </div>
         </header>
 
         {/* Success message */}
         {showSuccessMessage && (
-          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-fade-in flex items-center gap-2">
-            <Check className="h-5 w-5" />
-            <span className="font-medium">CV sparades framgångsrikt!</span>
+          <div role="status" className="fixed top-20 left-1/2 -translate-x-1/2 bg-ink text-white pl-3 pr-5 py-2.5 rounded-full shadow-float z-50 animate-fade-up flex items-center gap-2.5">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand"><Check className="h-3.5 w-3.5" strokeWidth={3} /></span>
+            <span className="text-sm font-medium">CV:t är sparat</span>
           </div>
         )}
         
@@ -2842,7 +2867,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             </div>
 
             {/* Download button at bottom of form */}
-            <div className="mt-8 pt-4 border-t border-gray-200 pb-20 md:pb-8">
+            <div className="mt-8 pt-4 border-t border-gray-200 pb-32 sm:pb-8">
               <button
                 className="btn-sweep-glow w-full bg-[#00bf63] hover:bg-[#00a857] text-white flex items-center justify-center gap-2 py-3 rounded-md transition-all font-medium text-base"
                 style={{ 
@@ -2907,249 +2932,47 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               />
           </div>
           {/* Preview controls */}
-          <div className="w-full px-4 py-3 border-t border-white/10" style={{ backgroundColor: '#111b2e' }}>
-            <div className="flex items-center justify-between gap-3">
+          <div className="relative w-full px-4 py-3 border-t border-white/10" style={{ backgroundColor: '#111b2e' }}>
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
               <div className="flex items-center gap-3">
-                <div className="relative" ref={templateDropdownRef}>
+                <div ref={templateDropdownRef}>
                   <button
-                    className="flex items-center gap-2 text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors font-medium"
+                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-colors font-medium ${showTemplateMenu ? "bg-white/10 text-white" : "text-slate-300 hover:text-white hover:bg-white/10"}`}
+                    aria-expanded={showTemplateMenu}
                     onClick={(e) => {
                       e.stopPropagation()
                       setShowTemplateMenu(!showTemplateMenu)
                     }}
                   >
-                    <LayoutIcon className="h-4 w-4" />
-                    <span className="text-sm">Mall</span>
+                    <span className="relative h-7 w-5 shrink-0 overflow-hidden rounded-[2px] bg-white ring-1 ring-white/20">
+                      <Image src={templatePreviewSrc(selectedTemplate)} alt="" fill sizes="24px" className="object-cover object-top" />
+                    </span>
+                    <span className="text-sm">
+                      Mall<span className="hidden xl:inline text-slate-400">: {PICKER_TEMPLATES.find((t) => t.id === selectedTemplate)?.name ?? "Standard"}</span>
+                    </span>
                     <ChevronDown className={`h-4 w-4 transition-transform ${showTemplateMenu ? "rotate-180" : ""}`} />
                   </button>
 
                   {showTemplateMenu && (
-                    <div className="absolute bottom-full left-0 mb-2 w-[900px] bg-white rounded-xl shadow-2xl border border-gray-200 p-4 z-[999]">
-                      <h3 className="text-xs font-semibold text-gray-700 mb-3">Välj en mall</h3>
-                      <div className="overflow-x-auto pb-2">
-                        <div className="flex gap-3 min-w-max">
-                        {templates
-                          .filter((template) => ["default", "modern", "minimalist", "executive", "timeline", ...CV_THEME_IDS].includes(template.id))
-                          .map((template) => (
-                            <button
-                              key={template.id}
-                              className={`group relative flex flex-col items-center p-2 rounded-lg border-2 transition-all hover:shadow-md flex-shrink-0 ${
-                                selectedTemplate === template.id 
-                                  ? 'border-[#00bf63] bg-green-50' 
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleSelectTemplate(template.id)
-                                setShowTemplateMenu(false)
-                              }}
-                            >
-                              {/* Preview thumbnail */}
-                              <div className="w-40 h-32 bg-gray-50 rounded border border-gray-200 mb-2 overflow-hidden p-2">
-                                {template.id === 'default' && (
-                                  <div className="space-y-1 text-[6px]">
-                                    <div className="flex items-start gap-1 pb-1 border-b border-black">
-                                      <div className="flex-1">
-                                        <div className="font-bold text-[7px]">Anna Andersson</div>
-                                        <div className="text-gray-600 text-[5px]">Senior Projektledare</div>
-                                        <div className="text-gray-500 text-[4px] mt-0.5">anna@email.se • 070-123 45 67</div>
-                                      </div>
-                                      <div className="w-5 h-5 rounded-full bg-gray-300"></div>
-                                    </div>
-                                    <div>
-                                      <div className="font-bold text-[5px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Yrkeslivserfarenhet</div>
-                                      <div className="text-[5px] space-y-0.5">
-                                        <div>
-                                          <div className="font-semibold">Projektledare</div>
-                                          <div className="text-gray-600">Tech AB • 2020 - Nu</div>
-                                        </div>
-                                        <div>
-                                          <div className="font-semibold">Utvecklare</div>
-                                          <div className="text-gray-600">IT Consulting • 2018 - 2020</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="font-bold text-[5px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Utbildning</div>
-                                      <div className="text-[5px]">
-                                        <div className="font-semibold">Civilingenjör</div>
-                                        <div className="text-gray-600">KTH • 2014 - 2018</div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                {template.id === 'modern' && (
-                                  <div className="flex h-full gap-0.5">
-                                    <div className="w-1/3 bg-[#2C3E50] text-white p-1 rounded-l space-y-0.5">
-                                      <div className="w-4 h-4 rounded-full bg-white/20 mx-auto"></div>
-                                      <div className="text-center text-[5px] font-bold">Erik Berg</div>
-                                      <div className="text-center text-[4px] text-white/80">UX Designer</div>
-                                      <div className="text-[4px] space-y-0.5 mt-1">
-                                        <div className="font-semibold text-[4px]">KONTAKT</div>
-                                        <div className="text-white/90 text-[3px]">erik@email.se</div>
-                                        <div className="text-white/90 text-[3px]">070-987 65 43</div>
-                                      </div>
-                                      <div className="text-[4px] space-y-0.5 mt-1">
-                                        <div className="font-semibold text-[4px]">FÄRDIGHETER</div>
-                                        <div className="text-white/90 text-[3px]">• Figma</div>
-                                        <div className="text-white/90 text-[3px]">• Adobe XD</div>
-                                        <div className="text-white/90 text-[3px]">• Sketch</div>
-                                      </div>
-                                    </div>
-                                    <div className="flex-1 p-1 space-y-1">
-                                      <div>
-                                        <div className="font-bold text-[4px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Yrkeslivserfarenhet</div>
-                                        <div className="text-[4px] space-y-0.5">
-                                          <div>
-                                            <div className="font-semibold">Senior UX Designer</div>
-                                            <div className="text-gray-600">Design Studio • 2021 - Nu</div>
-                                          </div>
-                                          <div>
-                                            <div className="font-semibold">UX Designer</div>
-                                            <div className="text-gray-600">StartUp AB • 2019 - 2021</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="font-bold text-[4px] uppercase border-b border-gray-300 pb-0.5 mb-0.5">Utbildning</div>
-                                        <div className="text-[4px]">
-                                          <div className="font-semibold">Interaktionsdesign</div>
-                                          <div className="text-gray-600">Malmö Universitet</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                {template.id === 'minimalist' && (
-                                  <div className="space-y-1 text-center text-[6px]">
-                                    <div className="w-5 h-5 rounded-full bg-gray-300 mx-auto"></div>
-                                    <div className="font-bold text-[7px]">Sofia Lindström</div>
-                                    <div className="text-gray-600 text-[5px]">Marketing Manager</div>
-                                    <div className="text-gray-500 text-[4px]">sofia@email.se • Stockholm</div>
-                                    <div className="border-t border-gray-200 pt-1 mt-1 text-left space-y-1">
-                                      <div>
-                                        <div className="font-bold text-[5px] uppercase text-gray-400 mb-0.5">Yrkeslivserfarenhet</div>
-                                        <div className="text-[5px] space-y-0.5">
-                                          <div>
-                                            <div className="font-semibold">Marketing Manager</div>
-                                            <div className="text-gray-600">Brand Co • 2020 - Nu</div>
-                                          </div>
-                                          <div>
-                                            <div className="font-semibold">Marketing Specialist</div>
-                                            <div className="text-gray-600">Media Group • 2017 - 2020</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="font-bold text-[5px] uppercase text-gray-400 mb-0.5">Utbildning</div>
-                                        <div className="text-[5px]">
-                                          <div className="font-semibold">Marknadsföring</div>
-                                          <div className="text-gray-600">Stockholms Universitet</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                {template.id === 'executive' && (
-                                  <div className="space-y-1 text-[6px]">
-                                    <div className="flex items-center gap-1 pb-1 border-b-2 border-gray-800">
-                                      <div className="w-6 h-6 rounded-full bg-gray-300 border border-gray-800"></div>
-                                      <div className="flex-1">
-                                        <div className="font-bold text-[7px]">Michael Karlsson</div>
-                                        <div className="text-gray-600 text-[5px]">CEO & Founder</div>
-                                      </div>
-                                    </div>
-                                    <div className="text-gray-500 text-[4px]">michael@email.se • +46 70 123 45 67</div>
-                                    <div className="space-y-1">
-                                      <div>
-                                        <div className="font-bold text-[5px] uppercase text-gray-800 border-b-2 border-gray-800 pb-0.5 mb-0.5">Yrkeslivserfarenhet</div>
-                                        <div className="text-[5px] space-y-0.5">
-                                          <div>
-                                            <div className="font-semibold">CEO & Founder</div>
-                                            <div className="text-gray-600">Innovation Labs • 2018 - Nu</div>
-                                          </div>
-                                          <div>
-                                            <div className="font-semibold">Director of Operations</div>
-                                            <div className="text-gray-600">Tech Corp • 2015 - 2018</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="font-bold text-[5px] uppercase text-gray-800 border-b-2 border-gray-800 pb-0.5 mb-0.5">Utbildning</div>
-                                        <div className="text-[5px]">
-                                          <div className="font-semibold">MBA</div>
-                                          <div className="text-gray-600">Stockholm School of Economics</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                {template.id === 'timeline' && (
-                                  <div className="space-y-1 text-[6px]">
-                                    <div className="flex items-center gap-1 pb-1 border-b border-gray-200">
-                                      <div className="w-5 h-5 rounded-full bg-gray-300 border border-blue-500"></div>
-                                      <div className="flex-1">
-                                        <div className="font-bold text-[7px]">Lisa Johansson</div>
-                                        <div className="text-gray-600 text-[5px]">Data Scientist</div>
-                                      </div>
-                                    </div>
-                                    <div className="text-gray-500 text-[4px]">lisa@email.se • Göteborg</div>
-                                    <div>
-                                      <div className="font-bold text-[5px] uppercase text-blue-500 mb-0.5">Yrkeslivserfarenhet</div>
-                                      <div className="relative pl-2 border-l-2 border-blue-500 space-y-1">
-                                        <div className="relative">
-                                          <div className="absolute -left-[5px] top-0 w-1.5 h-1.5 rounded-full bg-blue-500 border border-white"></div>
-                                          <div className="text-[5px]">
-                                            <div className="text-blue-500 font-semibold text-[4px]">2021 - Nu</div>
-                                            <div className="font-semibold">Senior Data Scientist</div>
-                                            <div className="text-gray-600">AI Solutions AB</div>
-                                          </div>
-                                        </div>
-                                        <div className="relative">
-                                          <div className="absolute -left-[5px] top-0 w-1.5 h-1.5 rounded-full bg-blue-500 border border-white"></div>
-                                          <div className="text-[5px]">
-                                            <div className="text-blue-500 font-semibold text-[4px]">2018 - 2021</div>
-                                            <div className="font-semibold">Data Analyst</div>
-                                            <div className="text-gray-600">Tech Insights</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="font-bold text-[5px] uppercase text-blue-500 mb-0.5">Utbildning</div>
-                                      <div className="text-[5px]">
-                                        <div className="font-semibold">MSc Computer Science</div>
-                                        <div className="text-gray-600">Chalmers • 2016 - 2018</div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                                {isCvTheme(template.id) && (
-                                  <CvThemePreview theme={getCvTheme(template.id)!} />
-                                )}
-                              </div>
-
-                              {/* Template name */}
-                              <div className="text-center w-full">
-                                <div className="font-semibold text-[11px] text-gray-900">{template.name}</div>
-                              </div>
-                              
-                              {/* Selected indicator */}
-                              {selectedTemplate === template.id && (
-                                <div className="absolute top-1 right-1 bg-[#00bf63] rounded-full p-0.5">
-                                  <Check className="h-2.5 w-2.5 text-white" />
-                                </div>
-                              )}
-                            </button>
-                          ))}
-                        </div>
+                    <div className="absolute bottom-full left-3 right-3 mb-2 max-h-[min(70vh,600px)] overflow-y-auto rounded-2xl bg-white p-4 shadow-float ring-1 ring-black/5 z-[999] animate-fade-up">
+                      <div className="mb-3 flex items-baseline justify-between gap-3 px-1">
+                        <h3 className="text-sm font-semibold text-ink">Välj en mall</h3>
+                        <span className="text-xs text-ink-400">{PICKER_TEMPLATES.length} mallar · alla ATS-anpassade</span>
                       </div>
+                      <TemplatePicker
+                        templates={PICKER_TEMPLATES}
+                        selected={selectedTemplate}
+                        onSelect={(id) => {
+                          handleSelectTemplate(id)
+                          setShowTemplateMenu(false)
+                        }}
+                      />
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-2 flex-1">
+              <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 flex-1">
                 {/* Font selector */}
                 <div className="relative" ref={fontDropdownRef}>
                   <button
@@ -3261,14 +3084,14 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
                     onClick={toggleColorPicker}
                   >
                     <Palette className="h-4 w-4" />
-                    <span className="text-sm">Färg</span>
+                    <span className="hidden xl:inline text-sm">Färg</span>
                     <div className="w-6 h-6 rounded-md ring-2 ring-white/70 shadow-sm" style={{ backgroundColor: selectedColor }} />
                   </button>
                   {isColorPickerOpen && (
                     <div className="absolute bottom-full right-0 mb-2 p-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] w-72">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3">Välj färg</h4>
                       <div className="grid grid-cols-6 gap-2 mb-4">
-                        {["#000000", "#4A5568", "#2B6CB0", "#48BB78", "#9F7AEA", "#ED8936", "#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899"].map((color) => (
+                        {COLOR_SWATCHES.map((color) => (
                           <button
                             key={color}
                             className={`w-10 h-10 rounded-lg border-2 hover:scale-110 transition-transform ${selectedColor === color ? 'border-gray-900 ring-2 ring-offset-2 ring-gray-900' : 'border-gray-200'}`}
@@ -3312,13 +3135,74 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
         onImport={applyImportedCv}
       />
 
-      {/* Preview Dialog */}
-      <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent
-          className="bg-gray-100 flex flex-col overflow-visible max-w-[none] transform scale-[0.4] md:scale-100 origin-center"
-          style={{ minWidth: "950px", minHeight: "1300px" }}
+      {/* ── Mobile: sticky action bar ─────────────────────────────
+          The side-by-side preview is hidden below `sm`, so this bar is the
+          way into the preview and template picker on phones. */}
+      {!showMobilePreview && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-100 bg-white/95 px-3 pt-2.5 pb-safe backdrop-blur-md sm:hidden">
+          <div className="flex items-stretch gap-2.5">
+            <button
+              type="button"
+              onClick={() => openMobilePreview("template")}
+              className="flex min-w-0 flex-1 items-center gap-3 rounded-xl bg-ink-50 py-1.5 pl-1.5 pr-3 text-left ring-1 ring-inset ring-ink-100 active:bg-ink-100"
+            >
+              <span className="relative h-12 w-[34px] shrink-0 overflow-hidden rounded-[4px] bg-white shadow-soft ring-1 ring-ink-200">
+                <Image src={templatePreviewSrc(selectedTemplate)} alt="" fill sizes="40px" className="object-cover object-top" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  <Eye className="h-4 w-4 shrink-0" />
+                  Förhandsgranska
+                </span>
+                <span className="mt-0.5 block truncate text-xs text-ink-500">
+                  Mall: {PICKER_TEMPLATES.find((t) => t.id === selectedTemplate)?.name ?? "Standard"} · Byt mall
+                </span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadClick}
+              disabled={isDownloading}
+              className="btn-sweep-glow flex shrink-0 items-center gap-2 rounded-xl bg-brand px-4 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2),0_6px_16px_-6px_rgb(0_191_99/0.6)] active:translate-y-px disabled:opacity-70"
+            >
+              <Download className="h-4 w-4" />
+              <span>{isDownloading ? "Laddar..." : "Ladda ned"}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Mobile: full-screen preview with design tools ─────────
+          Live preview on top, tools in a sheet below, so a template change
+          is visible immediately instead of hidden behind a dropdown. */}
+      {showMobilePreview && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Förhandsgranska CV"
+          className="fixed inset-0 z-[90] flex flex-col bg-ink animate-fade-in sm:hidden"
         >
-          <div className="bg-white p-8">
+          <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-white/10 px-2">
+            <button
+              type="button"
+              onClick={() => setShowMobilePreview(false)}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-ink-100 hover:bg-white/10 active:bg-white/10"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Redigera
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadClick}
+              disabled={isDownloading}
+              className="btn-sweep-glow inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg bg-brand px-4 text-sm font-semibold text-white active:translate-y-px disabled:opacity-70"
+            >
+              <Download className="h-4 w-4" />
+              <span>{isDownloading ? "Laddar..." : "Ladda ned"}</span>
+            </button>
+          </div>
+
+          <div className="relative min-h-0 flex-1">
             <PreviewBridge
               form={form}
               selectedTemplate={selectedTemplate}
@@ -3327,62 +3211,146 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               lineHeight={lineHeight}
               selectedColor={selectedColor}
               headerColor={headerColor}
-              zoomLevel={zoomLevel}
+              zoomLevel={1}
               sectionOrder={addedSections}
               sections={memoizedSections}
               templates={templates}
               onSelectTemplate={handleSelectTemplate}
             />
-            <div className="bg-white border-t w-full p-3.5">
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center">
-                  <div className="relative" ref={templateDropdownRef}>
-                    <button
-                      className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors w-full"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setShowTemplateMenu(!showTemplateMenu)
-                      }}
-                    >
-                      <LayoutIcon className="h-4 w-4" />
-                      <span className="text-sm">Mall</span>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${showTemplateMenu ? "rotate-180" : ""}`} />
-                    </button>
+          </div>
 
-                    {showTemplateMenu && (
-                      <div className="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-lg shadow-lg border p-2 space-y-1 z-999">
-                        {templates
-                          .filter((template) => ["default"].includes(template.id))
-                          .map((template) => (
-                            <button
-                              key={template.id}
-                              className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleSelectTemplate(template.id)
-                                setShowTemplateMenu(false)
-                              }}
-                            >
-                              <span className="text-sm">{template.name}</span>
-                              {selectedTemplate === template.id && <Check className="h-4 w-4 text-green-500 ml-auto" />}
-                            </button>
-                          ))}
-                      </div>
-                    )}
+          <div className="shrink-0 rounded-t-2xl bg-white pb-safe shadow-[0_-16px_40px_-12px_rgb(0_0_0/0.5)] animate-sheet-up">
+            <div className="flex h-[150px] items-center" role="tabpanel">
+              {mobileTool === "template" && (
+                <TemplatePicker
+                  layout="strip"
+                  templates={PICKER_TEMPLATES}
+                  selected={selectedTemplate}
+                  onSelect={handleSelectTemplate}
+                  className="w-full"
+                />
+              )}
+
+              {mobileTool === "font" && (
+                <div className="no-scrollbar flex w-full gap-2 overflow-x-auto overscroll-x-contain px-4 py-1">
+                  {fonts.map((font) => (
+                    <button
+                      key={font}
+                      type="button"
+                      onClick={() => setSelectedFont(font)}
+                      aria-pressed={selectedFont === font}
+                      className={`h-11 shrink-0 rounded-lg px-4 text-sm ring-1 ring-inset ${
+                        selectedFont === font ? "bg-ink text-white ring-ink" : "bg-white text-ink-700 ring-ink-200"
+                      }`}
+                      style={{ fontFamily: font }}
+                    >
+                      {font}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {mobileTool === "size" && (
+                <div className="w-full space-y-4 px-4">
+                  <div>
+                    <div className="mb-1.5 text-xs font-medium text-ink-500">Textstorlek</div>
+                    <div className="grid grid-cols-5 gap-1 rounded-xl bg-ink-50 p-1">
+                      {FONT_SIZES.map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => handleFontSizeChange(size)}
+                          aria-pressed={fontSize === size}
+                          className={`h-9 rounded-lg text-sm font-semibold ${
+                            fontSize === size ? "bg-white text-ink shadow-soft" : "text-ink-500"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mb-1.5 text-xs font-medium text-ink-500">Radavstånd</div>
+                    <div className="grid grid-cols-5 gap-1 rounded-xl bg-ink-50 p-1">
+                      {LINE_HEIGHTS.map((height) => (
+                        <button
+                          key={height}
+                          type="button"
+                          onClick={() => handleLineHeightChange(height)}
+                          aria-pressed={lineHeight === height}
+                          className={`h-9 rounded-lg text-sm font-semibold tabular ${
+                            lineHeight === height ? "bg-white text-ink shadow-soft" : "text-ink-500"
+                          }`}
+                        >
+                          {height}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {mobileTool === "color" && (
+                <div className="w-full">
+                  <div className="mb-2 px-4 text-xs font-medium text-ink-500">Välj färg</div>
+                  <div className="no-scrollbar flex items-center gap-3 overflow-x-auto overscroll-x-contain px-4 py-1.5">
+                    {COLOR_SWATCHES.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        aria-label={`Välj färg ${color}`}
+                        aria-pressed={selectedColor === color}
+                        onClick={() => handleColorChange(color)}
+                        className={`h-10 w-10 shrink-0 rounded-full ring-2 ring-offset-2 ${
+                          selectedColor === color ? "ring-ink" : "ring-transparent"
+                        }`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                    <label
+                      className="relative h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full ring-1 ring-ink-200"
+                      style={{ background: "conic-gradient(#ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ec4899, #ef4444)" }}
+                    >
+                      <span className="sr-only">Egen färg</span>
+                      <input
+                        type="color"
+                        value={selectedColor}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      />
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
-            <button
-              className="fixed top-4 right-4 flex items-center gap-2 text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg bg-white hover:bg-gray-100 transition-colors font-medium shadow-lg"
-              onClick={() => setShowPreview(false)}
-            >
-              <Minimize2 className="h-4 w-4" />
-              <span className="text-sm">Minimera</span>
-            </button>
+
+            <div role="tablist" aria-label="Designverktyg" className="grid grid-cols-4 border-t border-ink-100 px-2">
+              {([
+                { id: "template", label: "Mall", icon: LayoutIcon },
+                { id: "font", label: "Typsnitt", icon: Type },
+                { id: "size", label: "Storlek", icon: TextSize },
+                { id: "color", label: "Färg", icon: Palette },
+              ] as const).map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={mobileTool === id}
+                  onClick={() => setMobileTool(id)}
+                  className={`relative flex flex-col items-center gap-1 pb-2 pt-2.5 text-[11px] font-semibold ${
+                    mobileTool === id ? "text-ink" : "text-ink-400"
+                  }`}
+                >
+                  {mobileTool === id && <span className="absolute inset-x-5 top-0 h-0.5 rounded-full bg-brand" />}
+                  <Icon className="h-5 w-5" />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       <DownloadPopup 
         isOpen={isDownloadPopupOpen} 

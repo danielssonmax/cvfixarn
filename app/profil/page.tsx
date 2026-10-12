@@ -181,11 +181,12 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex flex-col items-center justify-center gap-6 py-20">
             <div className="text-center">
-              <h1 className="text-3xl font-semibold mb-3">Välkommen till CV.se</h1>
-              <p className="text-gray-600 mb-6">Logga in för att se dina sparade CV:n</p>
+              <h1 className="text-3xl font-bold tracking-tight text-ink mb-3">Välkommen till CVfixaren</h1>
+              <p className="text-ink-500 mb-6">Logga in för att se dina sparade CV:n</p>
             </div>
-            <Button 
-              className="bg-[#00bf63] hover:bg-[#00a857] text-white px-8 py-6 text-lg"
+            <Button
+              size="lg"
+              className="px-8"
               onClick={() => {
                 setIsSignupOpen(true)
                 setPopupMode("login")
@@ -213,30 +214,30 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
       
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-50 border-r border-gray-200 flex-shrink-0">
-          <nav className="px-3 py-6 space-y-1">
-            <button
-              className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-white shadow-sm text-gray-900"
+      <div className="flex flex-1 flex-col md:flex-row">
+        {/* Sidebar (a tab row on phones) */}
+        <aside className="border-b border-ink-100 bg-ink-50/60 md:w-64 md:flex-shrink-0 md:border-b-0 md:border-r">
+          <nav aria-label="Konto" className="flex gap-1 px-3 py-2 md:flex-col md:py-6">
+            <span
+              aria-current="page"
+              className="flex items-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-soft ring-1 ring-ink-100 md:py-3"
             >
               CV:n
-            </button>
-            <Link href="/profil/konto">
-              <button
-                className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-white hover:text-gray-900"
-              >
-                Mina sidor
-              </button>
+            </span>
+            <Link
+              href="/profil/konto"
+              className="flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-ink-500 hover:bg-white hover:text-ink md:py-3"
+            >
+              Mina sidor
             </Link>
           </nav>
         </aside>
 
         {/* Main Content Area */}
-        <div className="flex-1 px-6 py-6">
+        <div className="min-w-0 flex-1 px-4 py-6 sm:px-6">
             {/* Header Bar */}
             <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-normal text-gray-900">CV:n</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-ink">CV:n</h1>
           
           <div className="flex items-center gap-3">
             {/* View Toggle */}
@@ -262,16 +263,16 @@ export default function ProfilePage() {
         {/* CV Grid/List */}
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#00bf63]"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-2 border-ink-100 border-t-brand" role="status" aria-label="Laddar"></div>
           </div>
         ) : cvs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-6">
             <div className="text-center">
-              <h2 className="text-xl font-medium mb-2">Inga CV:n än</h2>
-              <p className="text-gray-600 mb-6">Skapa ditt första CV för att komma igång</p>
+              <h2 className="text-xl font-bold text-ink mb-2">Inga CV:n än</h2>
+              <p className="text-ink-500 mb-6">Skapa ditt första CV för att komma igång</p>
             </div>
             <Link href="/profil/skapa-cv?new=true">
-              <Button className="bg-[#00bf63] hover:bg-[#00a857] text-white px-6 py-5">
+              <Button size="lg">
                 <Plus className="h-5 w-5 mr-2" />
                 Skapa nytt CV
               </Button>
@@ -283,12 +284,12 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                 {/* Create New Card */}
                 <Link href="/profil/skapa-cv?new=true">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg hover:border-[#00bf63] hover:bg-gray-50 transition-all cursor-pointer group">
+                  <div className="border-2 border-dashed border-ink-200 rounded-xl hover:border-brand hover:bg-brand-50/40 transition-colors cursor-pointer group">
                     <div className="aspect-[3/4] flex flex-col items-center justify-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-[#00bf63] flex items-center justify-center transition-colors">
-                        <Plus className="h-6 w-6 text-gray-600 group-hover:text-white" />
+                      <div className="w-12 h-12 rounded-full bg-ink-50 group-hover:bg-brand flex items-center justify-center transition-colors">
+                        <Plus className="h-6 w-6 text-ink-500 group-hover:text-white" />
                       </div>
-                      <p className="text-sm text-gray-600 group-hover:text-[#00bf63] font-medium">Skapa nytt cv</p>
+                      <p className="text-sm text-ink-500 group-hover:text-brand-700 font-semibold">Skapa nytt CV</p>
                     </div>
                   </div>
                 </Link>
@@ -297,9 +298,9 @@ export default function ProfilePage() {
                 {cvs.map((cv) => (
                   <div key={cv.id} className="group">
                     <Link href={`/profil/skapa-cv?id=${cv.id}`}>
-                      <div className="border border-gray-200 rounded-lg hover:shadow-lg transition-shadow cursor-pointer overflow-hidden bg-white">
+                      <div className="ring-1 ring-ink-100 rounded-xl hover:shadow-lift hover:ring-ink-200 transition-shadow cursor-pointer overflow-hidden bg-white">
                         {/* CV Preview Thumbnail */}
-                        <div className="aspect-[3/4] bg-gray-50 border-b border-gray-200 overflow-hidden">
+                        <div className="aspect-[3/4] bg-ink-50 border-b border-ink-100 overflow-hidden">
                           <CVThumbnail cvData={cv.cvData} />
                         </div>
                         
@@ -307,7 +308,7 @@ export default function ProfilePage() {
                         <div className="p-3">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-sm font-medium text-gray-900 truncate">{cv.title}</h3>
+                              <h3 className="text-sm font-semibold text-ink truncate">{cv.title}</h3>
                               {cv.updated_at && (
                                 <p className="text-xs text-gray-500 mt-1">
                                   Redigerad {format(new Date(cv.updated_at), 'P', { locale: sv })}
@@ -317,7 +318,7 @@ export default function ProfilePage() {
                             
                             <DropdownMenu open={openDropdownId === cv.id} onOpenChange={(open) => setOpenDropdownId(open ? cv.id : null)}>
                               <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                                <button className="p-1 hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button aria-label="Fler val" className="p-1.5 hover:bg-ink-50 rounded-md sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity">
                                   <MoreVertical className="h-4 w-4 text-gray-600" />
                                 </button>
                               </DropdownMenuTrigger>
@@ -359,7 +360,7 @@ export default function ProfilePage() {
                           <CVThumbnail cvData={cv.cvData} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium text-gray-900 truncate">{cv.title}</h3>
+                          <h3 className="text-sm font-semibold text-ink truncate">{cv.title}</h3>
                           {cv.updated_at && (
                             <p className="text-xs text-gray-500">
                               Redigerad {format(new Date(cv.updated_at), 'P', { locale: sv })}
@@ -369,7 +370,7 @@ export default function ProfilePage() {
                         
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                            <button className="p-2 hover:bg-gray-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button aria-label="Fler val" className="p-2 hover:bg-ink-50 rounded-md sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity">
                               <MoreVertical className="h-4 w-4 text-gray-600" />
                             </button>
                           </DropdownMenuTrigger>
