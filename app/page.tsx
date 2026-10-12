@@ -11,20 +11,40 @@ import { FileText, Layout, Shield, Zap, Download, CheckCircle, Star, BarChart3, 
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Skapa ett gratis CV - Var en av de 2% som går vidare | CVfixaren",
-  description: "Skapa ett professionellt och ATS-anpassat CV gratis med CVfixaren. Välj bland professionella mallar, fyll i din information och ladda ner ditt CV som PDF på bara några minuter.",
+  title: "Skapa CV gratis online – 15 proffsiga CV-mallar | CVfixaren",
+  description: "Skapa ett professionellt, ATS-anpassat CV på några minuter med vår CV-byggare. Välj bland 15 CV-mallar, fyll i dina uppgifter och ladda ner som PDF.",
   alternates: {
     canonical: "https://www.cvfixaren.se",
   },
   openGraph: {
-    title: "Skapa ett gratis CV - Var en av de 2% som går vidare | CVfixaren",
-    description: "Skapa ett professionellt och ATS-anpassat CV gratis med CVfixaren. Välj bland professionella mallar, fyll i din information och ladda ner ditt CV som PDF på bara några minuter.",
+    title: "Skapa ett gratis CV – Var en av de 2% som går vidare | CVfixaren",
+    description: "Skapa ett professionellt, ATS-anpassat CV på några minuter med vår CV-byggare. Välj bland 15 CV-mallar, fyll i dina uppgifter och ladda ner som PDF.",
     url: "https://www.cvfixaren.se",
     type: "website",
   },
 }
 
 const faqItems = [
+  {
+    question: "Hur skapar jag ett CV?",
+    answer: "Välj en CV-mall, fyll i dina uppgifter i vår CV-byggare och se ditt CV växa fram i förhandsgranskningen medan du skriver. Du kan byta mall, typsnitt och färg när som helst utan att börja om. När du är nöjd laddar du ner ditt CV som PDF."
+  },
+  {
+    question: "Är det gratis att skapa ett CV hos CVfixaren?",
+    answer: "Det är gratis att skapa och redigera ditt CV, och du behöver inget konto för att komma igång. När du vill ladda ner ditt CV som PDF startar du en provperiod: 0 kr i 7 dagar, därefter 69 kr/vecka utan bindningstid. Du kan avsluta när du vill."
+  },
+  {
+    question: "Kan jag göra mitt CV i mobilen?",
+    answer: "Ja. CV-verktyget fungerar i mobilen, på surfplattan och på datorn. I mobilen kan du förhandsgranska ditt CV och byta mall, typsnitt och färg medan du ser resultatet direkt."
+  },
+  {
+    question: "Kan jag utgå från mitt gamla CV?",
+    answer: "Ja. Ladda upp ditt befintliga CV som PDF eller Word så fyller vi i fälten åt dig. Sedan kan du uppdatera innehållet och välja en ny CV-mall."
+  },
+  {
+    question: "Är CV-mallarna ATS-anpassade?",
+    answer: "Ja. Alla våra CV-mallar använder riktig, sökbar text och tydliga rubriker, så att de rekryteringssystem (ATS) som många arbetsgivare använder kan läsa ditt CV korrekt."
+  },
   {
     question: "Hur långt bör mitt CV vara?",
     answer: "Ett CV bör vanligtvis vara 1-2 sidor långt. För nyutexaminerade eller de med mindre erfarenhet räcker ofta en sida, medan mer erfarna kandidater kan behöva två sidor för att presentera all relevant information."
@@ -217,20 +237,20 @@ export default function HomePage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "HowTo",
-            "name": "Hur man skapar ett professionellt CV med CVfixaren",
-            "description": "Skapa ditt professionella CV i fyra enkla steg — klart på bara några minuter.",
+            "name": "Så skapar du ett CV med CVfixaren",
+            "description": "Skapa ditt CV online i fyra enkla steg – klart på bara några minuter.",
             "step": [
               {
                 "@type": "HowToStep",
                 "position": 1,
-                "name": "Välj en mall",
-                "text": "Bläddra igenom vårt urval av professionella mallar och välj den som passar dig bäst."
+                "name": "Välj en CV-mall",
+                "text": "Bläddra bland våra professionella CV-mallar och välj den som passar dig och branschen du söker jobb i."
               },
               {
                 "@type": "HowToStep",
                 "position": 2,
-                "name": "Fyll i din information",
-                "text": "Lägg till dina personuppgifter, arbetslivserfarenhet, utbildning och färdigheter."
+                "name": "Fyll i dina uppgifter",
+                "text": "Lägg till personuppgifter, arbetslivserfarenhet, utbildning och färdigheter – eller ladda upp ditt gamla CV så fyller vi i fälten åt dig."
               },
               {
                 "@type": "HowToStep",
@@ -241,8 +261,8 @@ export default function HomePage() {
               {
                 "@type": "HowToStep",
                 "position": 4,
-                "name": "Ladda ner och använd",
-                "text": "Ladda ner ditt färdiga CV i PDF-format och börja söka jobb!"
+                "name": "Ladda ner som PDF",
+                "text": "Ladda ner ditt färdiga CV som PDF och börja söka jobb direkt."
               }
             ]
           })
@@ -264,7 +284,7 @@ export default function HomePage() {
             <div className="text-center lg:col-span-6 lg:text-left">
               <p className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-white px-3 py-1 text-xs font-medium text-ink-600 shadow-soft">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                ATS-anpassade mallar · Klart på minuter
+                Svensk CV-byggare · ATS-anpassade mallar
               </p>
               <h1 className="mt-6 text-[2.4rem] font-extrabold leading-[1.06] tracking-[-0.035em] text-ink sm:text-5xl lg:text-[3.6rem]">
                 Skapa ett gratis CV -{" "}
@@ -285,8 +305,8 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-500 lg:mx-0">
-                Använd våra expertgranskade CV-mallar som följer arbetsgivarnas önskemål. Enkelt, snabbt och
-                professionellt - skapa ditt CV på minuter. Börja gratis idag!
+                Med vår CV-byggare skapar du ett professionellt CV online på några minuter. Välj bland 15
+                expertgranskade CV-mallar, fyll i dina uppgifter och ladda ner ditt CV som PDF. Börja gratis idag!
               </p>
               <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
                 <Button
@@ -301,7 +321,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
                 <Link href="/cv-mallar" className="link-underline py-2 text-sm font-semibold text-ink-700 hover:text-ink">
-                  Se alla mallar
+                  Se alla CV-mallar
                 </Link>
               </div>
               <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-ink-500 lg:justify-start">
@@ -318,7 +338,7 @@ export default function HomePage() {
             <div className="relative mx-auto h-[310px] w-full max-w-[520px] sm:h-[460px] lg:col-span-6 lg:h-[540px] lg:max-w-none">
               <div className="absolute left-[4%] top-[12%] w-[44%] -rotate-[7deg] overflow-hidden rounded-md bg-white shadow-lift ring-1 ring-ink-100 sm:left-[8%]">
                 <div className="relative aspect-[794/1123]">
-                  <Image src="/images/templates/cv-mall-modern.png" alt="Modern CV-mall" fill className="object-cover" sizes="240px" />
+                  <Image src="/images/templates/cv-mall-modern.png" alt="Modern CV-mall med sidopanel" fill className="object-cover" sizes="240px" />
                 </div>
               </div>
               <div className="absolute right-[4%] top-[8%] w-[44%] rotate-[6deg] overflow-hidden rounded-md bg-white shadow-lift ring-1 ring-ink-100 sm:right-[8%]">
@@ -330,7 +350,7 @@ export default function HomePage() {
                 <div className="relative aspect-[794/1123]">
                   <Image
                     src="/images/templates/cv-mall-standard.png"
-                    alt="Standard CV-mall — mest populär"
+                    alt="CV skapat med CVfixarens Standard-mall"
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 60vw, 300px"
@@ -387,17 +407,17 @@ export default function HomePage() {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-4">
               <p className="text-sm font-semibold text-brand-700">Varför CVfixaren</p>
-              <h2 className="mt-3 text-3xl font-bold text-ink md:text-4xl">Varför välja CVfixaren.se?</h2>
+              <h2 className="mt-3 text-3xl font-bold text-ink md:text-4xl">Varför välja CVfixaren som CV-byggare?</h2>
               <p className="mt-4 text-lg leading-relaxed text-ink-500">
-                Vi har byggt ett verktyg som gör det enkelt att skapa professionella, ATS-optimerade CV:n som imponerar på rekryterare.
+                CVfixaren är en svensk CV-byggare: du fyller i dina uppgifter och vi sköter formateringen. Resultatet är ett professionellt, ATS-anpassat CV som imponerar på rekryterare.
               </p>
             </div>
             <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:col-span-8">
               {[
-                { icon: Layout, title: "Professionella mallar", text: "Våra mallar är designade av experter och testade av rekryterare för att hjälpa dig sticka ut från mängden." },
-                { icon: Zap, title: "Enkelt att använda", text: "Vår användarvänliga plattform gör det enkelt att skapa ett imponerande CV på bara några minuter." },
-                { icon: Target, title: "ATS-optimerat", text: "Våra CV:n är optimerade för att passera Applicant Tracking Systems (ATS) som arbetsgivare använder." },
-                { icon: Download, title: "Exportera till PDF", text: "Ladda ner ditt färdiga CV i PDF-format med ett klick - redo att skicka till arbetsgivare direkt." },
+                { icon: Layout, title: "Professionella CV-mallar", text: "Våra CV-mallar är designade av experter och testade av rekryterare för att hjälpa dig sticka ut från mängden." },
+                { icon: Zap, title: "Enkelt att använda", text: "Vår CV-skapare guidar dig genom varje del, så att du kan göra ett imponerande CV på några minuter – även i mobilen." },
+                { icon: Target, title: "ATS-anpassat CV", text: "Alla CV-mallar är byggda för att läsas rätt av de rekryteringssystem (ATS) som många arbetsgivare använder." },
+                { icon: Download, title: "Ladda ner som PDF", text: "Ladda ner ditt färdiga CV som PDF med ett klick – redo att skicka till arbetsgivare direkt." },
                 { icon: Shield, title: "Säker hantering", text: "Dina uppgifter hanteras säkert och skyddas. Vi tar din integritet på allvar." },
                 { icon: Sparkles, title: "Anpassa designen", text: "Välj typsnitt, färger och layout för att göra ditt CV personligt och unikt." },
               ].map(({ icon: Icon, title, text }) => (
@@ -414,17 +434,17 @@ export default function HomePage() {
         {/* ── How it works ─────────────────────────────────────── */}
         <Section background="gray">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <h2 className="text-3xl font-bold text-ink md:text-4xl">Så här fungerar det</h2>
+            <h2 className="text-3xl font-bold text-ink md:text-4xl">Så skapar du ett CV i fyra steg</h2>
             <p className="max-w-md text-lg leading-relaxed text-ink-500">
-              Skapa ditt professionella CV i fyra enkla steg - klart på bara några minuter.
+              Skapa ditt CV online i fyra enkla steg – klart på bara några minuter.
             </p>
           </div>
           <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { title: "Välj en mall", text: "Bläddra igenom vårt urval av professionella mallar och välj den som passar dig bäst." },
-              { title: "Fyll i din information", text: "Lägg till dina personuppgifter, arbetslivserfarenhet, utbildning och färdigheter." },
+              { title: "Välj en CV-mall", text: "Bläddra bland våra professionella CV-mallar och välj den som passar dig och branschen du söker jobb i." },
+              { title: "Fyll i dina uppgifter", text: "Lägg till personuppgifter, arbetslivserfarenhet, utbildning och färdigheter – eller ladda upp ditt gamla CV så fyller vi i fälten åt dig." },
               { title: "Anpassa designen", text: "Justera färger, typsnitt och layout för att göra ditt CV unikt." },
-              { title: "Ladda ner och använd", text: "Ladda ner ditt färdiga CV i PDF-format och börja söka jobb!" },
+              { title: "Ladda ner som PDF", text: "Ladda ner ditt färdiga CV som PDF och börja söka jobb direkt." },
             ].map((step, i) => (
               <li key={step.title} className="rounded-2xl bg-white p-6 shadow-soft ring-1 ring-ink-100">
                 <div className="flex items-center gap-3">
@@ -443,7 +463,7 @@ export default function HomePage() {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
               <div className="lg:sticky lg:top-28">
-                <h2 className="text-3xl font-bold text-ink md:text-4xl">Allt du behöver för ett proffsigt CV</h2>
+                <h2 className="text-3xl font-bold text-ink md:text-4xl">Allt du behöver för att göra ett proffsigt CV</h2>
                 <p className="mt-4 text-lg leading-relaxed text-ink-500">
                   Vårt verktyg kombinerar enkelhet med kraftfulla funktioner för att ge dig det bästa resultatet.
                 </p>
@@ -461,7 +481,7 @@ export default function HomePage() {
                 { icon: BarChart3, title: "Optimerade för ATS-system", text: "Både format och layout har optimerats för de algoritmer som filtrerar CV:n. Se till att din ansökan blir läst av en riktig människa." },
                 { icon: Clock, title: "Klart på minuter", text: "Sluta spendera timmar på formatering. Vårt verktyg skapar ett snyggt, professionellt CV åt dig på bara några minuter." },
                 { icon: FileText, title: "Flexibla sektioner", text: "Lägg till arbetslivserfarenhet, utbildning, färdigheter, språk, certifikat, projekt och mycket mer. Ordna sektionerna precis som du vill." },
-                { icon: Sparkles, title: "Flera designalternativ", text: "Välj mellan olika typsnitt, storlekar, färger och mallar. Gör ditt CV personligt utan att kompromissa med professionalismen." },
+                { icon: Sparkles, title: "15 CV-mallar att välja mellan", text: "Välj mellan olika mallar, typsnitt, storlekar och färger. Gör ditt CV personligt utan att kompromissa med professionalismen." },
                 { icon: Download, title: "PDF-export med ett klick", text: "Exportera ditt CV som en perfekt formaterad PDF. Redo att skickas direkt till arbetsgivare eller laddas upp på jobbsajter." },
                 { icon: Shield, title: "Spara och redigera", text: "Ditt CV sparas automatiskt. Gå tillbaka och redigera det när som helst - perfekt när du vill anpassa det för olika tjänster." },
               ].map(({ icon: Icon, title, text }) => (
@@ -485,11 +505,11 @@ export default function HomePage() {
             <div>
               <h2 className="text-3xl font-bold text-ink md:text-4xl">Våra populäraste CV-mallar</h2>
               <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-500">
-                Testade och godkända mallar som hjälper dig att presentera din erfarenhet på bästa sätt.
+                Testade och godkända CV-mallar som hjälper dig att presentera din erfarenhet på bästa sätt. Välj en mall och skapa ditt CV direkt.
               </p>
             </div>
             <Link href="/cv-mallar" className="group hidden items-center gap-1.5 text-sm font-semibold text-ink hover:text-brand-700 md:inline-flex">
-              Visa alla mallar
+              Visa alla CV-mallar
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -506,7 +526,7 @@ export default function HomePage() {
           </div>
           <div className="mt-10 text-center md:hidden">
             <Button asChild variant="outline" size="lg">
-              <Link href="/cv-mallar">Visa alla mallar</Link>
+              <Link href="/cv-mallar">Visa alla CV-mallar</Link>
             </Button>
           </div>
         </Section>
@@ -574,7 +594,7 @@ export default function HomePage() {
                     variant="outline"
                     className="h-14 border-white/20 bg-transparent px-8 text-base text-white hover:border-white/40 hover:bg-white/10 hover:text-white"
                   >
-                    <Link href="/cv-mallar">Se våra mallar</Link>
+                    <Link href="/cv-mallar">Se våra CV-mallar</Link>
                   </Button>
                 </div>
                 <ul className="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-200">
@@ -647,7 +667,7 @@ export default function HomePage() {
         <Section background="gray">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-4">
-              <h2 className="text-3xl font-bold text-ink md:text-4xl">Vanliga frågor</h2>
+              <h2 className="text-3xl font-bold text-ink md:text-4xl">Vanliga frågor om att skapa CV</h2>
               <p className="mt-4 leading-relaxed text-ink-500">
                 Hittar du inte svaret?{" "}
                 <Link href="/vanliga-fragor" className="font-semibold text-ink underline underline-offset-4 hover:text-brand-700">
@@ -656,6 +676,17 @@ export default function HomePage() {
                 eller{" "}
                 <Link href="/kontakt" className="font-semibold text-ink underline underline-offset-4 hover:text-brand-700">
                   kontakta oss
+                </Link>
+                .
+              </p>
+              <p className="mt-4 leading-relaxed text-ink-500">
+                Behöver du inspiration? Se våra{" "}
+                <Link href="/cv-exempel" className="font-semibold text-ink underline underline-offset-4 hover:text-brand-700">
+                  CV-exempel för olika yrken
+                </Link>{" "}
+                eller läs vår guide om{" "}
+                <Link href="/skriva-cv" className="font-semibold text-ink underline underline-offset-4 hover:text-brand-700">
+                  hur du skriver ett bra CV
                 </Link>
                 .
               </p>

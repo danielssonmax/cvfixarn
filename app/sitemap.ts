@@ -23,6 +23,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/skriva-cv`,
+      lastModified: new Date("2026-10-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/ats-anpassade-cv-mallar`,
       lastModified: new Date(),
       changeFrequency: "weekly",

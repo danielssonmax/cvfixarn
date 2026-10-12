@@ -35,20 +35,20 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
           }),
         }}
       />
-      <nav aria-label="Breadcrumbs" className="text-sm">
-        <ol className="flex items-center space-x-2">
+      <nav aria-label="Brödsmulor" className="text-sm">
+        <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <Link href="/" className="text-gray-500 hover:text-[#00bf63]">
+            <Link href="/" className="text-ink-400 hover:text-ink">
               Hem
             </Link>
           </li>
           {items.map((item, index) => (
-            <li key={item.href} className="flex items-center space-x-2">
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+            <li key={item.href} className="flex items-center gap-2">
+              <ChevronRight aria-hidden className="h-4 w-4 text-ink-300" />
               {index === items.length - 1 ? (
-                <span className="text-gray-900 font-medium">{item.label}</span>
+                <span aria-current="page" className="font-medium text-ink">{item.label}</span>
               ) : (
-                <Link href={item.href} className="text-gray-500 hover:text-[#00bf63]">
+                <Link href={item.href} className="text-ink-400 hover:text-ink">
                   {item.label}
                 </Link>
               )}

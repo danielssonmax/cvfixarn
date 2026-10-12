@@ -19,6 +19,7 @@ const columns = [
   {
     title: "Resurser",
     links: [
+      { href: "/skriva-cv", label: "Skriva CV – guide" },
       { href: "/blogg", label: "Blogg" },
       { href: "/karriartips", label: "Karriärtips" },
       { href: "/intervjuguide", label: "Intervjuguide" },

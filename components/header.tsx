@@ -44,6 +44,7 @@ export function Header() {
   const navLinks = [
     { href: "/cv-mallar", label: "CV-mallar" },
     { href: "/cv-exempel", label: "CV-exempel" },
+    { href: "/skriva-cv", label: "Skriva CV" },
     { href: "/blogg", label: "Blogg" },
   ]
 
