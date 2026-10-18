@@ -82,7 +82,7 @@ export default function CVMallClient() {
   const editorRef = useRef<ResumeEditorHandle>(null)
   const editId = searchParams.get('edit')
   const checkoutSuccess = searchParams.get('checkout')
-  const isNewUser = searchParams.get('new') === 'true'
+  const shouldOpenPayment = searchParams.get('pay') === 'true'
 
   // Track purchase conversion when redirected from successful Stripe checkout
   useEffect(() => {
@@ -135,15 +135,16 @@ export default function CVMallClient() {
     }
   }, [checkoutSuccess, searchParams, user])
 
-  // When user lands on /skapa-cv after signup (?new=true), open Stripe checkout immediately (no "konto skapat" popup)
+  // When user lands on /skapa-cv with ?pay=true (after signup, or from the abandoned-CV email), open Stripe checkout immediately (no "konto skapat" popup).
+  // ?new=true only means "start a new CV" (e.g. the "Skapa CV" button) and must not open checkout.
   useEffect(() => {
-    if (isNewUser && user && !isSubscribed) {
+    if (shouldOpenPayment && user && !isSubscribed) {
       setShowCapturePayment(true)
       const url = new URL(window.location.href)
-      url.searchParams.delete('new')
+      url.searchParams.delete('pay')
       window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
     }
-  }, [isNewUser, user])
+  }, [shouldOpenPayment, user])
 
   // Use react-hook-form
   const form = useForm({

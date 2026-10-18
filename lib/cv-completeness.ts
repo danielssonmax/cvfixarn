@@ -7,8 +7,10 @@
  *   - copy: "Ditt CV ar 70% klart" is a far stronger nudge than a generic one,
  *     and the section list lets the email name what they actually filled in.
  *
- * The shape is whatever `public.cvs` returns, so every accessor is defensive —
- * these are JSONB columns and older rows predate some of the fields.
+ * `public.cvs` keeps the whole CV in one `data` JSONB column. The editor's
+ * autosave writes `experience` (and an empty `workExperience`), while older
+ * saves wrote `workExperience` or nested lists under `sections.<id>.items` — so
+ * every accessor reads all shapes, the same way the editor does on load.
  */
 
 export interface CvCompleteness {
@@ -36,6 +38,20 @@ function asObject(value: unknown): AnyRecord {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as AnyRecord)
     : {}
+}
+
+/** A list stored either directly or as `{ items: [...] }`. */
+function asList(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : asArray(asObject(value).items)
+}
+
+/** First non-empty list. Needed because new saves carry `workExperience: []`. */
+function firstList(...candidates: unknown[]): unknown[] {
+  for (const candidate of candidates) {
+    const list = asList(candidate)
+    if (list.length > 0) return list
+  }
+  return []
 }
 
 function text(value: unknown): string {
@@ -70,8 +86,11 @@ interface Rule {
 }
 
 export function scoreCv(cv: AnyRecord): CvCompleteness {
-  const personal = asObject(cv.personal_info)
-  const profile = asObject(cv.profile)
+  const data = asObject(cv.data)
+  const sections = asObject(data.sections)
+
+  const personal = asObject(data.personalInfo)
+  const profile = asObject(data.profile || sections.profile)
 
   const firstName = text(personal.firstName)
   const lastName = text(personal.lastName)
@@ -80,10 +99,10 @@ export function scoreCv(cv: AnyRecord): CvCompleteness {
       ? text(personal.summary)
       : text(profile.description)
 
-  const work = asArray(cv.work_experience)
-  const education = asArray(cv.education)
-  const skills = asArray(cv.skills)
-  const languages = asArray(cv.languages)
+  const work = firstList(data.experience, data.workExperience, sections.experience)
+  const education = firstList(data.education, sections.education)
+  const skills = firstList(data.skills, sections.skills)
+  const languages = firstList(data.languages, sections.languages)
 
   const rules: Rule[] = [
     { label: "Namn", weight: 12, done: firstName.length > 0 || lastName.length > 0 },
@@ -138,5 +157,4 @@ export function scoreCv(cv: AnyRecord): CvCompleteness {
 }
 
 /** Columns the scorer needs — keeps the cron's SELECT narrow. */
-export const CV_SCORING_COLUMNS =
-  "id, user_id, cv_name, updated_at, personal_info, profile, work_experience, education, skills, languages"
+export const CV_SCORING_COLUMNS = "id, user_id, title, updated_at, data"

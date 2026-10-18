@@ -174,7 +174,6 @@ async function handle(request: NextRequest) {
       "user_id",
       pending.map((row) => row.uid as string)
     )
-    .eq("active", true)
     .order("updated_at", { ascending: false })
 
   if (cvError) {
@@ -220,9 +219,11 @@ async function handle(request: NextRequest) {
     }
 
     const cvId = cv.id as string
-    // ?new=true is what CVMallClient watches to open the payment step, and
-    // ?edit=<id> is what makes it load this specific CV.
-    const destinationPath = `/profil/skapa-cv?edit=${encodeURIComponent(cvId)}&new=true`
+    // ?pay=true is what CVMallClient watches to open the payment step, and
+    // ?id=<id> is what makes the editor load (and keep saving to) this exact CV.
+    // Not ?edit=&new=true: new=true makes the editor start a fresh CV id, so the
+    // autosave would write a duplicate instead of updating this one.
+    const destinationPath = `/profil/skapa-cv?id=${encodeURIComponent(cvId)}&pay=true`
     const fallbackUrl = `${siteUrl}${destinationPath}`
 
     if (dryRun) {
