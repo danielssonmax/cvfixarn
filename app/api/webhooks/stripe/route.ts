@@ -8,9 +8,13 @@ import type Stripe from "stripe"
 
 const stripe = getStripeInstance()
 
+// Service role, not anon: the premium table's RLS policy only lets the service
+// role write (see the create_premium_table migration), so an anon-key upsert
+// here is rejected and nobody gets marked as paid.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } }
 )
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!

@@ -33,13 +33,27 @@ export default function StripeCheckoutDialog({ isOpen, onClose, onSubscriptionSu
       fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           priceId: "price_1SxjgoGE8ubumLAkT6ZRDsga",
-          userId: user.id 
+          userId: user.id,
+          cvId: new URLSearchParams(window.location.search).get("id") || undefined,
         }),
       })
         .then((res) => res.json())
-        .then((data) => setClientSecret(data.clientSecret))
+        .then((data) => {
+          // The server found an existing subscription: treat it like a finished
+          // payment so the user gets their download instead of a second checkout.
+          if (data.alreadySubscribed) {
+            onClose()
+            ;(onPaymentSuccess ?? onSubscriptionSuccess)?.()
+            return
+          }
+          if (!data.clientSecret) {
+            setError("Failed to initialize payment. Please try again later.")
+            return
+          }
+          setClientSecret(data.clientSecret)
+        })
         .catch((err) => {
           console.error("Error creating checkout session:", err)
           setError("Failed to initialize payment. Please try again later.")

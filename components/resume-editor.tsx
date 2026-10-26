@@ -66,6 +66,7 @@ import { Skills } from "@/components/resume-sections/Skills"
 import { Languages } from "@/components/resume-sections/Languages"
 import { DownloadPopup } from "@/components/download-popup"
 import CapturePayment from "@/components/capture-payment"
+import { fetchIsSubscribed } from "@/lib/subscription-client"
 import { SignupPopup } from "@/components/signup-popup"
 import { LoginPopup } from "@/components/login-popup"
 import { Courses } from "@/components/resume-sections/Courses"
@@ -183,6 +184,8 @@ export interface ResumeEditorHandle {
     selectedColor?: string
     headerColor?: string
   }) => void
+  /** Same as clicking "Ladda ned": downloads if paid, otherwise opens checkout. */
+  download: () => void
 }
 
 interface ResumeEditorProps {
@@ -887,7 +890,13 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       if (settings.selectedColor !== undefined) setSelectedColor(settings.selectedColor)
       if (settings.headerColor !== undefined) setHeaderColor(settings.headerColor)
     },
+    // Through a ref so the parent always gets the current handler, not the one
+    // captured when this handle was last rebuilt.
+    download: () => {
+      downloadHandlerRef.current?.()
+    },
   }), [selectedTemplate, selectedFont, fontSize, fontSizePixels, lineHeight, selectedColor, headerColor, addedSections])
+  const downloadHandlerRef = useRef<(() => void) | null>(null)
   const lineHeightDropdownRef = useRef<HTMLDivElement>(null)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(1.0)
@@ -2240,12 +2249,17 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     hasCustomCvNameRef.current = trimmed !== derived
   }, [cvName, form])
 
-  const handleDownloadClick = () => {
+  const handleDownloadClick = async () => {
     console.log('🔽 Download clicked, user:', user ? 'logged in' : 'not logged in', 'isSubscribed:', isSubscribed)
     if (user) {
       if (isSubscribed) {
         // Användaren har betalat - ladda ner direkt
         console.log('🔽 User has PAID status, downloading PDF...')
+        downloadPDF()
+      } else if (await fetchIsSubscribed()) {
+        // isSubscribed kan vara inaktuell eller inte laddad än - servern frågar även Stripe
+        console.log('🔽 Server confirmed subscription, downloading PDF...')
+        setIsSubscribed(true)
         downloadPDF()
       } else {
         // Användaren är inloggad men har inte betalat - visa Stripe checkout
@@ -2258,6 +2272,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
       setShowSignupPopup(true)
     }
   }
+  downloadHandlerRef.current = handleDownloadClick
 
   const downloadPDF = async () => {
     setIsDownloading(true)

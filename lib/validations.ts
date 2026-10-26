@@ -27,6 +27,9 @@ export const createUserSchema = z.object({
 export const createCheckoutSessionSchema = z.object({
   priceId: z.string().min(1, "Price ID krävs").regex(/^price_[a-zA-Z0-9]+$/, "Ogiltigt price ID format"),
   userId: userIdSchema,
+  // The CV being edited, so Stripe sends the customer back to it. A bad value is
+  // dropped rather than rejected: it must never stand between a customer and checkout.
+  cvId: z.string().uuid().optional().catch(undefined),
 })
 
 export const createPaymentIntentSchema = z.object({

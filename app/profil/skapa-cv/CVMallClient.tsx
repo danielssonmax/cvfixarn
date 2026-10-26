@@ -13,6 +13,7 @@ import { Check } from "lucide-react"
 import { createCheckoutSession, checkSubscriptionStatus } from "@/app/actions/stripe"
 import { useAuth } from "@/contexts/AuthContext"
 import CapturePayment from "@/components/capture-payment"
+import { confirmCheckout, fetchIsSubscribed } from "@/lib/subscription-client"
 import { SignupPopup } from "@/components/signup-popup"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
@@ -81,69 +82,69 @@ export default function CVMallClient() {
   const hasLoadedData = useRef(false)
   const editorRef = useRef<ResumeEditorHandle>(null)
   const editId = searchParams.get('edit')
-  const checkoutSuccess = searchParams.get('checkout')
   const shouldOpenPayment = searchParams.get('pay') === 'true'
 
-  // Track purchase conversion when redirected from successful Stripe checkout
+  // Read the Stripe return params once, on first render: the editor can rewrite
+  // the URL before the signed-in user has loaded.
+  const [checkoutReturn] = useState(() =>
+    searchParams.get('checkout') === 'success'
+      ? { sessionId: searchParams.get('session_id') }
+      : null
+  )
+  const checkoutHandled = useRef(false)
+
+  // Returned from Stripe checkout: verify the session server-side (which also marks the
+  // account paid), then report the Google Ads purchase conversion. Verifying first means
+  // a visit to ?checkout=success without a completed payment never counts as a purchase.
   useEffect(() => {
-    if (checkoutSuccess === 'success' && user) {
-      // Fire Google Ads purchase conversion
+    if (!checkoutReturn || !user || checkoutHandled.current) return
+    checkoutHandled.current = true
+
+    // Clean up URL by removing query params, so a reload cannot report it again
+    const url = new URL(window.location.href)
+    url.searchParams.delete('checkout')
+    url.searchParams.delete('session_id')
+    window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
+
+    if (!checkoutReturn.sessionId) return
+
+    confirmCheckout(checkoutReturn.sessionId).then((transactionId) => {
+      if (!transactionId) return
+
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-16880470708/a_QzCJbbyOEbELSVnvE-',
           'value': 237.0,
           'currency': 'SEK',
-          'transaction_id': user.id
+          // One id per checkout: Google drops repeats of the same id, so a reload
+          // never double counts but a later re-subscription still does count.
+          'transaction_id': transactionId
         })
       }
-      
-      // Add user to premium table with status "true"
-      // Note: This is a fallback - the webhook should handle this, but this ensures immediate UI update
-      const addUserToPremium = async () => {
-        try {
-          const { error } = await supabase
-            .from('premium')
-            .upsert({
-              uid: user.id,
-              email: user.email,
-              premium: 'true'
-            }, {
-              onConflict: 'uid'
-            })
-          
-          if (error) {
-            console.error('Error adding user to premium:', error)
-          } else {
-            console.log('User added to premium with true status')
-            setIsSubscribed(true)
-          }
-        } catch (err) {
-          console.error('Error adding user to premium:', err)
-        }
-      }
-      
-      addUserToPremium()
-      
-      // Show success dialog
+
+      setIsSubscribed(true)
       setShowSuccessDialog(true)
-      
-      // Clean up URL by removing query params
-      const url = new URL(window.location.href)
-      url.searchParams.delete('checkout')
-      url.searchParams.delete('session_id')
-      window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
-    }
-  }, [checkoutSuccess, searchParams, user])
+    })
+  }, [checkoutReturn, user])
 
   // When user lands on /skapa-cv with ?pay=true (after signup, or from the abandoned-CV email), open Stripe checkout immediately (no "konto skapat" popup).
   // ?new=true only means "start a new CV" (e.g. the "Skapa CV" button) and must not open checkout.
+  // Ask the server rather than read isSubscribed: that is still false while the premium lookup
+  // is in flight, which opened checkout for users who had already paid.
+  const paymentPromptHandled = useRef(false)
   useEffect(() => {
-    if (shouldOpenPayment && user && !isSubscribed) {
-      setShowCapturePayment(true)
-      const url = new URL(window.location.href)
-      url.searchParams.delete('pay')
-      window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
-    }
+    if (!shouldOpenPayment || !user || paymentPromptHandled.current) return
+    paymentPromptHandled.current = true
+    const url = new URL(window.location.href)
+    url.searchParams.delete('pay')
+    window.history.replaceState({}, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : ''))
+    fetchIsSubscribed().then((subscribed) => {
+      if (subscribed) {
+        setIsSubscribed(true)
+      } else {
+        setShowCapturePayment(true)
+      }
+    })
   }, [shouldOpenPayment, user])
 
   // Use react-hook-form
@@ -560,7 +561,7 @@ export default function CVMallClient() {
         onPaymentSuccess={() => {
           setShowCapturePayment(false)
           setIsSubscribed(true)
-          downloadPDF()
+          editorRef.current?.download()
         }}
       />
 
@@ -593,7 +594,9 @@ export default function CVMallClient() {
             <Button
               onClick={() => {
                 setShowSuccessDialog(false)
-                downloadPDF()
+                // The editor's own download: it renders the CV that is open and
+                // re-checks the subscription server-side.
+                editorRef.current?.download()
               }}
               size="lg"
               className="w-full"
