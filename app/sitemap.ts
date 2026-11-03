@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next"
+import { cvExamples } from "@/lib/cv-examples"
+import { COVER_LETTERS_UPDATED, coverLetterExamples } from "@/lib/cover-letter-examples"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.cvfixaren.se"
@@ -40,60 +42,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/cv-exempel/student`,
+    // One entry per profession page, straight from the data so new batches are included.
+    ...Object.keys(cvExamples).map((slug) => ({
+      url: `${baseUrl}/cv-exempel/${slug}`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
+      changeFrequency: "monthly" as const,
       priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/sjukskoterska`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/underskoterska`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/lagerarbetare`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/gymnasieelev`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/konsult`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/barnskotare`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/cv-exempel/servitor-servitris`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
+    })),
     {
       url: `${baseUrl}/exempel-personliga-brev`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    ...coverLetterExamples.map((example) => ({
+      url: `${baseUrl}/exempel-personliga-brev/${example.slug}`,
+      lastModified: new Date(COVER_LETTERS_UPDATED),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${baseUrl}/blogg`,
       lastModified: new Date(),
@@ -108,6 +75,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/blogg/vad-vill-rekryterare-se-i-ett-cv`,
+      lastModified: new Date("2026-11-03"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blogg/kompetenser-i-cv`,
+      lastModified: new Date("2026-11-03"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blogg/med-vanliga-halsningar`,
+      lastModified: new Date("2026-11-03"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blogg/personligt-brev-pa-engelska`,
       lastModified: new Date("2026-11-03"),
       changeFrequency: "monthly",
       priority: 0.7,
@@ -168,7 +153,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/blogg/personligt-brev-guide`,
-      lastModified: new Date("2024-02-05"),
+      lastModified: new Date("2026-11-03"),
       changeFrequency: "monthly",
       priority: 0.7,
     },

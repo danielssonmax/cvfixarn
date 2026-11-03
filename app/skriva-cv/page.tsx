@@ -33,6 +33,7 @@ const toc = [
   { id: "vad-ska-ett-cv-innehalla", label: "Vad ska ett CV innehålla?" },
   { id: "steg-for-steg", label: "Så skriver du ett CV steg för steg" },
   { id: "profiltext-exempel", label: "Exempel på profiltext" },
+  { id: "hur-ska-ett-cv-se-ut", label: "Hur ska ett CV se ut?" },
   { id: "hur-langt", label: "Hur långt ska ett CV vara?" },
   { id: "bild", label: "Ska man ha bild i CV:t?" },
   { id: "utan-erfarenhet", label: "Skriva CV utan erfarenhet" },
@@ -296,7 +297,10 @@ export default function SkrivaCvPage() {
               <h3 className="pt-2 text-xl font-semibold">Kompetenser och språk</h3>
               <p>
                 Konkreta färdigheter som är relevanta för tjänsten – system, verktyg, certifikat – och vilka språk du talar
-                och på vilken nivå. Körkort är värt att nämna om jobbet kräver resor.
+                och på vilken nivå. Körkort är värt att nämna om jobbet kräver resor.{" "}
+                <Link href="/blogg/kompetenser-i-cv" className={linkClass}>
+                  Se exempel på kompetenser för olika yrken.
+                </Link>
               </p>
               <h3 className="pt-2 text-xl font-semibold">Övrigt och referenser</h3>
               <p>
@@ -423,6 +427,33 @@ export default function SkrivaCvPage() {
                   Söker sommarjobb inom handel eller service.
                 </Example>
               </div>
+
+              <SectionHeading id="hur-ska-ett-cv-se-ut">Hur ska ett CV se ut?</SectionHeading>
+              <p>
+                Ett bra CV ser enkelt ut. Rekryteraren ska kunna skumma det på en halv minut och hitta det viktigaste
+                utan att leta. Så här ser ett CV ut som är lätt att läsa:
+              </p>
+              <ul className="list-disc space-y-1.5 pl-5 marker:text-brand-700">
+                <li>Namn och kontaktuppgifter överst, med ort i stället för gatuadress.</li>
+                <li>En kort profiltext på två till fyra meningar, anpassad efter jobbet du söker.</li>
+                <li>Arbetslivserfarenhet i omvänd ordning, så att det senaste jobbet står först.</li>
+                <li>Utbildning efter erfarenheten, eller före om du nyss har tagit examen.</li>
+                <li>Kompetenser, certifikat och språk som går att kontrollera, inte bara egenskaper.</li>
+                <li>Tydliga rubriker, ett typsnitt, luft mellan avsnitten och punktlistor i stället för långa stycken.</li>
+                <li>Sparat som PDF med text som går att markera, så att rekryteringssystem kan läsa det.</li>
+              </ul>
+              <p>
+                Det vanligaste problemet är sällan formen utan innehållet. I{" "}
+                <Link href="/blogg/vi-analyserade-cv" className={linkClass}>
+                  vår analys av 719 CV:n
+                </Link>{" "}
+                hade 79&nbsp;% med sin gatuadress, medan bara 14&nbsp;% av arbetsbeskrivningarna innehöll en siffra. Vill
+                du se hur det ser ut i praktiken finns{" "}
+                <Link href="/cv-exempel" className={linkClass}>
+                  CV-exempel för olika yrken
+                </Link>
+                .
+              </p>
 
               <SectionHeading id="hur-langt">Hur långt ska ett CV vara?</SectionHeading>
               <p>

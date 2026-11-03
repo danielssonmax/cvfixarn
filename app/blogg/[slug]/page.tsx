@@ -8,8 +8,18 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { sanitizeHTML } from "@/lib/sanitize"
 
+type BlogPost = {
+  title: string
+  date: string
+  /** Set when the content has been substantially revised after publication. */
+  updated?: string
+  category: string
+  excerpt: string
+  content: string
+}
+
 // This would typically come from a CMS or database
-const blogPosts = {
+const blogPosts: Record<string, BlogPost> = {
   "vi-analyserade-cv": {
     title: "Vad skriver folk i sitt CV? Vi analyserade 719 CV:n",
     date: "2026-11-03",
@@ -349,6 +359,289 @@ const blogPosts = {
         <li>Reddit, r/sweden: "Rekryterare, hur vill ni att ett CV och personligt brev ska se ut?", läst 2026-11-03, <a href="https://www.reddit.com/r/sweden/comments/1l26jz3/rekryterare_hur_vill_ni_att_ett_cv_och_personligt/" target="_blank" rel="noopener noreferrer">reddit.com/r/sweden/comments/1l26jz3</a>. Citaten är kortade och i vissa fall omformulerade.</li>
         <li>CVfixaren, egen analys av 719 CV:n byggda i CV-verktyget, april 2025 till november 2026. Läs mer i <a href="/blogg/vi-analyserade-cv">vår analys</a>.</li>
       </ul>
+    `,
+  },
+  "kompetenser-i-cv": {
+    title: "Kompetenser i CV: exempel och så skriver du dem",
+    date: "2026-11-03",
+    category: "CV-tips",
+    excerpt:
+      "Vilka kompetenser ska stå i ditt CV? Exempel för vård, lager, butik, kontor och fler yrken, hur du skriver datorkunskaper och vad 719 CV:n visar.",
+    content: `
+      <p>Kompetensavsnittet är där rekryteraren letar efter kraven i annonsen: körkortet, systemet, certifikatet, språket. Det är också där många CV:n är som tunnast. Av 719 CV:n som byggts i CVfixarens CV-verktyg hade 59&nbsp;% ett avsnitt för kompetenser, och de som hade det listade i median två. Nästan en tredjedel av allt som listades var egenskaper som "flexibel" och "social" snarare än kunskaper.</p>
+      <p>Här går vi igenom vad som räknas som kompetenser, hur du skriver dem och vilka som passar i olika yrken.</p>
+
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li>Lista <strong>konkreta kunskaper</strong>: system, maskiner, certifikat, behörigheter, metoder och språk.</li>
+          <li>Visa egenskaper som samarbetsförmåga <strong>i arbetslivserfarenheten</strong>, inte som ett ord i en lista.</li>
+          <li><strong>Fem till åtta kompetenser</strong> som matchar annonsen räcker. Av dem som har ett kompetensavsnitt i vår data listar hälften två eller färre.</li>
+          <li>Skriv inte bara "datorvana". Skriv <strong>vilka program du kan</strong> och vad du gör i dem.</li>
+        </ul>
+      </blockquote>
+
+      <h2>Vad räknas som kompetenser i ett CV?</h2>
+      <p>En kompetens i ett CV är något du kan och som går att visa eller kontrollera. Det brukar delas upp i två sorter:</p>
+      <ul>
+        <li><strong>Hårda kompetenser</strong> är kunskaper och behörigheter: truckkort, kassasystem, journalsystem, Excel, svetsning, ett språk, B-körkort. De går att kontrollera, och det är ofta dem rekryterare och rekryteringssystem söker efter.</li>
+        <li><strong>Mjuka förmågor</strong> är hur du arbetar: samarbete, kommunikation, problemlösning, stresstålighet. De är viktiga, men svåra att bevisa med ett enda ord.</li>
+      </ul>
+      <p>Båda sorterna hör hemma i CV:t, men på olika ställen. De hårda kompetenserna listar du. De mjuka visar du med exempel i arbetslivserfarenheten och profiltexten. "Svarade på cirka 40 samtal om dagen i växeln" säger mer om stresstålighet än själva ordet.</p>
+
+      <h2>Vilka kompetenser skriver folk i sitt CV?</h2>
+      <p>I vår analys av 719 CV:n var de vanligaste kompetenserna kommunikation, ansvarstagande, problemlösning, flexibel, kundservice, stresstålig och samarbetsförmåga. Sex av de sju är mjuka förmågor eller egenskaper. Räknat på alla listade kompetenser var 30&nbsp;% av den sorten.</p>
+      <p>Ingen enskild kompetens fanns i mer än 3,5&nbsp;% av CV:na, så folk skriver olika saker. Men de vanligaste orden är också de som säger minst, eftersom de passar alla och inte går att kontrollera. Det konkreta saknas ofta: bara 5&nbsp;% nämnde något Office-program och 1,1&nbsp;% kassahantering, trots att vård, handel, lager och service är de vanligaste branscherna bland användarna. Mer om resultaten finns i <a href="/blogg/vi-analyserade-cv">vår analys av 719 CV:n</a>.</p>
+
+      <h2>Exempel på kompetenser för olika yrken</h2>
+      <p>Bra kompetenser är specifika för yrket. Här är exempel att utgå från. Ta bara med det du faktiskt kan, och använd samma ord som annonsen.</p>
+      <h3>Vård och omsorg</h3>
+      <p>Delegering för läkemedelshantering, dokumentation i journalsystem, basala hygienrutiner, förflyttningsteknik och lyfthjälpmedel, demensvård och HLR. Se <a href="/cv-exempel/underskoterska">CV-exempel för undersköterska</a> och <a href="/cv-exempel/vardbitrade">vårdbiträde</a>.</p>
+      <h3>Lager och logistik</h3>
+      <p>Truckkort A och B, plock med handdator eller röststyrning, inleverans och utleverans, inventering, lagersystem (WMS) och godshantering enligt säkerhetsrutiner. Se <a href="/cv-exempel/lagerarbetare">CV-exempel för lagerarbetare</a>.</p>
+      <h3>Butik och handel</h3>
+      <p>Kassahantering och kassaavstämning, varupåfyllning och exponering, beställningar, reklamationer och svinnarbete. Se <a href="/cv-exempel/butiksbitrade">CV-exempel för butiksbiträde</a>.</p>
+      <h3>Restaurang och kök</h3>
+      <p>Egenkontroll och HACCP, allergener och specialkost, à la carte och storkök, kallskänk, kassa- och bokningssystem. Se <a href="/cv-exempel/kock">CV-exempel för kock</a>.</p>
+      <h3>Kontor och administration</h3>
+      <p>Excel (formler, pivottabeller, LETARAD), Outlook och Teams, fakturahantering i ekonomisystem, diarieföring, protokollskrivning och schemaläggning. Se <a href="/cv-exempel/administrator">CV-exempel för administratör</a>.</p>
+      <h3>Kundtjänst</h3>
+      <p>Ärendehanteringssystem, support via telefon, chatt och mejl, reklamationshantering, merförsäljning och hantering av kunduppgifter enligt GDPR. Se <a href="/cv-exempel/kundtjanst">CV-exempel för kundtjänst</a>.</p>
+      <h3>Bygg och transport</h3>
+      <p>Yrkesbevis, ID06, heta arbeten, fallskydd, ritningsläsning, C- eller CE-körkort, YKB, ADR-intyg och förarkort. Se <a href="/cv-exempel/snickare">CV-exempel för snickare</a> och <a href="/cv-exempel/lastbilschauffor">lastbilschaufför</a>.</p>
+      <p>Fler yrken hittar du bland våra <a href="/cv-exempel">CV-exempel</a>.</p>
+
+      <h2>Hur skriver man datorkunskaper i CV:t?</h2>
+      <p>Skriv vilka program du kan och vad du gör i dem. "Datorvana" står i 1,4&nbsp;% av CV:na i vår analys, och ordet säger nästan ingenting när de flesta använder en dator varje dag.</p>
+      <ul>
+        <li>I stället för "Datorvana": <strong>Outlook och Teams för mejl, möten och delade kalendrar</strong></li>
+        <li>I stället för "Excel": <strong>Excel: formler, pivottabeller och LETARAD för veckorapporter</strong></li>
+        <li>I stället för "Bra på data": <strong>Journalsystem för dokumentation och avvikelser</strong></li>
+        <li>I stället för "IT-kunnig": <strong>Kassasystem, kortterminal och dagsavslut</strong></li>
+      </ul>
+      <p>Har du arbetat i ett system som annonsen nämner, skriv systemets namn exakt som i annonsen. Det är så både rekryteraren och rekryteringssystemet hittar det.</p>
+
+      <h2>Hur många kompetenser ska man ha i CV:t?</h2>
+      <p>Fem till åtta kompetenser som matchar annonsen är en bra nivå. Färre än tre ser tunt ut, och fler än tio blir en lista som ingen läser. Har du många kan du dela upp dem under egna rubriker, till exempel Certifikat och behörigheter, System och program och Språk.</p>
+      <p>Börja med det annonsen kräver, gärna i samma ordning som annonsen nämner det. Stryk det som inte har med jobbet att göra, även om det stämmer.</p>
+
+      <h2>Ska man gradera sina kompetenser?</h2>
+      <p>Staplar, stjärnor och nivåer som "avancerad" är svåra att tolka, eftersom ingen vet vad din skala betyder. Rekryterarna i <a href="/blogg/vad-vill-rekryterare-se-i-ett-cv">tråden vi gick igenom</a> var skeptiska till sådana skalor. Beskriv hellre vad du kan göra: "Excel: pivottabeller och formler" säger mer än fyra av fem stjärnor.</p>
+      <p>För språk fungerar nivåer bra, eftersom de är etablerade: modersmål, flytande, goda kunskaper och grundläggande. Vill du vara exakt kan du använda den europeiska skalan A1–C2.</p>
+
+      <h2>Var i CV:t ska kompetenserna stå?</h2>
+      <p>De flesta har kompetenserna i ett eget avsnitt efter arbetslivserfarenhet och utbildning, och det fungerar bra. Söker du ett jobb där en behörighet är ett krav, som C-körkort eller legitimation, kan du nämna den redan i profiltexten högst upp.</p>
+      <p>Upprepa gärna de viktigaste kompetenserna i beskrivningen av dina jobb. Listan säger vad du kan, arbetsbeskrivningen visar att du har gjort det.</p>
+
+      <h2>Vanliga frågor</h2>
+      <h3>Vad är skillnaden mellan kompetenser och egenskaper?</h3>
+      <p>En kompetens är något du kan, som truckkort eller ett kassasystem. En egenskap är hur du är, som noggrann eller social. Kompetenser listar du, egenskaper visar du med exempel. I vår analys var 30&nbsp;% av alla listade kompetenser egentligen egenskaper.</p>
+      <h3>Ska körkort stå under kompetenser?</h3>
+      <p>Ja, eller under en egen rubrik för certifikat och behörigheter. Skriv behörigheten, till exempel B-körkort eller CE-körkort, och ta med truckkort, YKB eller liknande om du har dem. Kräver jobbet körkort ska det synas tydligt.</p>
+      <h3>Ska språk stå under kompetenser?</h3>
+      <p>De flesta CV-mallar har ett eget avsnitt för språk, och det är tydligast. Skriv varje språk med en nivå. I vår analys hade 68&nbsp;% ett språkavsnitt, och svenska och engelska var vanligast.</p>
+      <h3>Vad skriver jag om jag saknar erfarenhet?</h3>
+      <p>Utgå från det du kan visa: körkort, språk, program du använt i skolan, kurser och ansvar i föreningar eller idrott. En HLR-utbildning, en kurs i livsmedelshygien eller ett sommarjobb i kassan är kompetenser som räknas. Läs mer om att <a href="/skriva-cv#utan-erfarenhet">skriva CV utan erfarenhet</a>.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Lista det du kan, inte hur du är. Fem till åtta konkreta kompetenser som matchar annonsen, med system, certifikat och behörigheter först, slår en lång lista med egenskaper. Visa samarbetsförmåga och stresstålighet med exempel i dina jobb, och skriv datorkunskaper som de program du faktiskt använder.</p>
+
+      <h3>Källor</h3>
+      <ul>
+        <li>CVfixaren, egen analys av 719 CV:n byggda i CV-verktyget, april 2025 till november 2026. Läs mer i <a href="/blogg/vi-analyserade-cv">vår analys</a>.</li>
+      </ul>
+    `,
+  },
+  "med-vanliga-halsningar": {
+    title: "Med vänliga hälsningar eller med vänlig hälsning? Så avslutar du brev och mejl",
+    date: "2026-11-03",
+    category: "Personligt brev",
+    excerpt:
+      "Med vänliga hälsningar och med vänlig hälsning är båda rätt. Här är skillnaden, hur du skriver frasen, när Mvh fungerar och vad den heter på engelska.",
+    content: `
+      <p>"Med vänliga hälsningar" och "Med vänlig hälsning" är båda korrekta, och de är de vanligaste sätten att avsluta ett brev eller mejl på svenska. Båda passar i en jobbansökan, i ett mejl till en kund och i ett brev till en myndighet. Det som går fel är oftast detaljerna runt omkring: böjningen, kommatecknet, förkortningen och stycket före.</p>
+      <p>Här går vi igenom skillnaden mellan formerna, hur du skriver frasen rätt, vilka alternativ som passar när och vad den heter på engelska.</p>
+
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li><strong>Med vänlig hälsning</strong> och <strong>Med vänliga hälsningar</strong> är båda rätt. Blanda bara inte ihop böjningen.</li>
+          <li>Stor bokstav på första ordet, inget komma efter och ditt namn på raden under.</li>
+          <li><strong>Mvh</strong> fungerar i snabba mejl till folk du känner, men inte i en jobbansökan.</li>
+          <li>På engelska motsvaras frasen oftast av <strong>Kind regards</strong> eller <strong>Best regards</strong>.</li>
+        </ul>
+      </blockquote>
+
+      <h2>Är det "med vänlig hälsning" eller "med vänliga hälsningar"?</h2>
+      <p>Båda är rätt. <strong>Med vänlig hälsning</strong> står i singular och är den traditionella formen i formella brev. <strong>Med vänliga hälsningar</strong> står i plural och är minst lika vanlig i dag, särskilt i mejl. Många upplever pluralformen som lite varmare, men skillnaden är liten och ingen rekryterare lägger märke till vilken du väljer.</p>
+      <p>Det enda du ska se upp med är att orden hör ihop. Antingen båda i singular eller båda i plural:</p>
+      <ul>
+        <li>Rätt: Med vänlig hälsning</li>
+        <li>Rätt: Med vänliga hälsningar</li>
+        <li>Fel: Med vänlig hälsningar</li>
+        <li>Fel: Med vänliga hälsning</li>
+      </ul>
+      <p>Välj en form och håll dig till den, i mejlsignaturen och i dina ansökningar.</p>
+
+      <h2>Hur skriver man frasen rätt?</h2>
+      <p>Fyra detaljer avgör om avslutningen ser prydlig ut:</p>
+      <ol>
+        <li><strong>Stor bokstav bara på första ordet.</strong> Skriv "Med vänliga hälsningar", inte "Med Vänliga Hälsningar".</li>
+        <li><strong>Inget komma efter.</strong> På engelska skriver man "Kind regards," med komma. På svenska står frasen traditionellt utan skiljetecken. Kommat syns allt oftare i mejl och är inget allvarligt fel, men utan komma är det säkra valet.</li>
+        <li><strong>Namnet på egen rad.</strong> Skriv ditt för- och efternamn på raden under. I ett utskrivet brev kan du lämna plats för en namnteckning mellan hälsningen och namnet.</li>
+        <li><strong>Kontaktuppgifter under namnet i mejl.</strong> Telefonnumret räcker oftast, eftersom mejladressen redan syns.</li>
+      </ol>
+      <div style="margin:1.5rem 0;padding:1.25rem 1.5rem;border:1px solid #e9edf3;border-radius:12px;background:#ffffff;color:#16233a">Med vänliga hälsningar<br/>Sara Lindqvist<br/>070-174 06 07</div>
+
+      <h2>Vilka alternativ finns, och när passar de?</h2>
+      <p>"Med vänliga hälsningar" passar nästan alltid. Vill du variera, eller skriver du till någon du redan känner, finns fler alternativ. Här är de vanligaste, från formellt till vardagligt:</p>
+      <ul>
+        <li><strong>Med vänlig hälsning</strong>: formella brev, ansökningar och mejl till myndigheter. Neutral och säker.</li>
+        <li><strong>Med vänliga hälsningar</strong>: ansökningar och mejl till rekryterare och kunder. Lika korrekt, lite varmare.</li>
+        <li><strong>Vänliga hälsningar</strong>: mejl när ni redan har haft kontakt, till exempel när du bekräftar en intervjutid.</li>
+        <li><strong>Hälsningar</strong>: korta mejl till kollegor. Kan kännas kärvt till någon du inte känner.</li>
+        <li><strong>Bästa hälsningar</strong>: vanlig i mejl, troligen efter engelskans "Best regards". Fungerar, men i en ansökan är "Med vänliga hälsningar" säkrare.</li>
+        <li><strong>Varma hälsningar</strong>: personliga mejl. För privat i en ansökan.</li>
+        <li><strong>Mvh</strong>: snabba mejl till folk du känner väl. Undvik det i allt som ska ge ett första intryck.</li>
+      </ul>
+
+      <h2>Hur avslutar man ett personligt brev?</h2>
+      <p>Hälsningsfrasen är bara sista raden. Det som avgör hur brevet slutar är stycket före. Ett bra sista stycke är två eller tre meningar som knyter ihop varför du passar, säger att du gärna träffas och gör det lätt att nå dig.</p>
+      <p>Några exempel på sista stycken som fungerar:</p>
+      <ul>
+        <li>"Jag berättar gärna mer om hur jag lade om plockrutinerna på mitt förra lager. Du når mig enklast på 070-174 06 07."</li>
+        <li>"Jag kan börja den 1 februari och kommer gärna på en intervju när det passar er."</li>
+        <li>"Om ni vill se hur jag lägger upp en veckoplanering tar jag gärna med ett exempel till en intervju."</li>
+      </ul>
+      <p>Undvik avslutningar som låter passiva eller ålderdomliga, som "Med förhoppning om ett positivt svar" eller "Jag hoppas att ni hör av er". De säger inget om dig. Upprepa inte heller hela brevet i sista stycket, en mening räcker.</p>
+      <p>Efter stycket kommer hälsningsfrasen och ditt namn. Vill du se hur det ser ut i ett helt brev finns <a href="/exempel-personliga-brev">färdiga exempel på personliga brev</a> för många vanliga yrken, och i guiden om <a href="/blogg/personligt-brev-guide">vad ett personligt brev ska innehålla</a> går vi igenom resten av brevet.</p>
+
+      <h2>Kan man skriva Mvh i en jobbansökan?</h2>
+      <p>Nej, skriv ut hela frasen. Förkortningen fungerar i snabba mejl mellan kollegor eller folk som känner varandra, men i en ansökan är brevet ofta det första rekryteraren läser av dig. Där ser en förkortning ut som att du hade bråttom. Detsamma gäller att bara signera med förnamnet eller med "/Sara".</p>
+      <p>Svarar du senare på ett mejl från rekryteraren, till exempel för att bekräfta en intervjutid, kan du gå över till "Vänliga hälsningar". Vänta med "Mvh" tills tonen i mejlen har blivit vardaglig från deras sida.</p>
+
+      <h2>Vad heter "Med vänliga hälsningar" på engelska?</h2>
+      <p>I mejl och de flesta ansökningar motsvaras frasen av <strong>Kind regards</strong> eller <strong>Best regards</strong>. I formella brev på brittisk engelska styr hälsningen i början vilken avslutning du ska välja:</p>
+      <ul>
+        <li><strong>Kind regards / Best regards</strong>: mejl och de flesta ansökningar.</li>
+        <li><strong>Yours sincerely</strong>: formella brev på brittisk engelska när du vet mottagarens namn ("Dear Ms Holm").</li>
+        <li><strong>Yours faithfully</strong>: formella brev på brittisk engelska när du inte vet namnet ("Dear Sir or Madam").</li>
+        <li><strong>Sincerely</strong>: amerikansk engelska, oavsett om du vet namnet eller inte.</li>
+      </ul>
+      <p>På engelska sätter man komma efter avslutningsfrasen, "Kind regards," med namnet på raden under. Skriver du hela ansökan på engelska finns fler tips i guiden om <a href="/blogg/personligt-brev-pa-engelska">personligt brev på engelska</a>.</p>
+
+      <h2>Hur avslutar man mejlet när man skickar sin ansökan?</h2>
+      <p>Skickar du ansökan med mejl ska själva mejlet vara kort. Brevet och CV:t ligger som bilagor, så mejlet behöver bara säga vad det gäller och hur man når dig:</p>
+      <div style="margin:1.5rem 0;padding:1.25rem 1.5rem;border:1px solid #e9edf3;border-radius:12px;background:#ffffff;color:#16233a"><strong>Ämne: Ansökan lagerarbetare, ref. 2026-114</strong><br/><br/>Hej Anna!<br/><br/>Här kommer min ansökan till tjänsten som lagerarbetare. CV och personligt brev finns bifogade som PDF.<br/><br/>Med vänliga hälsningar<br/>Ahmed Yusuf<br/>070-174 06 08</div>
+      <p>Skriv tjänsten och eventuellt referensnummer i ämnesraden. Då hamnar mejlet rätt även hos en arbetsgivare som rekryterar till flera tjänster samtidigt.</p>
+
+      <h2>Vanliga frågor</h2>
+      <h3>Ska det vara komma efter "Med vänliga hälsningar"?</h3>
+      <p>På svenska skrivs frasen traditionellt utan komma, med namnet på raden under. Kommat kommer från engelskan, där "Kind regards," följs av komma. I mejl är det vanligt även på svenska och inget allvarligt fel, men i en ansökan är det säkrast att utelämna det.</p>
+      <h3>Ska det vara komma efter "Hej" i början av brevet?</h3>
+      <p>Det finns inga strikta regler. Enligt Språkrådet är det vanligast med utropstecken följt av stor bokstav: "Hej Anna!" Komma har blivit vanligare, och då följs det enligt gängse regler av liten bokstav. Stor bokstav efter kommat har också blivit vanligt, efter engelsk förebild. Välj en variant och var konsekvent.</p>
+      <h3>Vad betyder Mvh?</h3>
+      <p>Mvh är en förkortning av "med vänlig hälsning" eller "med vänliga hälsningar". Den skrivs ibland med versaler, MVH. Den passar i korta mejl till folk du känner, men inte i en jobbansökan eller i ett första mejl till någon.</p>
+      <h3>Kan man skriva "Med vänliga hälsningar" i ett personligt brev?</h3>
+      <p>Ja, det är det vanligaste sättet att avsluta ett personligt brev. Skriv frasen på egen rad efter sista stycket och ditt fullständiga namn på raden under. Har du inte kontaktuppgifterna överst i brevet kan du lägga telefonnummer och e-post under namnet.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>"Med vänlig hälsning" och "Med vänliga hälsningar" är båda rätt. Håll ihop böjningen, skriv stor bokstav bara på första ordet, hoppa över kommat och sätt namnet på raden under. Spara "Mvh" till mejl med folk du känner, och lägg energin på stycket före hälsningen. Det är där brevet faktiskt slutar.</p>
+
+      <h3>Källor</h3>
+      <ul>
+        <li>Språkrådet (Isof), Frågelådan: "Hur ska man inleda ett brev eller mejl?", läst 2026-11-03, <a href="https://frageladan.isof.se/faqs/21183" target="_blank" rel="noopener noreferrer">frageladan.isof.se/faqs/21183</a>.</li>
+      </ul>
+    `,
+  },
+  "personligt-brev-pa-engelska": {
+    title: "Personligt brev på engelska: exempel och tips för din cover letter",
+    date: "2026-11-03",
+    category: "Personligt brev",
+    excerpt:
+      "Så skriver du ett personligt brev på engelska: vad det heter, hur du inleder och avslutar, ett komplett exempel och de vanligaste misstagen svenskar gör.",
+    content: `
+      <p>Ett personligt brev heter <strong>cover letter</strong> på engelska, på brittisk engelska ibland <strong>covering letter</strong>. Det är inte ett "personal letter", som betyder ett privat brev till en vän. Innehållet är detsamma som i ett svenskt brev: vilket jobb du söker, varför du passar och varför du vill ha just det jobbet. Det som skiljer är formen: hälsningen, avslutningen och några språkfällor som är lätta att gå i när man tänker på svenska.</p>
+      <p>Här går vi igenom när du ska skriva på engelska, hur brevet byggs upp och vilka misstag svenskar oftast gör. Längre ner finns ett komplett exempel.</p>
+
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li>Skriv på engelska när <strong>annonsen är på engelska</strong>, annars på svenska.</li>
+          <li>Börja med <strong>"Dear"</strong> och mottagarens efternamn. Vet du inte namnet fungerar "Dear Hiring Manager".</li>
+          <li>Avsluta med <strong>"Kind regards"</strong> eller, i formella brittiska brev, "Yours sincerely".</li>
+          <li>Se upp med ord som liknar svenska men betyder något annat, som <strong>eventually, actual och possibility</strong>.</li>
+        </ul>
+      </blockquote>
+
+      <h2>När ska man skriva sitt personliga brev på engelska?</h2>
+      <p>Huvudregeln är enkel: skriv på samma språk som annonsen. Är annonsen på engelska vill arbetsgivaren se att du kan arbeta på engelska, och brevet blir ditt första arbetsprov. Är annonsen på svenska skriver du på svenska, även om företaget är internationellt, om inte annonsen ber om något annat.</p>
+      <p>Söker du jobb i ett annat land skriver du på det landets språk och följer dess vanor. Ett brev till en arbetsgivare i Storbritannien följer brittiska konventioner, ett brev till USA amerikanska.</p>
+
+      <h2>Hur skiljer sig ett engelskt personligt brev från ett svenskt?</h2>
+      <p>Strukturen är densamma, men fem detaljer skiljer sig:</p>
+      <ul>
+        <li><strong>Hälsningen.</strong> Börja med "Dear" och efternamnet: "Dear Ms Holm," eller "Dear Mr Berg,". Förnamn, som i svenskans "Hej Anna", känns för informellt i de flesta engelska ansökningar. Vet du inte namnet skriver du "Dear Hiring Manager," eller "Dear Recruitment Team,". "To whom it may concern" uppfattas av många som stelt.</li>
+        <li><strong>Komma och stor bokstav.</strong> På engelska följs hälsningen av komma, och nästa stycke börjar med stor bokstav.</li>
+        <li><strong>Avslutningen.</strong> "Kind regards" eller "Best regards" fungerar i de flesta fall. I formella brev på brittisk engelska skriver du "Yours sincerely" om du vet mottagarens namn och "Yours faithfully" om du inte gör det. På amerikansk engelska räcker "Sincerely". Avslutningen följs av komma och ditt namn på raden under.</li>
+        <li><strong>Tonen.</strong> En engelsk cover letter är ofta rakare om vad du har åstadkommit. Meningar som "I increased" och "I led" är helt normala, och det som kan låta skrytsamt på svenska låter ofta lagom på engelska.</li>
+        <li><strong>Stavningen.</strong> Välj brittisk eller amerikansk engelska och håll dig till den, till exempel "organise" och "colour" eller "organize" och "color". Följ annonsens stavning om du är osäker.</li>
+      </ul>
+      <p>Längden är densamma som på svenska: högst en sida, ungefär 250–400 ord fördelat på fyra eller fem stycken.</p>
+
+      <h2>Exempel på personligt brev på engelska</h2>
+      <p>Brevet nedan är skrivet av en kundtjänstmedarbetare som söker jobb på ett internationellt resebolag i Sverige, där annonsen är på engelska. Brevet följer brittisk engelska. Personen och företagen är påhittade.</p>
+      <div style="margin:1.5rem 0;padding:1.5rem;border:1px solid #e9edf3;border-radius:12px;background:#ffffff;color:#2a3850">
+        <p style="margin:0;font-weight:600;color:#16233a">Elin Bergström</p>
+        <p style="margin:0 0 1.25rem;font-size:.9rem;color:#5b6b86">elin.bergstrom@example.com · 070-174 06 10 · Göteborg</p>
+        <p><strong>Application for Customer Support Agent (ref. 4471)</strong></p>
+        <p>Dear Ms Holm,</p>
+        <p>I am applying for the position of Customer Support Agent at Nordvik Travel. For the past three years I have handled bookings, changes and complaints for a ferry operator on the west coast, in both Swedish and English, and I would like to bring that experience to a team that serves travellers from all over Europe.</p>
+        <p>At Skärgårdslinjen I answer around 60 calls and chats a day during the summer season, and I resolve most cases in the first contact. Last year I drafted a shared checklist for refund requests, which helped our team cut the average handling time from eight working days to three. I am used to working in a ticket system, writing clear replies under time pressure and helping travellers whose plans have just fallen apart.</p>
+        <p>Your advert mentions that the role includes written support in English. Most of my chat conversations are with international guests, and I use English every working day, both in writing and on the phone.</p>
+        <p>What attracts me to Nordvik Travel is your focus on complex trips with several stops. Those are the cases I enjoy most, because they require planning ahead rather than just answering the question in front of you.</p>
+        <p>I would welcome the opportunity to discuss how I could contribute to your support team. I can start in March and am available for an interview at your convenience.</p>
+        <p style="margin-bottom:0">Yours sincerely,<br/>Elin Bergström</p>
+      </div>
+
+      <h3>Därför fungerar brevet</h3>
+      <ul>
+        <li><strong>Första meningen säger vilket jobb det gäller</strong>, och andra meningen visar direkt varför hon är relevant.</li>
+        <li><strong>Siffrorna gör erfarenheten konkret:</strong> 60 ärenden om dagen och en handläggningstid som gick från åtta arbetsdagar till tre.</li>
+        <li><strong>Hon svarar på annonsens krav</strong> om skriftlig support på engelska, i stället för att bara skriva att hon är bra på engelska.</li>
+        <li><strong>"Dear Ms Holm" och "Yours sincerely" hör ihop.</strong> Hon vet mottagarens namn och följer därför den brittiska regeln.</li>
+      </ul>
+
+      <h2>Vanliga misstag när svenskar skriver på engelska</h2>
+      <p>De flesta fel i engelska ansökningar beror inte på dålig engelska, utan på att man översätter ord för ord från svenska. Här är de vanligaste:</p>
+      <ul>
+        <li><strong>"I work here since 2021"</strong> ska vara <strong>"I have worked here since 2021"</strong>. Något som började då och pågår nu kräver present perfect.</li>
+        <li><strong>"since three years"</strong> ska vara <strong>"for three years"</strong>. "Since" används med en tidpunkt, "for" med en tidslängd.</li>
+        <li><strong>"eventually"</strong> betyder "till slut", inte "eventuellt". Skriv "possibly" eller "I may be able to".</li>
+        <li><strong>"actual"</strong> betyder "faktisk", inte "aktuell". "The actual position" ska vara "this position" eller "the advertised position".</li>
+        <li><strong>"Thank you for the possibility"</strong> ska vara <strong>"Thank you for the opportunity"</strong>.</li>
+        <li><strong>"She learned me the system"</strong> ska vara <strong>"She taught me the system"</strong>. På engelska är det skillnad på att lära sig (learn) och att lära någon (teach).</li>
+        <li><strong>"I am educated as a nurse"</strong> låter översatt. Skriv "I trained as a nurse" eller "I am a qualified nurse".</li>
+        <li><strong>"Personal letter"</strong> i ämnesraden ska vara <strong>"Cover letter"</strong> eller "Application for" följt av tjänsten.</li>
+      </ul>
+      <p>Läs brevet högt innan du skickar det. Det som låter konstigt när du säger det brukar vara en direktöversättning.</p>
+
+      <h2>Ska CV:t också vara på engelska?</h2>
+      <p>Ja, CV:t och brevet ska vara på samma språk. Översätt rubrikerna till Work experience, Education, Skills, Languages och Certificates. Skriv svenska utbildningar så att de går att förstå för någon utanför Sverige, till exempel "Upper secondary school, Business Management and Economics Programme" i stället för bara "Ekonomiprogrammet".</p>
+      <p>Söker du jobb i Storbritannien eller USA är det ovanligt med foto, födelsedatum och civilstånd i CV:t, så lämna dem utanför. Vill du se hur innehållet kan byggas upp kan du utgå från våra <a href="/cv-exempel">CV-exempel</a> och översätta dem.</p>
+
+      <h2>Vanliga frågor</h2>
+      <h3>Vad heter personligt brev på engelska?</h3>
+      <p>Cover letter. På brittisk engelska förekommer också covering letter. "Personal letter" betyder ett privat brev och används inte om en ansökan. I ämnesraden i ett mejl kan du skriva "Application for Customer Support Agent" eller motsvarande för din tjänst.</p>
+      <h3>Ska man skriva "Dear Sir or Madam"?</h3>
+      <p>Bara om du inte hittar något namn och brevet är formellt, till exempel till en brittisk myndighet. Avsluta då med "Yours faithfully". I de flesta fall är "Dear Hiring Manager" ett bättre val, men leta alltid efter ett namn i annonsen först.</p>
+      <h3>Hur långt ska ett personligt brev på engelska vara?</h3>
+      <p>Lika långt som på svenska: högst en sida, ungefär 250–400 ord. Fyra eller fem stycken räcker: en inledning, ett eller två stycken om varför du passar, ett om varför du vill ha jobbet och en kort avslutning.</p>
+      <h3>Kan jag översätta mitt svenska brev med ett översättningsverktyg?</h3>
+      <p>Det kan vara en start, men gå igenom resultatet noga. Verktyg missar ofta tempus, ord som liknar svenska och tonen. Kontrollera listan ovan, läs brevet högt och låt gärna någon med god engelska läsa det innan du skickar.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Ett personligt brev på engelska är en cover letter med samma innehåll som ett svenskt brev, men med engelsk form: "Dear" och efternamn, komma efter hälsningen och en avslutning som passar mottagaren. Skriv på annonsens språk, håll dig till en sida och se upp med ord som ser svenska ut men betyder något annat. Mer om avslutningsfraser på båda språken finns i guiden om <a href="/blogg/med-vanliga-halsningar">Med vänliga hälsningar</a>.</p>
     `,
   },
   "skriva-cv-med-ai": {
@@ -937,49 +1230,104 @@ const blogPosts = {
     `,
   },
   "personligt-brev-guide": {
-    title: "Personligt brev - En komplett guide",
+    title: "Vad ska ett personligt brev innehålla? Struktur, mall och exempel",
     date: "2024-02-05",
+    updated: "2026-11-03",
     category: "Personligt brev",
     excerpt:
-      "Lär dig skriva ett övertygande personligt brev som kompletterar ditt CV och ökar dina chanser att få jobbet.",
+      "Vad ska ett personligt brev innehålla? Här är brevets sju delar, hur långt det ska vara, en mall att kopiera och misstagen du ska undvika.",
     content: `
-      <h2>Vad är ett personligt brev?</h2>
-      <p>Ett personligt brev är ett dokument som kompletterar ditt CV i en jobbansökan. Medan CV:t ger en översikt över din karriär och kompetenser, ger det personliga brevet dig möjlighet att förklara varför du är den perfekta kandidaten för jobbet och vad som motiverar dig att söka tjänsten.</p>
+      <p>Ett personligt brev ska svara på tre frågor: vilket jobb du söker, varför du passar och varför du vill ha just det jobbet. Allt i brevet ska hjälpa till att besvara någon av dem. CV:t visar vad du har gjort, brevet förklarar varför det är relevant för just den här tjänsten.</p>
+      <p>Här går vi igenom vad ett personligt brev ska innehålla, i vilken ordning, hur långt det ska vara och vad du ska hoppa över. Längre ner finns en mall du kan kopiera.</p>
 
-      <h2>Struktur och innehåll</h2>
-      <h3>1. Inledning</h3>
-      <p>Börja med en stark öppning som fångar läsarens uppmärksamhet. Nämn vilken tjänst du söker och var du hittade annonsen. Visa entusiasm för företaget och positionen.</p>
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li>Ett personligt brev innehåller <strong>kontaktuppgifter, rubrik, hälsning, inledning, ett eller två stycken om varför du passar, ett om varför du vill ha jobbet och en avslutning</strong>.</li>
+          <li>Håll det till <strong>högst en sida</strong>, ungefär 250–400 ord.</li>
+          <li>Varje påstående om dig själv ska ha <strong>ett konkret exempel</strong>.</li>
+          <li>Skriv om brevet för varje tjänst. Ett brev som passar alla jobb övertygar ingen.</li>
+        </ul>
+      </blockquote>
 
-      <h3>2. Varför du?</h3>
-      <p>Förklara varför du är den rätta personen för jobbet. Koppla dina färdigheter och erfarenheter till kraven i jobbannonsen. Använd konkreta exempel på hur du har använt dessa färdigheter i tidigare roller.</p>
+      <h2>Vad ska ett personligt brev innehålla?</h2>
+      <p>Ett personligt brev har sju delar, och ordningen är nästan alltid densamma:</p>
+      <ol>
+        <li><strong>Kontaktuppgifter.</strong> Namn, telefon, e-post och ort högst upp. Gatuadress och personnummer behövs inte.</li>
+        <li><strong>Rubrik.</strong> Till exempel "Ansökan: Undersköterska, Björkhagens äldreboende". Har annonsen ett referensnummer tar du med det.</li>
+        <li><strong>Hälsning.</strong> "Hej Anna!" om du vet rekryterarens namn. Står det inget namn i annonsen fungerar "Hej!".</li>
+        <li><strong>Inledning.</strong> Vilken tjänst du söker och varför du skriver, i en eller två meningar. Börja med något konkret, inte med "Jag heter".</li>
+        <li><strong>Varför du passar.</strong> Ett eller två stycken där du tar de viktigaste kraven i annonsen och visar med exempel att du uppfyller dem.</li>
+        <li><strong>Varför just det här jobbet.</strong> Vad som lockar med arbetsgivaren eller tjänsten. Ju mer specifikt, desto bättre.</li>
+        <li><strong>Avslutning och hälsningsfras.</strong> Att du gärna kommer på intervju och när du kan börja, sedan "Med vänliga hälsningar" och ditt namn. Läs mer om <a href="/blogg/med-vanliga-halsningar">hur du avslutar brevet</a>.</li>
+      </ol>
 
-      <h3>3. Varför företaget?</h3>
-      <p>Visa att du har gjort din research. Berätta varför du är intresserad av just detta företag och denna roll. Koppla dina värderingar och karriärmål till företagets mission och kultur.</p>
+      <h2>Hur långt ska ett personligt brev vara?</h2>
+      <p>Högst en A4-sida, ungefär 250–400 ord fördelat på fyra eller fem stycken. Rekryterare läser ofta många ansökningar på kort tid, och ett brev som går att läsa på en minut har större chans att bli läst hela vägen. Blir brevet längre, stryk det som redan står i CV:t.</p>
+      <p>Håll styckena korta, tre till fem meningar. Ett stycke per poäng gör brevet lätt att skumma.</p>
 
-      <h3>4. Avslutning</h3>
-      <p>Avsluta starkt genom att sammanfatta ditt intresse och din lämplighet för tjänsten. Uttryck din önskan om en intervju och tacka för deras tid och övervägande.</p>
+      <h2>Mall för personligt brev</h2>
+      <p>Kopiera mallen och byt ut texten inom hakparentes. Använd den som stöd för strukturen, inte som färdig text. Det är exemplen du fyller i som gör brevet bra.</p>
+      <div style="margin:1.5rem 0;padding:1.5rem;border:1px solid #e9edf3;border-radius:12px;background:#ffffff;color:#2a3850">
+        <p style="margin:0;font-weight:600;color:#16233a">[Förnamn Efternamn]</p>
+        <p style="margin:0 0 1.25rem;font-size:.9rem;color:#5b6b86">[Telefon] · [E-post] · [Ort]</p>
+        <p><strong>Ansökan: [Tjänst], [Arbetsgivare] (ref. [nummer])</strong></p>
+        <p>Hej [rekryterarens förnamn]!</p>
+        <p>[Inledning: Vilken tjänst du söker och varför du skriver. En konkret detalj om dig eller jobbet som gör att man vill läsa vidare.]</p>
+        <p>[Varför du passar, del 1: Det viktigaste kravet i annonsen. Visa med ett exempel från jobb, praktik eller skola att du uppfyller det. Ta med en siffra eller ett resultat om du kan.]</p>
+        <p>[Varför du passar, del 2: Ett andra krav, eller något som skiljer dig från andra sökande. Även här med ett exempel.]</p>
+        <p>[Varför just det här jobbet: Något specifikt om arbetsgivaren, arbetssättet eller tjänsten, och varför det passar dig.]</p>
+        <p>[Avslutning: Att du gärna berättar mer på en intervju, när du kan börja och hur man når dig.]</p>
+        <p style="margin-bottom:0">Med vänliga hälsningar<br/>[Förnamn Efternamn]</p>
+      </div>
+      <p>Vill du se mallen ifylld? Bland våra <a href="/exempel-personliga-brev">exempel på personliga brev</a> finns färdiga brev för bland annat <a href="/exempel-personliga-brev/underskoterska">undersköterska</a>, <a href="/exempel-personliga-brev/lagerarbetare">lagerarbetare</a>, <a href="/exempel-personliga-brev/butiksbitrade">butiksbiträde</a> och <a href="/exempel-personliga-brev/administrator">administratör</a>, med förklaringar av varför de fungerar.</p>
 
-      <h2>Tips för ett övertygande personligt brev</h2>
+      <h2>Hur börjar man ett personligt brev?</h2>
+      <p>Första meningen avgör om rekryteraren läser vidare. Den vanligaste inledningen, "Jag heter Anna och är 24 år", säger inget som inte redan står i CV:t. Börja hellre med jobbet och något konkret:</p>
       <ul>
-        <li>Anpassa varje brev till den specifika tjänsten och företaget</li>
-        <li>Håll det koncist - sikta på cirka en A4-sida</li>
-        <li>Använd ett professionellt men personligt språk</li>
-        <li>Fokusera på vad du kan göra för företaget, inte bara vad du vill ha från dem</li>
-        <li>Använd konkreta exempel för att stödja dina påståenden</li>
-        <li>Korrekturläs noggrant för att undvika stavfel och grammatiska misstag</li>
+        <li>I stället för "Jag heter Anna och söker jobbet som undersköterska": <strong>"Under tre somrar på ett korttidsboende lärde jag mig hur mycket de första dagarna efter en utskrivning betyder. Nu söker jag tjänsten som undersköterska hos er för att få arbeta med det året runt."</strong></li>
+        <li>I stället för "Jag söker härmed tjänsten som säljare": <strong>"I våras skrev jag 31 nya avtal på en månad, mitt bästa resultat hittills. Nu söker jag tjänsten som säljare hos er, där kunderna är större och säljcyklerna längre."</strong></li>
+        <li>I stället för "Jag har alltid brunnit för att arbeta med barn": <strong>"När vi flyttade vilan utomhus till skogsdungen bakom förskolan somnade fler barn och färre vaknade ledsna. Sådana små förändringar vill jag fortsätta arbeta med som barnskötare hos er."</strong></li>
+      </ul>
+      <p>Fler inledningar finns på varje yrkessida bland våra <a href="/exempel-personliga-brev">exempel på personliga brev</a>.</p>
+
+      <h2>Vad ska man inte skriva i ett personligt brev?</h2>
+      <ul>
+        <li><strong>En upprepning av CV:t.</strong> Brevet ska förklara och ge exempel, inte lista dina jobb en gång till.</li>
+        <li><strong>Egenskaper utan bevis.</strong> I profiltexterna i CV:n byggda hos oss står "engagerad" i var tredje och "positiv" i mer än var fjärde. Samma ord hamnar lätt i brevet, där de inte säger något utan ett exempel.</li>
+        <li><strong>Personnummer, lönekrav och privatliv.</strong> Lön tar du upp om annonsen ber om det eller när ni ses. Familj, hälsa och religion behöver du inte nämna.</li>
+        <li><strong>Negativa ord om tidigare arbetsgivare.</strong> Berätta hellre vad du söker än vad du vill bort från.</li>
+        <li><strong>Ett brev som passar alla jobb.</strong> Byter du bara ut företagsnamnet märks det. Nämn något som bara gäller den här tjänsten.</li>
       </ul>
 
-      <h2>Vanliga misstag att undvika</h2>
-      <ul>
-        <li>Att upprepa information som redan finns i ditt CV</li>
-        <li>Att använda en generisk mall utan anpassning</li>
-        <li>Att fokusera för mycket på dig själv och inte tillräckligt på företaget</li>
-        <li>Att överdriva eller ljuga om dina kvalifikationer</li>
-        <li>Att glömma att inkludera dina kontaktuppgifter</li>
-      </ul>
+      <h2>Hur anpassar man brevet efter annonsen?</h2>
+      <p>Ett anpassat brev tar mindre tid än man tror. Gör så här:</p>
+      <ol>
+        <li>Markera alla krav och önskemål i annonsen.</li>
+        <li>Välj ut de två eller tre som verkar viktigast, ofta de som står först eller nämns flera gånger.</li>
+        <li>Hitta ett konkret exempel för vart och ett: en situation, en siffra eller ett resultat.</li>
+        <li>Använd annonsens egna ord. Står det "kundbemötande" skriver du kundbemötande, inte "service".</li>
+        <li>Lägg till en mening om varför du vill ha just det här jobbet, med något du vet om arbetsgivaren.</li>
+      </ol>
+      <p>Saknar du arbetslivserfarenhet fungerar samma metod med exempel från skola, föreningar och sommarjobb. Läs mer i guiden om <a href="/blogg/personligt-brev-utan-erfarenhet">personligt brev utan erfarenhet</a>. Ska brevet vara på engelska finns tips i guiden om <a href="/blogg/personligt-brev-pa-engelska">personligt brev på engelska</a>.</p>
 
-      <h2>Avslutande ord</h2>
-      <p>Ett välskrivet personligt brev kan vara avgörande för att få dig kallad till intervju. Genom att följa denna guide och lägga tid på att skräddarsy ditt brev för varje ansökan, ökar du dina chanser att sticka ut från mängden och fånga rekryterarens intresse. Kom ihåg att ditt personliga brev är din chans att berätta din historia och visa varför du är den perfekta kandidaten för jobbet.</p>
+      <h2>Vanliga frågor</h2>
+      <h3>Måste man skicka med ett personligt brev?</h3>
+      <p>Om annonsen ber om det, ja. Vissa arbetsgivare ber i stället om svar på urvalsfrågor eller en kort presentation i ett formulär, och då följer du det. Står det inget alls är ett kort och specifikt brev ett bra sätt att sticka ut.</p>
+      <h3>Ska man skriva datum i ett personligt brev?</h3>
+      <p>Det behövs inte när du skickar ansökan digitalt, eftersom datumet syns ändå. I ett utskrivet brev som du lämnar personligen kan du skriva ort och datum högst upp.</p>
+      <h3>Ska man skriva "Hej" eller "Bästa rekryterare"?</h3>
+      <p>"Hej" följt av förnamnet är det vanligaste och fungerar i de flesta branscher. "Bästa rekryterare" och "Till den det berör" låter opersonligt. Hittar du inget namn i annonsen kan du ringa kontaktpersonen och fråga, eller skriva bara "Hej!".</p>
+      <h3>Ska brevet skickas som PDF?</h3>
+      <p>Ja, om du laddar upp eller bifogar det. En PDF ser likadan ut på alla skärmar. Har rekryteringssystemet bara ett textfält klistrar du in texten där och kontrollerar att styckeindelningen följde med.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Ett personligt brev innehåller kontaktuppgifter, en rubrik, en hälsning, en inledning som nämner jobbet, ett eller två stycken om varför du passar, ett om varför du vill ha jobbet och en kort avslutning. Håll det till en sida, ge ett exempel för varje påstående och skriv om brevet för varje tjänst. Använd mallen ovan som stöd, och titta på <a href="/exempel-personliga-brev">våra exempel</a> för att se hur det kan se ut i ditt yrke.</p>
+
+      <h3>Källor</h3>
+      <ul>
+        <li>CVfixaren, egen analys av 719 CV:n byggda i CV-verktyget, april 2025 till november 2026. Läs mer i <a href="/blogg/vi-analyserade-cv">vår analys</a>.</li>
+      </ul>
     `,
   },
   "linkedin-profil-optimering": {
@@ -1164,6 +1512,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
+      ...(post.updated && { modifiedTime: post.updated }),
       url: `https://www.cvfixaren.se/blogg/${resolvedParams.slug}`,
     },
   }
@@ -1202,7 +1551,7 @@ export default async function BlogPost({ params }: Props) {
             headline: post.title,
             description: post.excerpt,
             datePublished: post.date,
-            dateModified: post.date,
+            dateModified: post.updated ?? post.date,
             author: {
               "@type": "Organization",
               name: "CVfixaren.se",
@@ -1238,6 +1587,14 @@ export default async function BlogPost({ params }: Props) {
               <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
               <div className="flex items-center gap-4 text-gray-500">
                 <time dateTime={post.date}>{post.date}</time>
+                {post.updated && (
+                  <>
+                    <span>·</span>
+                    <span>
+                      Uppdaterad <time dateTime={post.updated}>{post.updated}</time>
+                    </span>
+                  </>
+                )}
                 <span>·</span>
                 <span>CVfixaren Redaktionen</span>
               </div>

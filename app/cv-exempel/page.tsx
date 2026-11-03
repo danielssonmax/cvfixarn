@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer"
 import { Section } from "@/components/section"
 import { FileText, CheckCircle } from "lucide-react"
 import type { Metadata } from "next"
+import { cvExamples } from "@/lib/cv-examples"
 
 const exampleSlugs: Record<string, string> = {
   Student: "student",
@@ -16,18 +17,43 @@ const exampleSlugs: Record<string, string> = {
   Konsult: "konsult",
   Barnskötare: "barnskotare",
   "Servitör/servitris": "servitor-servitris",
+  Säljare: "saljare",
+  Kock: "kock",
+  Butiksbiträde: "butiksbitrade",
+  Kundtjänstmedarbetare: "kundtjanst",
+  Administratör: "administrator",
+  Läkare: "lakare",
+  Förskollärare: "forskollarare",
+  "Personlig assistent": "personlig-assistent",
+  Vårdbiträde: "vardbitrade",
+  "Operativ chef": "operativ-chef",
+  Lokalvårdare: "lokalvardare",
+  Lastbilschaufför: "lastbilschauffor",
+  Snickare: "snickare",
+  Byggnadsarbetare: "snickare",
+  Projektledare: "projektledare",
+  Kontorschef: "kontorschef",
+  Lärare: "larare",
+  Grundskollärare: "larare",
 }
+
+function slugForChip(chip: string): string | undefined {
+  const slug = exampleSlugs[chip]
+  return slug && cvExamples[slug] ? slug : undefined
+}
+
+const exampleCount = Object.keys(cvExamples).length
 
 export const metadata: Metadata = {
   title: "CV-exempel för olika yrken och branscher (2026) | CVfixaren",
   description:
-    "Utforska professionella CV-exempel för över 50 yrken och branscher. Hitta inspiration och skapa ditt eget CV med våra ATS-optimerade mallar. Gratis att komma igång.",
+    `Kompletta CV-exempel för ${exampleCount} yrken, med skrivtips och typiska arbetsuppgifter. Hitta inspiration och skapa ditt eget CV med våra ATS-anpassade mallar.`,
   alternates: {
     canonical: "https://www.cvfixaren.se/cv-exempel",
   },
   openGraph: {
     title: "CV-exempel för olika yrken och branscher (2026) | CVfixaren",
-    description: "Professionella CV-exempel för över 50 yrken och branscher. Hitta inspiration för ditt CV.",
+    description: `Kompletta CV-exempel för ${exampleCount} yrken. Hitta inspiration för ditt CV.`,
     url: "https://www.cvfixaren.se/cv-exempel",
   },
 }
@@ -41,6 +67,8 @@ const categories = [
       "Läkare",
       "Sjuksköterska",
       "Undersköterska",
+      "Vårdbiträde",
+      "Personlig assistent",
       "Tandläkare",
       "Sjukgymnast",
       "Psykolog",
@@ -74,7 +102,7 @@ const categories = [
       "Grundskollärare",
       "Lärarassistent",
       "Akademiker",
-      "Förskolepedagog",
+      "Förskollärare",
       "Universitetslektor",
     ],
     count: 6,
@@ -85,6 +113,7 @@ const categories = [
       "CV-exempel som hjälper dig visa dina resultat inom försäljning och marknadsföring. Lyft fram dina prestationer med siffror.",
     examples: [
       "Säljare",
+      "Butiksbiträde",
       "Marknadsförare",
       "Digital marknadsförare",
       "Social Media Manager",
@@ -115,9 +144,11 @@ const categories = [
     examples: [
       "Administratör",
       "Kontorschef",
+      "Projektledare",
+      "Operativ chef",
       "Receptionist",
       "Chefsassistent",
-      "Kundtjänstrepresentant",
+      "Kundtjänstmedarbetare",
       "Kontorssekreterare",
       "Virtuell assistent",
     ],
@@ -188,6 +219,7 @@ const categories = [
       "Elektriker",
       "Rörmokare",
       "Snickare",
+      "Lokalvårdare",
       "Mekaniker",
       "Byggnadsarbetare",
       "Underhållstekniker",
@@ -249,7 +281,7 @@ export default function CVExempelPage() {
               Professionella CV-exempel för alla branscher
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Hitta inspiration bland våra CV-exempel för över 50 yrken. Använd dem som grund och skapa ditt eget professionella, ATS-optimerade CV med vårt verktyg.
+              Hitta inspiration bland våra CV-exempel för {exampleCount} yrken. Använd dem som grund och skapa ditt eget professionella, ATS-optimerade CV med vårt verktyg.
             </p>
             <Link href="/profil/skapa-cv">
               <Button size="lg" className="px-8">
@@ -285,24 +317,36 @@ export default function CVExempelPage() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xl font-semibold">{category.name}</h3>
-                  <span className="text-xs font-medium bg-[#00bf63]/10 text-[#00bf63] px-2.5 py-1 rounded-full">
-                    {category.count} exempel
-                  </span>
+                  {(() => {
+                    const available = new Set(category.examples.map(slugForChip).filter(Boolean)).size
+                    return available > 0 ? (
+                      <span className="text-xs font-medium bg-brand-50 text-brand-800 px-2.5 py-1 rounded-full">
+                        {available} exempel
+                      </span>
+                    ) : null
+                  })()}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   {category.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {category.examples.map((example) => {
-                    const slug = exampleSlugs[example]
-                    return (
+                    const slug = slugForChip(example)
+                    return slug ? (
                       <Link
                         key={example}
-                        href={slug ? `/cv-exempel/${slug}` : "/profil/skapa-cv"}
-                        className="text-xs bg-gray-50 hover:bg-[#00bf63]/10 hover:text-[#00bf63] text-muted-foreground px-3 py-1.5 rounded-full transition-colors border border-gray-100"
+                        href={`/cv-exempel/${slug}`}
+                        className="text-xs font-medium bg-brand-50 text-brand-800 hover:bg-brand-100 px-3 py-1.5 rounded-full transition-colors border border-brand-200"
                       >
                         {example}
                       </Link>
+                    ) : (
+                      <span
+                        key={example}
+                        className="text-xs bg-gray-50 text-muted-foreground px-3 py-1.5 rounded-full border border-gray-100"
+                      >
+                        {example}
+                      </span>
                     )
                   })}
                 </div>

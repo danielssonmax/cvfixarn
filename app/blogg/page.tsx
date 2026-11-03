@@ -37,6 +37,34 @@ export default function BlogPage() {
       category: "CV-tips",
     },
     {
+      title: "Kompetenser i CV: exempel och så skriver du dem",
+      description: "Exempel på kompetenser för vård, lager, butik, kontor och fler yrken, och hur du skriver datorkunskaper så att de säger något.",
+      date: "2026-11-03",
+      slug: "kompetenser-i-cv",
+      category: "CV-tips",
+    },
+    {
+      title: "Med vänliga hälsningar eller med vänlig hälsning? Så avslutar du brev och mejl",
+      description: "Båda formerna är rätt. Så skriver du avslutningsfrasen, när Mvh fungerar och hur du avslutar ett personligt brev.",
+      date: "2026-11-03",
+      slug: "med-vanliga-halsningar",
+      category: "Personligt brev",
+    },
+    {
+      title: "Personligt brev på engelska: exempel och tips för din cover letter",
+      description: "Ett komplett exempel på cover letter, hur hälsning och avslutning fungerar på engelska och de vanligaste språkfällorna.",
+      date: "2026-11-03",
+      slug: "personligt-brev-pa-engelska",
+      category: "Personligt brev",
+    },
+    {
+      title: "Vad ska ett personligt brev innehålla? Struktur, mall och exempel",
+      description: "Brevets sju delar, hur långt det ska vara och en mall att kopiera och fylla i.",
+      date: "2026-11-03",
+      slug: "personligt-brev-guide",
+      category: "Personligt brev",
+    },
+    {
       title: "Skriva CV med AI: så får du hjälp av ChatGPT utan att det märks",
       description: "Så använder du ChatGPT och andra AI-verktyg till ditt CV, med instruktioner att kopiera och fallgropar att undvika.",
       date: "2026-11-03",
@@ -98,13 +126,6 @@ export default function BlogPage() {
       date: "2024-02-10",
       slug: "5-vanliga-misstag-att-undvika",
       category: "CV-tips",
-    },
-    {
-      title: "Personligt brev - En komplett guide",
-      description: "Allt du behöver veta för att skriva ett övertygande personligt brev",
-      date: "2024-02-05",
-      slug: "personligt-brev-guide",
-      category: "Personligt brev",
     },
     {
       title: "LinkedIn-profil som kompletterar ditt CV",

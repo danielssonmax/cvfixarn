@@ -3,19 +3,61 @@ import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Section } from "@/components/section"
-import { FileText, CheckCircle, Pen, Mail, Sparkles } from "lucide-react"
+import { FileText, CheckCircle, Pen, Mail, Sparkles, ArrowRight } from "lucide-react"
 import type { Metadata } from "next"
+import { CopyLetterButton } from "@/components/copy-letter-button"
+import { coverLetterExamples, getCoverLetterExample, letterAsPlainText } from "@/lib/cover-letter-examples"
+
+/** Hub chips that have a full example page. Chips without one render as plain text. */
+const CHIP_TO_LETTER: Record<string, string> = {
+  Sjuksköterska: "sjukskoterska",
+  Läkare: "lakare",
+  Undersköterska: "underskoterska",
+  "Personlig assistent": "personlig-assistent",
+  Lärarassistent: "elevassistent",
+  Studenter: "student",
+  Kundtjänst: "kundtjanst",
+  Butiksbiträde: "butiksbitrade",
+  Administratör: "administrator",
+  Receptionist: "receptionist",
+  Chef: "chef",
+  Kock: "kock",
+  Servitris: "servitris",
+  Restaurang: "servitris",
+  Restaurangmedarbetare: "servitris",
+  Lagerarbetare: "lagerarbetare",
+  Barnskötare: "barnskotare",
+  Vårdbiträde: "vardbitrade",
+  Hemtjänst: "vardbitrade",
+  Vårdare: "vardbitrade",
+  Lokalvårdare: "lokalvardare",
+  Snickare: "snickare",
+  Lastbilschaufför: "lastbilschauffor",
+  Chaufför: "lastbilschauffor",
+  Köksbiträde: "kokbitrade",
+  Projektledare: "projektledare",
+  Jurist: "jurist",
+  Handläggare: "handlaggare",
+  Lärare: "larare",
+  Förskollärare: "forskollarare",
+}
+
+function letterSlugForChip(chip: string): string | undefined {
+  const slug = CHIP_TO_LETTER[chip]
+  return slug && getCoverLetterExample(slug) ? slug : undefined
+}
+
+const featured = getCoverLetterExample("butiksbitrade") ?? coverLetterExamples[0]
 
 export const metadata: Metadata = {
   title: "Exempel på personliga brev per bransch och yrke (2026) | CVfixaren",
-  description:
-    "Hitta gratis exempel på personliga brev för över 100 yrken och branscher. Använd våra mallar som inspiration och skriv ett övertygande personligt brev som kompletterar ditt CV.",
+  description: `Färdiga exempel på personliga brev för ${coverLetterExamples.length} vanliga yrken, med tips om vad du ska lyfta fram. Kopiera ett exempel och anpassa det efter jobbet du söker.`,
   alternates: {
     canonical: "https://www.cvfixaren.se/exempel-personliga-brev",
   },
   openGraph: {
     title: "Exempel på personliga brev per bransch och yrke (2026) | CVfixaren",
-    description: "Hitta gratis exempel på personliga brev för över 100 yrken och branscher.",
+    description: `Färdiga exempel på personliga brev för ${coverLetterExamples.length} vanliga yrken.`,
     url: "https://www.cvfixaren.se/exempel-personliga-brev",
   },
 }
@@ -30,10 +72,12 @@ const categories = [
       "Sjuksköterska",
       "Läkare",
       "Undersköterska",
+      "Vårdbiträde",
       "Apotekare",
       "Fysioterapeut",
       "Psykolog",
       "Hemtjänst",
+      "Personlig assistent",
       "Veterinär",
       "Socialarbetare",
     ],
@@ -141,6 +185,7 @@ const categories = [
     examples: [
       "Kock",
       "Servitris",
+      "Köksbiträde",
       "Barista",
       "Restaurangmedarbetare",
       "Restaurang",
@@ -214,7 +259,7 @@ const categories = [
     icon: "⚖️",
     description:
       "Personliga brev för jurister och advokater. Visa din juridiska kompetens och analytiska förmåga.",
-    examples: ["Advokat"],
+    examples: ["Jurist", "Advokat"],
   },
   {
     name: "Övrigt",
@@ -271,13 +316,13 @@ export default function ExempelPersonligaBrevPage() {
           <div className="container mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 bg-[#00bf63]/10 text-[#00bf63] px-4 py-1.5 rounded-full text-sm font-medium mb-6">
               <Mail className="h-4 w-4" />
-              Över 100 gratis exempel
+              {coverLetterExamples.length} färdiga exempel att utgå från
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Exempel på personliga brev för alla branscher
+              Exempel på personligt brev för olika yrken
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Våra gratis exempel på personliga brev är fyllda med praktiska tips och råd om hur du skriver ett övertygande brev för just din bransch. Kombinera dem med ditt CV för en komplett ansökan.
+              Här hittar du kompletta personliga brev skrivna för vanliga yrken, med förklaringar av varför de fungerar och vad du ska lyfta fram. Kopiera ett exempel, byt ut detaljerna mot dina egna och kombinera det med ditt CV.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/profil/skapa-cv">
@@ -297,6 +342,62 @@ export default function ExempelPersonligaBrevPage() {
             </div>
           </div>
         </section>
+
+        {/* A complete example, then every profession that has one */}
+        {featured && (
+          <Section background="white">
+            <div className="mx-auto max-w-4xl">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Ett komplett exempel på personligt brev</h2>
+              <p className="text-muted-foreground text-lg mb-6">
+                Så här kan ett personligt brev se ut när det är anpassat efter tjänsten. Exemplet är skrivet för ett jobb som {featured.roleLower}.
+              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-semibold text-ink">{featured.letter.subject}</p>
+                <CopyLetterButton text={letterAsPlainText(featured)} />
+              </div>
+              <article
+                id="exempelbrev"
+                className="mt-4 rounded-2xl bg-white p-6 text-[0.975rem] leading-relaxed text-ink-700 shadow-page ring-1 ring-ink-100 sm:p-10"
+              >
+                <p className="font-semibold text-ink">{featured.letter.senderName}</p>
+                <p className="text-sm text-ink-500">{featured.letter.senderContact}</p>
+                <p className="mt-6">{featured.letter.greeting}</p>
+                {featured.letter.paragraphs.map((paragraph) => (
+                  <p key={paragraph.slice(0, 40)} className="mt-4">
+                    {paragraph}
+                  </p>
+                ))}
+                <p className="mt-6">{featured.letter.closing}</p>
+                <p className="font-semibold text-ink">{featured.letter.signature}</p>
+              </article>
+              <p className="mt-4">
+                <Link href={`/exempel-personliga-brev/${featured.slug}`} className="font-semibold text-brand-700 hover:underline">
+                  Se varför brevet fungerar och fler tips för {featured.roleLower}
+                </Link>
+              </p>
+            </div>
+          </Section>
+        )}
+
+        <Section background="gray-50">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Personliga brev per yrke</h2>
+          <p className="text-center text-muted-foreground text-lg max-w-2xl mx-auto mb-10">
+            Varje exempel är ett komplett brev med tips om vad just det yrket ska lyfta fram, tre sätt att inleda och vanliga misstag.
+          </p>
+          <ul className="mx-auto grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {coverLetterExamples.map((example) => (
+              <li key={example.slug}>
+                <Link
+                  href={`/exempel-personliga-brev/${example.slug}`}
+                  className="group flex items-center justify-between rounded-xl bg-white px-4 py-3 text-ink ring-1 ring-ink-100 transition-colors hover:ring-ink-300"
+                >
+                  <span className="font-medium">Personligt brev {example.roleLower}</span>
+                  <ArrowRight className="h-4 w-4 text-ink-400 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Section>
 
         {/* Categories grid */}
         <Section background="white">
@@ -319,23 +420,39 @@ export default function ExempelPersonligaBrevPage() {
                     </span>
                     <h3 className="text-lg font-semibold">{category.name}</h3>
                   </div>
-                  <span className="text-xs font-medium bg-[#00bf63]/10 text-[#00bf63] px-2.5 py-1 rounded-full">
-                    {category.examples.length} exempel
-                  </span>
+                  {(() => {
+                    // Count only professions that have a real example page.
+                    const available = new Set(category.examples.map(letterSlugForChip).filter(Boolean)).size
+                    return available > 0 ? (
+                      <span className="text-xs font-medium bg-brand-50 text-brand-800 px-2.5 py-1 rounded-full">
+                        {available} exempel
+                      </span>
+                    ) : null
+                  })()}
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   {category.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {category.examples.map((example) => (
-                    <Link
-                      key={example}
-                      href="/profil/skapa-cv"
-                      className="text-xs bg-gray-50 hover:bg-[#00bf63]/10 hover:text-[#00bf63] text-muted-foreground px-3 py-1.5 rounded-full transition-colors border border-gray-100"
-                    >
-                      {example}
-                    </Link>
-                  ))}
+                  {category.examples.map((example) => {
+                    const slug = letterSlugForChip(example)
+                    return slug ? (
+                      <Link
+                        key={example}
+                        href={`/exempel-personliga-brev/${slug}`}
+                        className="text-xs font-medium bg-brand-50 text-brand-800 hover:bg-brand-100 px-3 py-1.5 rounded-full transition-colors border border-brand-200"
+                      >
+                        {example}
+                      </Link>
+                    ) : (
+                      <span
+                        key={example}
+                        className="text-xs bg-gray-50 text-muted-foreground px-3 py-1.5 rounded-full border border-gray-100"
+                      >
+                        {example}
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
             ))}
@@ -371,6 +488,17 @@ export default function ExempelPersonligaBrevPage() {
                 </div>
               ))}
             </div>
+            <p className="mt-8 text-center text-muted-foreground">
+              Läs mer i guiden om{" "}
+              <Link href="/blogg/personligt-brev-guide" className="font-semibold text-brand-700 hover:underline">
+                vad ett personligt brev ska innehålla
+              </Link>
+              , med en mall att kopiera. Ska brevet vara på engelska finns ett{" "}
+              <Link href="/blogg/personligt-brev-pa-engelska" className="font-semibold text-brand-700 hover:underline">
+                exempel på personligt brev på engelska
+              </Link>
+              .
+            </p>
           </div>
         </Section>
 
