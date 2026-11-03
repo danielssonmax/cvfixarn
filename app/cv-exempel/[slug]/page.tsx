@@ -445,7 +445,7 @@ export default async function CVExamplePage({ params }: Props) {
                 {example.intro}
               </p>
               <Link href="/profil/skapa-cv">
-                <Button size="lg" className="bg-[#00bf63] hover:bg-[#00a857] text-white px-8">
+                <Button size="lg" className="px-8">
                   Skapa ditt CV nu
                 </Button>
               </Link>
@@ -503,7 +503,7 @@ export default async function CVExamplePage({ params }: Props) {
               <Link href="/profil/skapa-cv">
                 <Button
                   size="lg"
-                  className="btn-sweep-glow bg-[#00bf63] hover:bg-[#00a857] text-white px-8"
+                  className="btn-sweep-glow px-8"
                 >
                   Skapa ditt CV nu
                 </Button>

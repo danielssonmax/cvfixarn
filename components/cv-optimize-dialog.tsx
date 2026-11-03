@@ -150,7 +150,7 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
               <Button
                 onClick={analyse}
                 disabled={tooShort || status === "loading"}
-                className="bg-[#00bf63] text-white hover:bg-[#00a857]"
+               
               >
                 {status === "loading" ? (
                   <>
@@ -342,7 +342,7 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
                 <Button
                   onClick={apply}
                   disabled={selected.length === 0}
-                  className="bg-[#00bf63] text-white hover:bg-[#00a857]"
+                 
                 >
                   <Check className="mr-2 h-4 w-4" />
                   Använd {selected.length > 0 ? `(${selected.length})` : ""}

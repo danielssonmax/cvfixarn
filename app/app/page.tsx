@@ -43,7 +43,7 @@ export default function AppPage() {
         <aside className="w-64 bg-gray-100 p-6">
           <nav className="space-y-2">
             <Link href="/app/cv-mall">
-              <Button className="w-full justify-start bg-[#00bf63] hover:bg-[#00a857] text-white">Skapa CV</Button>
+              <Button className="w-full justify-start">Skapa CV</Button>
             </Link>
             <Button
               variant={activeTab === "cvs" ? "default" : "ghost"}

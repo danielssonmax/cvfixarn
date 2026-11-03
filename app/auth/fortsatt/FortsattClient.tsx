@@ -191,7 +191,7 @@ export default function FortsattClient() {
               <button
                 type="submit"
                 disabled={isSending}
-                className="w-full rounded-lg bg-[#00bf63] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#00a857] disabled:opacity-60"
+                className="w-full rounded-lg bg-cta px-4 py-3 text-sm font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14)] transition-colors hover:bg-cta-hover disabled:opacity-60"
               >
                 {isSending ? "Skickar..." : "Skicka ny länk"}
               </button>

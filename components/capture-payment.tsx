@@ -60,7 +60,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
           {/* CTA Button */}
           <button
             onClick={handlePaymentClick}
-            className="btn-sweep-glow mt-5 flex h-14 w-full items-center justify-center rounded-xl bg-brand text-lg font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2),0_8px_20px_-6px_rgb(0_191_99/0.55)] hover:bg-brand-600 active:translate-y-px"
+            className="btn-sweep-glow mt-5 flex h-14 w-full items-center justify-center rounded-xl bg-cta text-lg font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14),0_8px_20px_-6px_rgb(197_254_52/0.9)] hover:bg-cta-hover active:translate-y-px"
           >
             <span>Kom igång gratis</span>
           </button>

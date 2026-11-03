@@ -106,7 +106,7 @@ export function LoginPopup({ isOpen, onClose, onOpenSignup }: LoginPopupProps) {
                 
                 {/* CTA */}
                 <button
-                  className="mt-3 h-12 w-full rounded-xl bg-brand px-4 text-base font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2),0_6px_16px_-6px_rgb(0_191_99/0.5)] hover:bg-brand-600 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-3 h-12 w-full rounded-xl bg-cta px-4 text-base font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14),0_6px_16px_-6px_rgb(197_254_52/0.9)] hover:bg-cta-hover active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleLogin}
                   disabled={isLoading}
                 >

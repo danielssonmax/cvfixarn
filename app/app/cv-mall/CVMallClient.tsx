@@ -170,7 +170,7 @@ export default function CVMallClient({ searchParams }: { searchParams: { templat
                 Spara
               </Button>
               <Button
-                className="bg-[#00bf63] hover:bg-[#00a857] text-white text-sm"
+                className="text-sm"
                 onClick={handleDownloadRequest}
                 disabled={isDownloading}
               >
@@ -327,7 +327,7 @@ export default function CVMallClient({ searchParams }: { searchParams: { templat
                 />
               </div>
               <Button
-                className="w-full bg-[#00bf63] hover:bg-[#00a857] text-white"
+                className="w-full"
                 size="lg"
                 onClick={handleCreateCheckoutSession}
                 disabled={isLoadingPayment}

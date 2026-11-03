@@ -2619,7 +2619,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               </button>
             )}
             <button
-              className="btn-sweep-glow hidden h-10 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2)] hover:bg-brand-600 active:translate-y-px disabled:opacity-70 sm:flex"
+              className="btn-sweep-glow hidden h-10 items-center gap-2 rounded-lg bg-cta px-4 text-sm font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14)] hover:bg-cta-hover active:translate-y-px disabled:opacity-70 sm:flex"
               onClick={handleDownloadClick}
               disabled={isDownloading}
             >
@@ -2884,7 +2884,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             {/* Download button at bottom of form */}
             <div className="mt-8 pt-4 border-t border-gray-200 pb-32 sm:pb-8">
               <button
-                className="btn-sweep-glow w-full bg-[#00bf63] hover:bg-[#00a857] text-white flex items-center justify-center gap-2 py-3 rounded-md transition-all font-medium text-base"
+                className="btn-sweep-glow w-full bg-cta hover:bg-cta-hover text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14)] flex items-center justify-center gap-2 py-3 rounded-md transition-all font-medium text-base"
                 style={{ 
                   border: '0px solid transparent', 
                   outline: '0px solid transparent', 
@@ -3178,7 +3178,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               type="button"
               onClick={handleDownloadClick}
               disabled={isDownloading}
-              className="btn-sweep-glow flex shrink-0 items-center gap-2 rounded-xl bg-brand px-4 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.2),0_6px_16px_-6px_rgb(0_191_99/0.6)] active:translate-y-px disabled:opacity-70"
+              className="btn-sweep-glow flex shrink-0 items-center gap-2 rounded-xl bg-cta px-4 text-sm font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14),0_6px_16px_-6px_rgb(197_254_52/0.9)] hover:bg-cta-hover active:translate-y-px disabled:opacity-70"
             >
               <Download className="h-4 w-4" />
               <span>{isDownloading ? "Laddar..." : "Ladda ned"}</span>
@@ -3210,7 +3210,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               type="button"
               onClick={handleDownloadClick}
               disabled={isDownloading}
-              className="btn-sweep-glow inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg bg-brand px-4 text-sm font-semibold text-white active:translate-y-px disabled:opacity-70"
+              className="btn-sweep-glow inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg bg-cta px-4 text-sm font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14)] hover:bg-cta-hover active:translate-y-px disabled:opacity-70"
             >
               <Download className="h-4 w-4" />
               <span>{isDownloading ? "Laddar..." : "Ladda ned"}</span>

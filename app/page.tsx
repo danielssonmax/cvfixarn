@@ -276,6 +276,11 @@ export default function HomePage() {
             aria-hidden
             className="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_70%_40%,black,transparent)]"
           />
+          {/* Lime glow top-left meets the logo-green glow on the right */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -left-48 -top-40 h-[520px] w-[520px] rounded-full bg-cta/30 blur-3xl"
+          />
           <div
             aria-hidden
             className="pointer-events-none absolute -right-40 top-10 h-[560px] w-[560px] rounded-full bg-brand/10 blur-3xl"
@@ -312,7 +317,7 @@ export default function HomePage() {
                 <Button
                   asChild
                   size="lg"
-                  className="btn-sweep-glow h-14 w-full px-8 text-base shadow-[0_1px_2px_rgb(0_80_40/0.2),0_10px_24px_-8px_rgb(0_191_99/0.6)] sm:w-auto"
+                  className="btn-sweep-glow h-14 w-full px-8 text-base shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14),0_10px_24px_-8px_rgb(197_254_52/0.9)] sm:w-auto"
                 >
                   <Link href="/profil/skapa-cv">
                     <span className="inline-flex items-center gap-2">
@@ -449,7 +454,7 @@ export default function HomePage() {
               <li key={step.title} className="rounded-2xl bg-white p-6 shadow-soft ring-1 ring-ink-100">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-bold text-brand-700 tabular">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="h-px flex-1 bg-gradient-to-r from-brand/40 to-transparent" />
+                  <span className="h-px flex-1 bg-gradient-to-r from-cta via-brand/40 to-transparent" />
                 </div>
                 <h3 className="mt-5 text-lg font-semibold text-ink">{step.title}</h3>
                 <p className="mt-2 leading-relaxed text-ink-500">{step.text}</p>
@@ -576,6 +581,7 @@ export default function HomePage() {
               className="pointer-events-none absolute inset-0 opacity-60 [background-image:linear-gradient(to_right,rgb(255_255_255/0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.05)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_60%_80%_at_80%_50%,black,transparent)]"
             />
             <div aria-hidden className="pointer-events-none absolute -right-24 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-brand/25 blur-3xl" />
+            <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-cta/15 blur-3xl" />
             <div className="relative grid items-center gap-12 lg:grid-cols-12">
               <div className="lg:col-span-7">
                 <h2 className="text-3xl font-bold text-white md:text-[2.6rem]">Skapa ett proffsigt CV som leder dig till drömjobbet</h2>
@@ -698,8 +704,11 @@ export default function HomePage() {
         </Section>
 
         {/* ── Final CTA ────────────────────────────────────────── */}
-        <Section>
-          <div className="mx-auto max-w-2xl text-center">
+        <Section className="relative overflow-hidden">
+          {/* Soft lime-and-green halo behind the last call to action */}
+          <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] max-w-full -translate-x-[60%] -translate-y-1/2 rounded-full bg-cta/15 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[560px] max-w-full -translate-x-[25%] -translate-y-[40%] rounded-full bg-brand/10 blur-3xl" />
+          <div className="relative mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-ink md:text-4xl">Redo att ta nästa steg i din karriär?</h2>
             <p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-ink-500">
               Anslut dig till tusentals jobbsökare som redan skapat sitt professionella CV med CVfixaren.
@@ -707,7 +716,7 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
-              className="mt-9 h-auto min-h-14 whitespace-normal px-8 py-4 text-base shadow-[0_1px_2px_rgb(0_80_40/0.2),0_10px_24px_-8px_rgb(0_191_99/0.6)]"
+              className="mt-9 h-auto min-h-14 whitespace-normal px-8 py-4 text-base shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14),0_10px_24px_-8px_rgb(197_254_52/0.9)]"
             >
               <Link href="/profil/skapa-cv">Skapa ditt CV nu - det är gratis att börja</Link>
             </Button>

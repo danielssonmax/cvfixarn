@@ -68,7 +68,7 @@ export default function AccountPage() {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold">Profil</h1>
             <Link href="/profil/skapa-cv">
-              <Button className="bg-[#00bf63] hover:bg-[#00a857] text-white">
+              <Button>
                 Logga in för att se ditt konto
               </Button>
             </Link>
@@ -148,7 +148,7 @@ export default function AccountPage() {
                         )
                       ) : (
                         <Link href="/profil/skapa-cv">
-                          <Button className="bg-[#00bf63] hover:bg-[#00a857] text-white">
+                          <Button>
                             <Crown className="h-4 w-4 mr-2" />
                             Uppgradera till premium
                           </Button>

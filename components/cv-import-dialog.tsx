@@ -206,7 +206,7 @@ export function CvImportDialog({ isOpen, onClose, onImport }: CvImportDialogProp
                 Välj en annan fil
               </Button>
               <Button
-                className="flex-1 bg-[#00bf63] hover:bg-[#00a857] text-white"
+                className="flex-1"
                 onClick={() => {
                   onImport(result.data)
                   handleClose()

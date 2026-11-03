@@ -110,8 +110,12 @@
     background-size: 32px 32px;
   }
 
+  /* Page heroes: a faint Tropical Lime glow top-left blending into the logo green */
   .bg-gradient-subtle {
-    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(216 33% 98%) 100%);
+    background:
+      radial-gradient(55% 70% at 0% 0%, rgb(197 254 52 / 0.22), transparent 70%),
+      radial-gradient(50% 60% at 100% 15%, rgb(0 191 99 / 0.08), transparent 70%),
+      linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(216 33% 98%) 100%);
   }
 
   .bg-gradient-brand {

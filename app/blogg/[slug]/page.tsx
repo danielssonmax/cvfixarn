@@ -1247,7 +1247,7 @@ export default async function BlogPost({ params }: Props) {
 
             <div className="mt-12 pt-8 border-t">
               <Link href="/profil/skapa-cv">
-                <Button className="bg-[#00bf63] hover:bg-[#00a857] text-white">Skapa ditt CV nu</Button>
+                <Button>Skapa ditt CV nu</Button>
               </Link>
             </div>
 

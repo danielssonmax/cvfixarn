@@ -137,7 +137,7 @@ export default function ATSCVTemplatesPage() {
                   <h2 className="text-2xl font-semibold mb-2">{template.name}</h2>
                   <p className="text-gray-600 mb-4">{template.description}</p>
                   <Link href={`/profil/skapa-cv?template=${template.id}`}>
-                    <Button className="w-full bg-[#00bf63] hover:bg-[#00a857] text-white">Använd denna mall</Button>
+                    <Button className="w-full">Använd denna mall</Button>
                   </Link>
                 </div>
               </div>

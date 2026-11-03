@@ -11,8 +11,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Call-to-action: Tropical Lime with navy text. The 1px edge keeps the
+        // button visible on white, where lime alone is too faint.
         default:
-          "bg-primary text-primary-foreground shadow-[0_1px_2px_rgb(0_80_40/0.18),inset_0_1px_0_rgb(255_255_255/0.18)] hover:bg-brand-600",
+          "bg-cta text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14),inset_0_1px_0_rgb(255_255_255/0.35)] hover:bg-cta-hover",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-input bg-background text-foreground hover:border-ink-300 hover:bg-ink-50",
         secondary: "bg-secondary text-secondary-foreground hover:bg-ink-100",

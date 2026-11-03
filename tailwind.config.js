@@ -22,8 +22,20 @@ module.exports = {
         heading: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"],
       },
       colors: {
-        // Brand green. DEFAULT is the CTA fill; 700+ are for green text on
-        // white, where the base green is too light to pass contrast.
+        // Tropical Lime: the fill for call-to-action buttons, plus pale tints
+        // for background glows next to the logo green. Lime is too light for
+        // white text (1.2:1), so CTAs always use navy `cta-foreground` (13:1).
+        // It is also faint on white, which is why CTA buttons get a thin edge.
+        cta: {
+          50: "#f9ffeb",
+          100: "#f3ffd6",
+          200: "#ebffb8",
+          DEFAULT: "#c5fe34",
+          hover: "#b5ea30",
+          foreground: "#16233a",
+        },
+        // Brand green: the logo colour, used for accents, icons and text
+        // (700+ for green text on white, where the base green is too light).
         brand: {
           50: "#effdf5",
           100: "#d8f8e6",

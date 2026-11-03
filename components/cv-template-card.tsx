@@ -33,7 +33,7 @@ export function CVTemplateCard({ imageSrc, alt, templateName, templateId }: CVTe
           <h3 className="font-semibold text-ink">{templateName}</h3>
           <p className="text-sm text-ink-500">ATS-anpassad · PDF</p>
         </div>
-        <span className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-brand px-4 text-sm font-semibold text-white shadow-[0_1px_2px_rgb(0_80_40/0.18)] transition-colors group-hover:bg-brand-600">
+        <span className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-cta px-4 text-sm font-semibold text-cta-foreground shadow-[0_0_0_1px_rgb(22_35_58/0.10),0_1px_2px_rgb(22_35_58/0.14)] transition-colors group-hover:bg-cta-hover">
           Använd mall
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </span>

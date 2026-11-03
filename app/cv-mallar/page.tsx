@@ -243,6 +243,9 @@ export default function CVTemplatesPage() {
             aria-hidden
             className="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_60%_80%_at_50%_0%,black,transparent)]"
           />
+          {/* Lime glow top-left meets a logo-green glow on the right, as on the home page */}
+          <div aria-hidden className="pointer-events-none absolute -left-40 -top-48 h-[440px] w-[440px] rounded-full bg-cta/25 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -right-32 -top-24 h-[380px] w-[380px] rounded-full bg-brand/10 blur-3xl" />
           <div className="relative mx-auto max-w-7xl px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-16">
             <Breadcrumbs items={[{ label: "CV-mallar", href: "/cv-mallar" }]} />
             <div className="mt-10 max-w-3xl">
