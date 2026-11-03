@@ -23,6 +23,27 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const blogPosts = [
     {
+      title: "Vad skriver folk i sitt CV? Vi analyserade 719 CV:n",
+      description: "Vi gick igenom 719 CV:n och räknade vad folk skriver. Se vad som är vanligast, och vad som är värt platsen.",
+      date: "2026-11-03",
+      slug: "vi-analyserade-cv",
+      category: "CV-tips",
+    },
+    {
+      title: "Vad vill rekryterare se i ett CV? Det här säger de som läser dem",
+      description: "Rekryterare och chefer om vad som får ett CV att gå vidare, var de tycker olika och vilka råd du ska strunta i.",
+      date: "2026-11-03",
+      slug: "vad-vill-rekryterare-se-i-ett-cv",
+      category: "CV-tips",
+    },
+    {
+      title: "Skriva CV med AI: så får du hjälp av ChatGPT utan att det märks",
+      description: "Så använder du ChatGPT och andra AI-verktyg till ditt CV, med instruktioner att kopiera och fallgropar att undvika.",
+      date: "2026-11-03",
+      slug: "skriva-cv-med-ai",
+      category: "CV-tips",
+    },
+    {
       title: "Söka jobb i en annan stad? Så ökar du dina chanser att lyckas",
       description: "Att söka jobb i en annan stad kan öppna helt nya möjligheter. Lär dig anpassa din ansökan, hantera flytten och övertyga arbetsgivare på distans.",
       date: "2026-03-11",

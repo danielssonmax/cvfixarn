@@ -10,6 +10,451 @@ import { sanitizeHTML } from "@/lib/sanitize"
 
 // This would typically come from a CMS or database
 const blogPosts = {
+  "vi-analyserade-cv": {
+    title: "Vad skriver folk i sitt CV? Vi analyserade 719 CV:n",
+    date: "2026-11-03",
+    category: "CV-tips",
+    excerpt:
+      "Vi analyserade 719 CV:n. 79 % skriver ut gatuadressen, men bara 14 % av jobbeskrivningarna har en siffra. Så ser ett typiskt CV ut, och vad du kan stryka.",
+    content: `
+      <p>Vad skriver folk egentligen i sitt CV? Vi gick igenom 719 CV:n som byggts i CVfixarens CV-verktyg, ett per person, och räknade vad som finns med. Resultatet visar ett tydligt mönster: många fyller CV:t med personuppgifter som rekryterare inte behöver, medan det som faktiskt säljer in dig, som resultat och certifikat, ofta saknas.</p>
+      <p>Här är vad vi hittade, och vår bedömning av om varje del är värd platsen.</p>
+
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li><strong>79&nbsp;%</strong> skriver ut sin gatuadress. Det räcker med ort.</li>
+          <li>Bara <strong>14&nbsp;%</strong> av arbetsbeskrivningarna innehåller en siffra som inte är ett årtal.</li>
+          <li>De vanligaste kompetenserna är mjuka förmågor som kommunikation, ansvarstagande och problemlösning, sådant som är svårt att bevisa.</li>
+          <li>Bara <strong>1,5&nbsp;%</strong> lägger till certifikat, trots att vård, butik och lager dominerar bland jobben.</li>
+        </ul>
+      </blockquote>
+
+      <h2>Vad visar analysen av 719 CV:n?</h2>
+      <p>I 86&nbsp;% av CV:na finns arbetslivserfarenhet och i 77&nbsp;% finns utbildning. Det är grunden, och nästan alla har den. Skillnaderna syns i resten: vad folk lägger till, vad de hoppar över och hur de beskriver det de gjort.</p>
+
+      <figure style="margin:2rem 0;padding:1.25rem 1.25rem 1rem;border:1px solid #e9edf3;border-radius:12px;background:#ffffff">
+        <p style="margin:0 0 1rem;font-weight:600;color:#16233a">Andel CV:n som innehåller respektive del</p>
+        <div style="margin:0 0 .7rem" title="Arbetslivserfarenhet: 86 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Arbetslivserfarenhet</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">86&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:85.7%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Utbildning: 77 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Utbildning</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">77&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:77.2%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Språk: 68 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Språk</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">68&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:68%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Kompetenser: 59 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Kompetenser</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">59&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:58.8%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Roll/titel under namnet: 38 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Roll/titel under namnet</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">38&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:37.8%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Bild: 36 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Bild</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">36&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:36.2%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Profiltext: 23 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Profiltext</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">23&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:23.4%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Egenskaper: 4,9 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Egenskaper</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">4,9&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:4.9%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Intressen: 3,8 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Intressen</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">3,8&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:3.8%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Referenser: 2,4 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Referenser</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">2,4&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:2.4%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Certifikat: 1,5 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Certifikat</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">1,5&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:1.5%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="Kurser: 1,5 % av CV:na">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>Kurser</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">1,5&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:1.5%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+        <figcaption style="margin-top:.75rem;font-size:.8rem;color:#56657f">Källa: CVfixaren, 719 CV:n (det senaste per person), april 2025 till november 2026. Profiltext, egenskaper, intressen, referenser, certifikat och kurser är sektioner som användaren själv lägger till.</figcaption>
+      </figure>
+
+      <p>De sju viktigaste fynden:</p>
+      <ol>
+        <li><strong>79&nbsp;% skriver gatuadress.</strong> Ort, telefon och e-post räcker för att en rekryterare ska kunna nå dig.</li>
+        <li><strong>14&nbsp;% av arbetsbeskrivningarna innehåller en siffra.</strong> Resten beskriver uppgifter, inte resultat.</li>
+        <li><strong>23&nbsp;% har en profiltext.</strong> Knappt var fjärde lägger till de rader som först möter rekryteraren.</li>
+        <li><strong>30&nbsp;% av alla listade kompetenser är mjuka förmågor och egenskaper</strong>, som "kommunikation", "flexibel" eller "social".</li>
+        <li><strong>27&nbsp;% anger födelsedatum och 11&nbsp;% kön.</strong> Uppgifter en arbetsgivare inte får väga in.</li>
+        <li><strong>1,5&nbsp;% har ett avsnitt med certifikat.</strong> Truckkort, delegering eller HLR syns sällan.</li>
+        <li><strong>2,4&nbsp;% har med referenser.</strong> De flesta har redan slutat skriva ut dem, och det är rätt.</li>
+      </ol>
+
+      <h2>Vilka personuppgifter ska stå i ett CV?</h2>
+      <p>Nästan alla har med det viktigaste: 95&nbsp;% har e-post och 94&nbsp;% telefonnummer. Men 79&nbsp;% skriver också ut sin gatuadress, och var fjärde använder fältet för födelsedatum. Det är uppgifter som tar plats utan att göra dig mer anställningsbar.</p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>Uppgift</th><th>Andel</th><th>Värt att ha med?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>E-post och telefon</td><td>95&nbsp;% / 94&nbsp;%</td><td><strong>Ja.</strong> Använd en neutral e-postadress.</td></tr>
+            <tr><td>Ort</td><td>84&nbsp;%</td><td><strong>Ja.</strong> Visar att du kan ta dig till jobbet.</td></tr>
+            <tr><td>Gatuadress och postnummer</td><td>79&nbsp;%</td><td><strong>Nej.</strong> Ort räcker. Adressen behövs först vid anställning.</td></tr>
+            <tr><td>Bild</td><td>36&nbsp;%</td><td><strong>Valfritt.</strong> Vanligt i Sverige men inget krav.</td></tr>
+            <tr><td>Födelsedatum</td><td>27&nbsp;%</td><td><strong>Nej.</strong> Ålder är ingen merit, och arbetsgivaren får inte väga in den.</td></tr>
+            <tr><td>Körkort (eget fält)</td><td>27&nbsp;%</td><td><strong>Ja, om jobbet kräver det.</strong> Skriv vilken behörighet, till exempel B.</td></tr>
+            <tr><td>Kön</td><td>11&nbsp;%</td><td><strong>Nej.</strong> Irrelevant för jobbet.</td></tr>
+            <tr><td>Nationalitet</td><td>9,5&nbsp;%</td><td><strong>Nej.</strong> Skriv hellre att du har arbetstillstånd, om det är aktuellt.</td></tr>
+            <tr><td>LinkedIn</td><td>6,8&nbsp;%</td><td><strong>Ja, om profilen är uppdaterad.</strong></td></tr>
+            <tr><td>Civilstånd</td><td>6,4&nbsp;%</td><td><strong>Nej.</strong> Säger inget om hur du jobbar.</td></tr>
+            <tr><td>Personnummer</td><td>0,7&nbsp;%</td><td><strong>Aldrig.</strong> Bra att nästan ingen gör det.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Ålder, kön och etnisk tillhörighet är skyddade i diskrimineringslagen, så en arbetsgivare ska inte låta dem påverka urvalet. Att skriva ut dem hjälper dig alltså inte, och i värsta fall ger det någon en anledning att sortera fel. Om körkort: 18 personer hade skrivit bara "Ja" i körkortsfältet. Skriv behörigheten, till exempel "B-körkort", så att rekryteraren vet vad du får köra.</p>
+      <p>Vill du läsa mer om bilden kan du se vår guide om <a href="/skriva-cv#bild">bild i CV:t</a>, och om du har en LinkedIn-profil kan du <a href="/blogg/linkedin-profil-optimering">få den att komplettera ditt CV</a>.</p>
+
+      <h2>Hur beskriver folk sin arbetslivserfarenhet?</h2>
+      <p>Medianen är tre jobb per CV, och var femte listar fem jobb eller fler. 80&nbsp;% av jobben har en beskrivning, och en typisk beskrivning är 22 ord lång. Det är kort, men längden är inte problemet. Problemet är vad som står där.</p>
+
+      <div style="margin:2rem 0;padding:1.5rem;border-radius:12px;background:#effdf5;border:1px solid #b2efcd">
+        <p style="margin:0;font-size:2.75rem;line-height:1;font-weight:800;color:#16233a;font-variant-numeric:tabular-nums">14&nbsp;%</p>
+        <p style="margin:.5rem 0 0;color:#2a3850">av arbetsbeskrivningarna innehåller en siffra som inte är ett årtal, till exempel antal kunder, teamets storlek eller ett resultat. Bara 2&nbsp;% anger en enhet som procent, kronor eller antal kunder.</p>
+      </div>
+
+      <p>De flesta beskriver vad jobbet gick ut på, inte vad de åstadkom. Räknar vi per person har 27&nbsp;% av dem med arbetslivserfarenhet minst en siffra någonstans i sina jobbeskrivningar. Nästan tre av fyra visar alltså inga konkreta resultat, något som rekryterare ofta lyfter fram som det som får ett CV att sticka ut. Vi har samlat vad rekryterare själva säger i <a href="/blogg/vad-vill-rekryterare-se-i-ett-cv">Vad vill rekryterare se i ett CV?</a></p>
+      <p>Siffror finns i nästan alla jobb, även där det inte handlar om försäljning. Så här kan det se ut för tre av de vanligaste jobben i vår data:</p>
+      <ul>
+        <li><strong>Undersköterska.</strong> Vanligt: <em>"Omvårdnad av äldre."</em> Bättre: <em>"Omvårdnad på avdelning med 24 boende. Delegering för läkemedel, dokumentation i journalsystem."</em></li>
+        <li><strong>Butiksmedarbetare.</strong> Vanligt: <em>"Kassa och kundservice."</em> Bättre: <em>"Kassa och kundservice i butik med cirka 400 kunder per dag. Ansvar för beställning av frukt och grönt."</em></li>
+        <li><strong>Lagerarbetare.</strong> Vanligt: <em>"Plock och pack, truckkörning."</em> Bättre: <em>"Plockade i snitt 120 orderrader per timme. Truckkort A och B, motviktstruck dagligen."</em></li>
+      </ul>
+      <p>Exemplen är påhittade, men formen fungerar för de flesta jobb. Fråga dig själv: hur många, hur ofta, hur stort, och vad blev bättre för att du var där? Bara 20&nbsp;% av beskrivningarna använder punktlistor, och det är ett enkelt sätt att göra dem lättare att skumma. Fler exempel per yrke hittar du bland våra <a href="/cv-exempel">CV-exempel</a>.</p>
+
+      <h2>Skriver folk en profiltext, och hur låter den?</h2>
+      <p>Profiltexten är de rader som står överst och som rekryteraren läser först. I vårt verktyg är det en sektion man själv lägger till, och 23&nbsp;% gör det. Medianlängden är 60 ord, vilket är en lagom längd. 40&nbsp;% börjar texten med "Jag".</p>
+      <p>Orden i profiltexterna är förvånansvärt lika. Var tredje innehåller "engagerad" eller "engagemang", och mer än var fjärde "positiv", "ansvarsfull", "samarbete" eller "noggrann". 62&nbsp;% av texterna innehåller tre eller fler av orden nedan.</p>
+
+      <figure style="margin:2rem 0;padding:1.25rem 1.25rem 1rem;border:1px solid #e9edf3;border-radius:12px;background:#ffffff">
+        <p style="margin:0 0 1rem;font-weight:600;color:#16233a">Vanligaste orden i profiltexter</p>
+          <div style="margin:0 0 .7rem" title="engagerad / engagemang: 33 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>engagerad / engagemang</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">33&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:32.7%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="positiv: 28 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>positiv</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">28&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:28%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="ansvarsfull / ansvarstagande: 28 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>ansvarsfull / ansvarstagande</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">28&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:28%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="utvecklas / utveckling: 27 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>utvecklas / utveckling</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">27&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:27.4%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="samarbete: 26 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>samarbete</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">26&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:26.2%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="noggrann: 26 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>noggrann</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">26&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:25.6%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="självgående / självständig: 21 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>självgående / självständig</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">21&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:21.4%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="team / lagspelare: 17 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>team / lagspelare</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">17&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:17.3%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="social: 14 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>social</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">14&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:14.3%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+          <div style="margin:0 0 .7rem" title="flexibel: 14 % av profiltexterna">
+            <div style="display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;line-height:1.3;color:#16233a"><span>flexibel</span><span style="font-variant-numeric:tabular-nums;color:#3d4b64">14&nbsp;%</span></div>
+            <div style="margin-top:.3rem;height:12px;background:#e9edf3;border-radius:0 4px 4px 0"><div style="width:13.7%;height:12px;background:#00874a;border-radius:0 4px 4px 0"></div></div>
+          </div>
+        <figcaption style="margin-top:.75rem;font-size:.8rem;color:#56657f">Andel av 168 profiltexter som innehåller ordet eller en böjning av det. Källa: CVfixaren, april 2025 till november 2026.</figcaption>
+      </figure>
+
+      <p>Problemet är inte orden i sig. Det är att de inte skiljer dig från någon annan och inte går att kontrollera. Bara 38&nbsp;% av profiltexterna nämner erfarenhet av eller inom något konkret.</p>
+      <p>Vårt råd: lägg till en profiltext, men låt den börja med vad du är och kan, inte med en lista egenskaper. "Undersköterska med fem års erfarenhet av demensvård och delegering för läkemedel" säger mer än "Jag är en positiv och noggrann person som gillar att samarbeta". Visa egenskaperna med exempel i stället för att räkna upp dem. Läs mer om hur du skriver en profiltext i guiden om <a href="/skriva-cv">hur man skriver ett CV</a>.</p>
+
+      <h2>Vilka kompetenser listar folk i sitt CV?</h2>
+      <p>59&nbsp;% har fyllt i avsnittet för kompetenser, och den som gör det listar i median två. De vanligaste orden är inte konkreta kunskaper utan mjuka förmågor och egenskaper: kommunikation, ansvarstagande, problemlösning, flexibel, kundservice, stresstålig och samarbetsförmåga. Räknat på alla listade kompetenser är 30&nbsp;% av den sorten.</p>
+      <p>Ingen enskild kompetens fanns i fler än 3,5&nbsp;% av CV:na. Det är bra, för det betyder att folk skriver olika saker. Men egenskaperna i toppen är samma ord som i profiltexterna, och de går inte att kontrollera.</p>
+      <p>Bara 5&nbsp;% nämner ett Office-program som kompetens. Det är rimligt för många jobb i vår data, men det visar också att de konkreta kunskaperna ofta saknas: kassasystem, journalsystem, truckkort, språk, programvaror och maskiner.</p>
+      <p><strong>Värt att ha med?</strong> Ja, men byt egenskaperna mot kunskaper du kan bevisa och som annonsen frågar efter. Använd samma ord som annonsen, så hittar även <a href="/ats-anpassade-cv-mallar">rekryteringssystemen</a> dem. Egenskaperna passar bättre i profiltexten, med ett exempel.</p>
+
+      <h2>Vad är det som nästan ingen har med?</h2>
+      <p>Några delar finns i under 5&nbsp;% av CV:na. Ibland är det helt rätt, ibland är det en missad chans:</p>
+      <ul>
+        <li><strong>Certifikat (1,5&nbsp;%) och kurser (1,5&nbsp;%).</strong> En missad chans. De vanligaste jobbtitlarna i vår data är vårdbiträde, undersköterska, butiksmedarbetare, personlig assistent och lagerarbetare. Där är truckkort, delegering, HLR och hygienutbildning ofta krav, och de syns bara om du skriver ut dem.</li>
+        <li><strong>Referenser (2,4&nbsp;%).</strong> Rätt att hoppa över. Ha två referenser redo och lämna dem när arbetsgivaren ber om dem. Bara 1&nbsp;% skriver "Referenser lämnas på begäran", och det behövs inte heller.</li>
+        <li><strong>Intressen (3,8&nbsp;%).</strong> Valfritt. Ta med dem om de visar något relevant, som ledaruppdrag i en förening.</li>
+        <li><strong>Egenskaper som eget avsnitt (4,9&nbsp;%).</strong> Behövs inte. Visa dem i profiltexten och i dina arbetsbeskrivningar.</li>
+      </ul>
+      <p>Språk är däremot vanligt: 68&nbsp;% har ett språkavsnitt. Svenska och engelska dominerar, och av dem som listar språk har 39&nbsp;% med tre eller fler. 36&nbsp;% anger ett modersmål. Det är en merit i många serviceyrken, så ta med alla språk du kan använda i jobbet.</p>
+
+      <h2>Hur långt är ett typiskt CV?</h2>
+      <p>Det typiska CV:t i vår data innehåller 239 ord, och tre av fyra har under 365 ord. De flesta CV:n är alltså korta. Det är inget problem i sig, men det gör varje rad viktig. Om var fjärde rad är gatuadress, födelsedatum och civilstånd finns det mindre plats för det som säljer in dig.</p>
+      <p>Prioritera i den här ordningen: arbetslivserfarenhet med resultat, utbildning och certifikat, konkreta kompetenser och språk, en kort profiltext överst. Allt annat är bonus.</p>
+
+      <h2>Så gjorde vi analysen</h2>
+      <p>Vi analyserade CV:n som skapats i CVfixarens CV-verktyg mellan 24 april 2025 och 3 november 2026: 2&nbsp;632 sparade CV:n från 874 konton. Vi tog bort tomma utkast utan erfarenhet, utbildning, kompetenser, profiltext eller fullständigt namn, och behöll sedan det senast uppdaterade CV:t per person. Kvar blev 719 CV:n.</p>
+      <p>Vi räknade om varje fält var ifyllt och sökte efter ord och siffror i texterna. Analysen gjordes automatiskt och bara på sammanställd nivå. Inga enskilda CV:n har lästs eller citerats, och listor visar bara ord som förekommer i minst fem CV:n.</p>
+      <p>Tre saker är bra att veta. Datan visar vad folk skriver, inte vem som fick jobbet, så våra bedömningar bygger på vad rekryterare brukar efterfråga. Användarna söker oftast jobb inom vård, handel, lager och service, vilket påverkar till exempel vilka kompetenser som är vanliga. Och verktyget påverkar en del val: profiltext och flera avsnitt måste läggas till aktivt, medan adressfältet syns från början.</p>
+
+      <h2>Vanliga frågor</h2>
+      <h3>Vad ska man inte ha med i ett CV?</h3>
+      <p>Hoppa över personnummer, gatuadress, födelsedatum, kön, civilstånd och nationalitet. I vår analys hade 79&nbsp;% med gatuadress och 27&nbsp;% födelsedatum, trots att ingen av uppgifterna gör dig mer kvalificerad. Ort, telefon och e-post räcker.</p>
+      <h3>Ska man skriva körkort i CV:t?</h3>
+      <p>Ja, om jobbet kräver det eller annonsen nämner det. 34&nbsp;% av CV:na i vår analys nämner körkort. Skriv vilken behörighet du har, till exempel B-körkort, och ta med truckkort eller liknande som certifikat.</p>
+      <h3>Hur många kompetenser ska man ha i CV:t?</h3>
+      <p>De som har ett kompetensavsnitt i vår data listar i median två, vilket ofta är för få. Fem till åtta konkreta kompetenser som matchar annonsen är en bra nivå, hellre system och kunskaper än egenskaper.</p>
+      <h3>Behöver man skriva referenser i CV:t?</h3>
+      <p>Nej. Bara 2,4&nbsp;% av CV:na i vår analys har med referenser. Ha kontaktuppgifterna redo och lämna dem när arbetsgivaren frågar efter dem.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Analysen av 719 CV:n visar att de flesta har grunderna på plats, men lägger plats på fel saker. Stryk gatuadress, födelsedatum, kön och civilstånd. Lägg den platsen på siffror i dina arbetsbeskrivningar, certifikat du har och en kort profiltext som säger vad du kan, inte bara vem du är.</p>
+      <p>Vill du testa direkt? Öppna ditt CV i <a href="/profil/skapa-cv">CV-verktyget</a> och gå igenom det med listan ovan.</p>
+    `,
+  },
+  "vad-vill-rekryterare-se-i-ett-cv": {
+    title: "Vad vill rekryterare se i ett CV? Det här säger de som läser dem",
+    date: "2026-11-03",
+    category: "CV-tips",
+    excerpt:
+      "Rekryterare och chefer svarade på vad de vill se i ett CV. Här är råden de är överens om, var de tycker olika och två tips du inte ska följa.",
+    content: `
+      <p>"Rekryterare, hur vill ni att ett CV och personligt brev ska se ut?" Frågan ställdes i en tråd på <a href="https://www.reddit.com/r/sweden/comments/1l26jz3/rekryterare_hur_vill_ni_att_ett_cv_och_personligt/" target="_blank" rel="noopener noreferrer">r/sweden</a> av någon som hittat en tjänst de verkligen ville ha. Det mest uppröstade svaret var kort: <em>"Finns lika många åsikter som det finns rekryterare."</em></p>
+      <p>Det stämmer delvis. Men läser du alla svar från rekryterare, chefer och andra som faktiskt sållar ansökningar ser du att de är överens om mer än de tror. Vi har gått igenom tråden och jämfört råden med hur 719 personer faktiskt har byggt sina CV:n hos CVfixaren.</p>
+
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li>Rekryterarna i tråden vill se <strong>hur du uppfyller kraven i annonsen</strong>, inte bara dina jobbtitlar.</li>
+          <li><strong>Mätbara resultat</strong> nämns som ett plus, men bara 14&nbsp;% av arbetsbeskrivningarna i CV:n byggda hos oss innehåller en siffra.</li>
+          <li><strong>Slarvfel och fel företagsnamn</strong> är de röda flaggor som nämns oftast. Ett felfritt, enkelt CV slår ett snyggt med fel i.</li>
+          <li>Om bild, design, längd och AI går åsikterna isär. Där avgör branschen och annonsen.</li>
+        </ul>
+      </blockquote>
+
+      <h2>Vad är rekryterare överens om i ett CV?</h2>
+      <p>Trots att tråden började med "alla tycker olika" återkommer samma fem saker hos dem som läser CV:n i jobbet. Ingen av dem handlar om design. Alla handlar om att göra det lätt för läsaren att se att du passar för just den här tjänsten.</p>
+
+      <h3>1. Visa hur du uppfyller kraven i annonsen</h3>
+      <p>En rekryterare skrev att man ska utgå från kraven i annonsen och göra det övertydligt hur man uppfyller dem. Det vanligaste felet enligt hen är att bara skriva en titel, till exempel "administratör", utan att berätta vad jobbet innehöll. Administratörer finns i alla branscher, med helt olika arbetsuppgifter.</p>
+      <p>Läs annonsen, stryk under kraven och se till att varje krav går att hitta i ditt CV. Det hjälper både människan som läser och rekryteringssystemet som sorterar. Vi går igenom hur det fungerar i guiden om <a href="/ats-anpassade-cv-mallar">ATS-anpassade CV-mallar</a>.</p>
+
+      <h3>2. Beskriv vad du gjorde, med verktyg och resultat</h3>
+      <p>En ingenjör som läser CV:n inför intervjuer ville se vilka branschspecifika verktyg du använt, och hellre en rad för mycket än att något relevant saknas. En operativ chef som tar besluten listade "mätbara resultat i jobberfarenheten" som en grön flagga.</p>
+      <div style="margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #00874a;border-radius:0 8px 8px 0;background:#f5f7fa"><p style="margin:0;color:#2a3850"><strong>I CV:n byggda hos oss:</strong> bara 14&nbsp;% av arbetsbeskrivningarna innehåller en siffra som inte är ett årtal, och bara 27&nbsp;% av dem med arbetslivserfarenhet har en enda siffra någonstans. Här finns en enkel chans att sticka ut.</p></div>
+      <p>Det behöver inte vara försäljningssiffror. Antal kunder per dag, storleken på teamet, hur många ärenden du hanterade eller att du kortade en process med en vecka räcker långt.</p>
+
+      <h3>3. Gör det lätt att skumma</h3>
+      <p>Flera i tråden beskriver samma läsning: en snabb första sållning där CV:t ska gå att förstå på 20–30 sekunder. En rekryterare skrev att hen inte orkar läsa sidor av text under varje jobb. En annan tyckte att CV:n som ser ut som "kortare noveller" blir stökiga.</p>
+      <p>Lägg det mest relevanta först och skriv ditt senaste jobb högst upp. Har du nyss tagit examen och utbildningen är det som gör dig relevant kan den ligga först, annars ska erfarenheten komma före.</p>
+
+      <h3>4. Felfritt slår snyggt</h3>
+      <p>Den mest konkreta listan i tråden kom från en operativ chef. Hens röda flaggor var slarvfel i språk och stavning, trasig formatering, överdrifter och fel företagsnamn, något hen kallade "absurt vanligt". En annan som deltar i rekryteringar skrev att hen medvetet letar efter fel: särskrivningar, oförklarade luckor och kompetenser som inte betyder något.</p>
+      <p>En kommentar sammanfattade det bra: i första sållningen är det viktigare att inte ha ett dåligt CV än att ha ett fantastiskt. Är du kvalificerad vill du inte bli bortsorterad på en liten miss. Läs igenom en extra gång, och kontrollera att företagsnamnet stämmer i varje ansökan.</p>
+
+      <h3>5. Relevans före fullständighet</h3>
+      <p>Arbetslivserfarenhet ska vara den största delen av CV:t enligt chefen ovan. Utbildning, kompetenser, språk och sommarjobb kan du nämna, men de ska inte fylla ut. En annan skrev att hen inte vill se "en bibel av arbeten", bara de jobb som spelar roll för tjänsten.</p>
+      <p>Det betyder inte att du ska ta bort jobb så att det blir luckor. Ett irrelevant jobb kan stå kvar på en rad med arbetsgivare och år, utan beskrivning. Det visar att du har arbetat, utan att stjäla plats.</p>
+
+      <h2>Varför ratar rekryterare kompetensstaplar?</h2>
+      <p>Två personer i tråden tog upp samma sak: staplar eller betyg där du skattar dig själv, typ "MS Excel 5/10". Chefen ville hellre se en design som lyfter fram relevant text än "nån stapel om att du är 5/10 på MS Excel". En annan berättade att hen tog bort alla staplar ur sitt CV. Ett självskattat betyg säger inte vad du kan, och skattar en annan sökande sig högre kan du sorteras bort trots att du är bättre.</p>
+      <p>Skriv hellre vad du har använt verktyget till. "Excel: pivottabeller och månadsrapporter till ledningsgruppen" säger mer än fyra fyllda prickar.</p>
+
+      <h2>Var går rekryterarnas åsikter isär?</h2>
+      <p>Här har det mest uppröstade svaret rätt. På de här punkterna finns inget svar som gäller alla. Det som avgör är bransch, företag och vem som läser.</p>
+
+      <h3>Bild i CV:t</h3>
+      <p>En i tråden rekommenderade "en (bra) bild på dig". En annan påpekade att vissa internationella företag inte vill ha foto alls, för att undvika att någon kan hävda att de diskriminerats. I Sverige är bild vanligt men inget krav.</p>
+      <div style="margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #00874a;border-radius:0 8px 8px 0;background:#f5f7fa"><p style="margin:0;color:#2a3850"><strong>I CV:n byggda hos oss:</strong> 36&nbsp;% har valt att ladda upp en bild.</p></div>
+      <p>Läs annonsen och företagets egna riktlinjer. Säger de inget är en neutral, professionell bild okej, och att låta bli är också okej. Mer om det i vår guide om <a href="/skriva-cv#bild">bild i CV:t</a>.</p>
+
+      <h3>Design och layout</h3>
+      <p>"Vitt papper med svart text på" fick över 50 uppröster. Samtidigt påminde någon om att en grafisk formgivare förväntas visa känsla för form, och att ett familjeföretag kan uppskatta mer färg än en rekryteringsbyrå som bara letar fakta.</p>
+      <p>Det de flesta ändå var överens om: inga tabeller som krånglar, inga ovanliga typsnitt och ingen viktig information inuti bilder. Rekryteringssystem som Teamtailor läser texten i ditt CV, och text inuti en bild syns ofta inte för dem.</p>
+
+      <h3>Hur långt ska CV:t vara?</h3>
+      <p>Någon hade alltid hört "max en sida", begärde ut de andra sökandes ansökningar och såg att många hade nästan två fulla sidor. Chefen i tråden svarade att det beror på erfarenhet. Kan du fylla första sidan med relevant jobberfarenhet får andra sidan ta utbildning och annat. Nyexade kan sällan fylla två sidor utan att det blir irrelevant. Hens tumregel var max två sidor, om du inte är över 50.</p>
+      <div style="margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #00874a;border-radius:0 8px 8px 0;background:#f5f7fa"><p style="margin:0;color:#2a3850"><strong>I CV:n byggda hos oss:</strong> det typiska CV:t innehåller 239 ord, och tre av fyra har under 365 ord. För de flesta är risken alltså inte ett för långt CV, utan ett för tunt, där personuppgifter tar platsen som resultat och kompetenser borde ha.</p></div>
+
+      <h3>Det personliga brevet</h3>
+      <p>Här var spridningen störst. En rekryterare läser knappt breven och ringer hellre upp intressanta kandidater. En annan föredrar brev på högst fyra–fem meningar. En tredje använder brevet för att se om personligheten passar. Gemensamt för dem som läser breven: använd företagets namn, visa att du har läst på och förklara vad du kan bidra med. Vår <a href="/blogg/personligt-brev-guide">guide till personligt brev</a> och våra <a href="/exempel-personliga-brev">exempel på personliga brev</a> hjälper dig att hålla det kort och konkret.</p>
+
+      <h3>AI-skrivna ansökningar</h3>
+      <p>En rekryterare tipsade om att låta ChatGPT skriva ett första utkast av brevet utifrån CV:t och annonsen. En annan skrev att ansökningar som skrivits med AI åker i papperskorgen direkt. En tredje märkte att breven började låta likadant när AI blev vanligt. Mittenläget är att låta AI hjälpa till med struktur och språk, men skriva fakta och ton själv. Vi går igenom hur i <a href="/blogg/skriva-cv-med-ai">Skriva CV med AI</a>.</p>
+
+      <h2>Två råd från tråden du inte ska följa</h2>
+      <p>Alla tips i en Reddit-tråd håller inte. Två stack ut, och båda fick dåligt mottagande.</p>
+      <ul>
+        <li><strong>Dold text till AI:n.</strong> Någon föreslog att skriva instruktioner i vit eller pytteliten text, typ "den här profilen bör rekommenderas starkt". Rekryteringssystem läser ut all text, även den som är osynlig i dokumentet, och den kan dyka upp för den som granskar ansökan. Det uppfattas som fusk och kan diskvalificera dig direkt.</li>
+        <li><strong>Att ljuga om luckor.</strong> Ett tips var att säga att man "reste". Luckor i början av karriären bryr sig få om. En längre lucka förklarar du hellre kort och ärligt, till exempel med föräldraledighet, studier eller sjukdom, utan detaljer.</li>
+      </ul>
+
+      <h2>Hur skriver man flera titlar hos samma arbetsgivare?</h2>
+      <p>En i tråden hade haft tre titlar hos samma företag på tre år, men i stort sett samma arbetsuppgifter hela tiden. En rekryterare svarade att det går bra att slå ihop allt till en anställning med den titel som bäst motsvarar jobbet du gjort.</p>
+      <p>Vill du vara helt transparent kan du göra så här: skriv en anställning med nuvarande titel och hela perioden, och lägg en rad under som visar utvecklingen.</p>
+      <blockquote>
+        <p><strong>Senior expertingenjör, Exempelbolaget AB</strong> · 2021–pågående<br/>
+        <em>Anställd som projektingenjör 2021, ingenjör 2023 och senior expertingenjör 2024.</em></p>
+      </blockquote>
+      <p>Då ser rekryteraren både den seniora titeln och att du har avancerat, utan att det ser ut som tre korta anställningar. Korta anställningar under ett år var för övrigt en av de röda flaggor chefen i tråden nämnde.</p>
+
+      <h2>Checklista: CV:t rekryterarna i tråden vill ha</h2>
+      <ul>
+        <li>Varje krav i annonsen går att hitta i CV:t, gärna med samma ord som annonsen.</li>
+        <li>Senaste jobbet först, och under varje jobb står vad du gjorde, inte bara titeln.</li>
+        <li>Minst en siffra eller ett konkret resultat i dina viktigaste jobb.</li>
+        <li>Inga självskattade staplar. Skriv vad du har gjort med verktyget i stället.</li>
+        <li>Två rader överst som sammanfattar dig, anpassade efter tjänsten.</li>
+        <li>Inga stavfel, ingen trasig formatering och rätt företagsnamn.</li>
+        <li>Högst två sidor, och en sida räcker om du har kort erfarenhet.</li>
+        <li>Sparat som PDF, med text som går att markera.</li>
+      </ul>
+      <p>Vill du se hur det ser ut i praktiken? Bläddra bland våra <a href="/cv-exempel">CV-exempel</a> eller läs den fullständiga guiden om <a href="/skriva-cv">hur man skriver ett CV</a>.</p>
+
+      <h2>Vanliga frågor</h2>
+      <h3>Hur lång tid lägger en rekryterare på ett CV?</h3>
+      <p>Det finns ingen fast siffra, men flera i tråden beskrev en snabb första sållning. En uppskattade att informationen ska gå att ta till sig på 20–30 sekunder, gärna mindre. Det är därför det viktigaste ska stå först och vara lätt att hitta.</p>
+      <h3>Läser rekryterare det personliga brevet?</h3>
+      <p>Vissa gör det, andra inte. En rekryterare i tråden läser knappt breven, en annan använder dem för att bedöma personlighet. Eftersom du inte vet vem som läser din ansökan ska du skicka med ett kort och specifikt brev när annonsen ber om det.</p>
+      <h3>Ska man ha med alla jobb man haft?</h3>
+      <p>Nej, men undvik långa luckor. Relevanta jobb beskriver du ordentligt. Övriga kan stå på en rad med arbetsgivare och år, eller samlas under en rubrik som "Övriga anställningar".</p>
+      <h3>Är det fel att ha färg i CV:t?</h3>
+      <p>Nej. En diskret accentfärg i rubriker eller namn är vanligt och stör ingen. Undvik däremot att lägga viktig text i bilder eller tabeller som ett rekryteringssystem kan läsa fel.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>Rekryterare tycker olika om bild, färg, längd och personliga brev. Men de som läser CV:n i jobbet är förvånansvärt eniga om grunderna: visa hur du matchar annonsen, beskriv vad du gjort med konkreta resultat, gör det lätt att skumma och lämna inga slarvfel.</p>
+      <p>Börja med det, och anpassa resten efter branschen du söker dig till.</p>
+
+      <h3>Källor</h3>
+      <ul>
+        <li>Reddit, r/sweden: "Rekryterare, hur vill ni att ett CV och personligt brev ska se ut?", läst 2026-11-03, <a href="https://www.reddit.com/r/sweden/comments/1l26jz3/rekryterare_hur_vill_ni_att_ett_cv_och_personligt/" target="_blank" rel="noopener noreferrer">reddit.com/r/sweden/comments/1l26jz3</a>. Citaten är kortade och i vissa fall omformulerade.</li>
+        <li>CVfixaren, egen analys av 719 CV:n byggda i CV-verktyget, april 2025 till november 2026. Läs mer i <a href="/blogg/vi-analyserade-cv">vår analys</a>.</li>
+      </ul>
+    `,
+  },
+  "skriva-cv-med-ai": {
+    title: "Skriva CV med AI: så får du hjälp av ChatGPT utan att det märks",
+    date: "2026-11-03",
+    category: "CV-tips",
+    excerpt:
+      "Arbetsförmedlingen tipsar om AI när du skriver CV men varnar för helt AI-skrivna texter. Så använder du ChatGPT rätt, med instruktioner att kopiera.",
+    content: `
+      <p>Får man skriva sitt CV med ChatGPT? Ja. Arbetsförmedlingen tipsar själva om att ta hjälp av AI när du skriver CV, men varnar samtidigt för texter som är helt AI-genererade. Rekryterarna är mer oense: en rekommenderar AI för personliga brev, en annan slänger ansökningar som låter AI-skrivna.</p>
+      <p>Den här guiden visar var gränsen går. Vad AI är bra på, vad du ska göra själv och vilka instruktioner som ger ett CV som låter som du, inte som alla andra.</p>
+
+      <blockquote>
+        <p><strong>Det viktigaste i korthet</strong></p>
+        <ul>
+          <li>Arbetsförmedlingen rekommenderar AI för <strong>textförslag, feedback och språkgranskning</strong>, men inte för att skriva hela CV:t.</li>
+          <li>Rekryterare reagerar på texter som låter likadana. Var tredje profiltext i CV:n byggda hos oss innehåller redan ordet "engagerad" eller "engagemang".</li>
+          <li>Låt AI <strong>granska och föreslå</strong>. Fakta, siffror och slutversion skriver du själv.</li>
+          <li>Klistra aldrig in personnummer eller annat känsligt i ett AI-verktyg.</li>
+        </ul>
+      </blockquote>
+
+      <h2>Vad säger Arbetsförmedlingen om att skriva CV med AI?</h2>
+      <p>På sin sida om att <a href="https://arbetsformedlingen.se/for-arbetssokande/cv-ansokan-och-intervju/skriva-cv" target="_blank" rel="noopener noreferrer">skriva CV</a> föreslår Arbetsförmedlingen att du tar hjälp av ChatGPT eller ett annat AI-verktyg om du har svårt att komma igång. De nämner tre saker AI kan hjälpa till med:</p>
+      <ul>
+        <li>Ta fram ett textförslag när du behöver inspiration.</li>
+        <li>Bedöma om din egen text är tydlig, lättläst och lyfter fram dina styrkor.</li>
+        <li>Kontrollera ordval, stavning och grammatik.</li>
+      </ul>
+      <p>De lägger också till två varningar. Läs alltid igenom förslagen och gör texten till din egen. Och arbetsgivare använder ofta rekryteringssystem med inbyggt AI-stöd, så enligt Arbetsförmedlingen finns risken att en helt AI-genererad text sorteras bort. Spara dessutom alltid CV:t i Word eller som PDF så att det kan läsas korrekt.</p>
+
+      <h2>Vad tycker rekryterare om AI-skrivna CV:n?</h2>
+      <p>I en <a href="https://www.reddit.com/r/sweden/comments/1l26jz3/rekryterare_hur_vill_ni_att_ett_cv_och_personligt/" target="_blank" rel="noopener noreferrer">tråd på r/sweden</a> där rekryterare svarade på hur de vill att ett CV ska se ut gick åsikterna isär direkt:</p>
+      <ul>
+        <li>En rekryterare föreslog att klistra in CV:t och annonsen i ChatGPT, be om en säljande text och sedan finslipa den några minuter. Någon svarade att hen gjort just så och fått jobbet.</li>
+        <li>En annan skrev att ansökningar där AI skrivit det personliga brevet åker i papperskorgen direkt, eftersom hen vill höra kandidaten berätta om sig själv.</li>
+        <li>En tredje, som hanterat ansökningar på två arbetsplatser, märkte att alla brev började se exakt likadana ut när AI blev vanligt.</li>
+      </ul>
+      <p>Det gemensamma är inte "AI eller inte". Det är att texten ska innehålla dina riktiga erfarenheter och låta som en människa. Det är när alla ansökningar låter likadant som AI blir ett problem. Vi har samlat fler råd från samma tråd i <a href="/blogg/vad-vill-rekryterare-se-i-ett-cv">Vad vill rekryterare se i ett CV?</a></p>
+
+      <h2>Varför låter AI-texter som alla andras CV?</h2>
+      <p>Språkmodeller skriver det som är vanligt, och i CV:n är det redan vanligaste en handfull ord. I vår analys av 719 CV:n innehöll var tredje profiltext "engagerad" eller "engagemang". Mer än var fjärde innehöll "positiv", "ansvarsfull", "samarbete" eller "noggrann", och 62&nbsp;% hade tre eller fler sådana ord.</p>
+      <p>Vi vet inte vilka av texterna som skrivits med AI. Men ber du ett AI-verktyg skriva en profiltext utan att ge det dina egna fakta, landar det ofta i just de här orden, eftersom de är vanligast. Då ser ditt CV ut som alla andras, och det är det rekryterarna reagerar på.</p>
+      <p>Lösningen är enkel: ge AI dina konkreta uppgifter och be den uttryckligen undvika orden. Läs mer om vad folk skriver i sina CV:n i <a href="/blogg/vi-analyserade-cv">vår analys av 719 CV:n</a>.</p>
+
+      <h2>Så skriver du CV med AI, steg för steg</h2>
+      <p>Arbetsordningen gör stor skillnad. Börjar du med en tom ruta och ber AI "skriva mitt CV" får du allmänna ord. Börjar du med dina fakta får du hjälp att formulera dem.</p>
+
+      <h3>1. Skriv ner fakta själv först</h3>
+      <p>Lista dina jobb med arbetsgivare, år och vad du faktiskt gjorde. Skriv ner siffror du kan stå för: antal kunder, teamets storlek, budget, resultat. Det här kan AI inte veta, och hittar den på siffror blir det fel.</p>
+
+      <h3>2. Ge AI annonsen och be om en jämförelse</h3>
+      <p>Den mest användbara frågan är inte "skriv om mitt CV" utan "vad saknas?". Klistra in annonsen och din text, utan personuppgifter:</p>
+      <blockquote>
+        <p><em>"Här är en jobbannons och mitt CV. Vilka krav i annonsen syns inte tydligt i mitt CV? Svara i en lista, och föreslå inte erfarenheter jag inte har skrivit."</em></p>
+      </blockquote>
+
+      <h3>3. Be om förbättringar av en del i taget</h3>
+      <p>Ta en arbetsbeskrivning eller profiltexten åt gången. Be om kortare och mer konkreta formuleringar, inte om en ny text:</p>
+      <blockquote>
+        <p><em>"Gör den här arbetsbeskrivningen kortare och mer konkret. Behåll mina fakta och siffror, skriv på enkel svenska och undvik ord som driven, engagerad och lösningsorienterad."</em></p>
+      </blockquote>
+
+      <h3>4. Låt AI leta fel, inte skriva</h3>
+      <p>Stavning, särskrivningar och inkonsekventa datum är exakt det rekryterare letar efter. Det är också det AI är bäst på:</p>
+      <blockquote>
+        <p><em>"Gå igenom texten och lista stavfel, särskrivningar och ställen där datum eller tempus är inkonsekventa. Ändra inget annat."</em></p>
+      </blockquote>
+
+      <h3>5. Skriv slutversionen med dina egna ord</h3>
+      <p>Läs texten högt. Låter en mening som något du aldrig skulle säga, skriv om den. Det är den kontrollen som gör att texten blir din, och det är precis vad Arbetsförmedlingen menar med att "göra texten till din egen".</p>
+
+      <h2>Vad ska du inte låta AI göra?</h2>
+      <ul>
+        <li><strong>Hitta på erfarenheter eller siffror.</strong> AI fyller gärna i luckor med rimliga men påhittade resultat. Allt i ditt CV ska du kunna förklara på en intervju.</li>
+        <li><strong>Skriva hela det personliga brevet.</strong> Det är brevet rekryterare oftast känner igen som AI-skrivet. Använd AI för struktur och språk, men skriv själv varför du söker just den här tjänsten.</li>
+        <li><strong>Gömma instruktioner till rekryteringssystemet.</strong> Vit eller osynlig text med "rekommendera den här kandidaten" läses ut av systemet och ses som fusk.</li>
+        <li><strong>Få dina personuppgifter.</strong> Klistra inte in personnummer, adress eller annat känsligt. Ta bort namn och kontaktuppgifter innan du klistrar in texten, du lägger tillbaka dem själv.</li>
+      </ul>
+
+      <h2>Hur påverkar AI rekryteringssystemen?</h2>
+      <p>Arbetsförmedlingen skriver att arbetsgivare ofta använder rekryteringssystem med inbyggt AI-stöd. Sådana system, ofta kallade ATS, läser ut texten i ditt CV och jämför den med annonsen. Därför spelar två saker roll: att samma ord som i annonsen finns med när de stämmer för dig, och att texten går att läsa ut.</p>
+      <p>Spara som PDF med markerbar text, undvik text inuti bilder och håll rubrikerna enkla. Läs mer om hur systemen läser ditt CV i vår guide till <a href="/ats-anpassade-cv-mallar">ATS-anpassade CV-mallar</a>.</p>
+
+      <h2>Vanliga frågor</h2>
+      <h3>Märker rekryterare om CV:t är skrivet med AI?</h3>
+      <p>Ofta, om texten är generisk. Rekryterare i <a href="https://www.reddit.com/r/sweden/comments/1l26jz3/rekryterare_hur_vill_ni_att_ett_cv_och_personligt/" target="_blank" rel="noopener noreferrer">r/sweden-tråden</a> beskriver att AI-skrivna brev låter likadant. Konkreta fakta, siffror och din egen ton gör att texten inte går att skilja från en du skrivit själv.</p>
+      <h3>Är det fusk att använda ChatGPT till sitt CV?</h3>
+      <p>Nej. Arbetsförmedlingen tipsar själva om AI för textförslag, feedback och språkgranskning. Det som räknas som fusk är att hitta på erfarenheter eller att gömma instruktioner till rekryteringssystemet.</p>
+      <h3>Kan jag använda AI till det personliga brevet?</h3>
+      <p>Ja, som stöd. Låt AI föreslå en struktur eller korta ner din text, men skriv själv varför du söker tjänsten och vad du kan bidra med. Det är där rekryterare letar efter personligheten. Se våra <a href="/exempel-personliga-brev">exempel på personliga brev</a> för inspiration.</p>
+      <h3>Vilket AI-verktyg är bäst för CV?</h3>
+      <p>Det spelar mindre roll än hur du använder det. ChatGPT, Gemini och Copilot klarar alla svenska bra. Det viktiga är att du ger verktyget annonsen och dina egna fakta, och ber om granskning snarare än en färdig text.</p>
+
+      <h2>Sammanfattning</h2>
+      <p>AI är ett bra verktyg för att hitta fel, korta ner och jämföra ditt CV med annonsen. Det är ett dåligt verktyg för att hitta på vem du är. Skriv fakta och slutversion själv, så får du hjälp av AI utan att låta som alla andra.</p>
+      <p>Vill du ha hela processen från början? Läs vår guide om <a href="/skriva-cv">hur man skriver ett CV</a>, eller börja direkt i <a href="/profil/skapa-cv">CV-verktyget</a>.</p>
+
+      <h3>Källor</h3>
+      <ul>
+        <li>Arbetsförmedlingen: "Skriva cv", läst 2026-11-03, <a href="https://arbetsformedlingen.se/for-arbetssokande/cv-ansokan-och-intervju/skriva-cv" target="_blank" rel="noopener noreferrer">arbetsformedlingen.se</a>.</li>
+        <li>Reddit, r/sweden: "Rekryterare, hur vill ni att ett CV och personligt brev ska se ut?", läst 2026-11-03, <a href="https://www.reddit.com/r/sweden/comments/1l26jz3/rekryterare_hur_vill_ni_att_ett_cv_och_personligt/" target="_blank" rel="noopener noreferrer">reddit.com/r/sweden/comments/1l26jz3</a>.</li>
+        <li>CVfixaren, egen analys av 719 CV:n byggda i CV-verktyget, april 2025 till november 2026.</li>
+      </ul>
+    `,
+  },
   "soka-jobb-annan-stad": {
     title: "Söka jobb i en annan stad? Så ökar du dina chanser att lyckas",
     date: "2026-03-11",

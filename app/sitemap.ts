@@ -101,6 +101,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/blogg/vi-analyserade-cv`,
+      lastModified: new Date("2026-11-03"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blogg/vad-vill-rekryterare-se-i-ett-cv`,
+      lastModified: new Date("2026-11-03"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blogg/skriva-cv-med-ai`,
+      lastModified: new Date("2026-11-03"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/blogg/soka-jobb-annan-stad`,
       lastModified: new Date("2026-03-11"),
       changeFrequency: "monthly",
