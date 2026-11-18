@@ -46,6 +46,7 @@ export function Header() {
     { href: "/cv-exempel", label: "CV-exempel" },
     { href: "/skriva-cv", label: "Skriva CV" },
     { href: "/blogg", label: "Blogg" },
+    { href: "/lediga-jobb", label: "Lediga jobb" },
   ]
 
   return (

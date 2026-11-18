@@ -24,6 +24,7 @@ const columns = [
       { href: "/karriartips", label: "Karriärtips" },
       { href: "/intervjuguide", label: "Intervjuguide" },
       { href: "/vanliga-fragor", label: "Vanliga frågor" },
+      { href: "/lediga-jobb", label: "Lediga jobb" },
     ],
   },
   {
@@ -31,6 +32,7 @@ const columns = [
     links: [
       { href: "/kontakt", label: "Kontakta oss" },
       { href: "/anvandarvillkor", label: "Användarvillkor" },
+      { href: "/integritetspolicy", label: "Integritetspolicy" },
       { href: "/marknadsforing", label: "Marknadsföringspolicy" },
     ],
   },

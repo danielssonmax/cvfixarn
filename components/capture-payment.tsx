@@ -5,15 +5,28 @@ import { Check } from "lucide-react"
 import StripeCheckoutDialog from "./stripe-checkout-dialog"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import Image from "next/image"
+import { JobMatchCard } from "@/components/job-match-card"
+import type { JobMatchResult } from "@/lib/jobs/types"
 
 interface CapturePaymentProps {
   isOpen: boolean
   onClose: () => void
   onPaymentSuccess: () => void
+  /** Open jobs for the CV in the editor, shown as one quiet line. Leave out to show nothing. */
+  jobMatch?: JobMatchResult | null
 }
 
-export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: CapturePaymentProps) {
+export default function CapturePayment({ isOpen, onClose, onPaymentSuccess, jobMatch }: CapturePaymentProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  // Fixed when the dialog opens: a line that turned up a moment later would
+  // move the button under the cursor.
+  const [jobLine, setJobLine] = useState<JobMatchResult | null>(null)
+  const [wasOpen, setWasOpen] = useState(false)
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen)
+    if (isOpen) setJobLine(jobMatch ?? null)
+  }
 
   const handlePaymentClick = () => {
     setIsDialogOpen(true)
@@ -36,6 +49,7 @@ export default function CapturePayment({ isOpen, onClose, onPaymentSuccess }: Ca
           <h1 className="mt-2 pr-8 text-[1.6rem] font-bold leading-tight tracking-tight text-ink">
             Starta din gratisvecka på CVfixaren
           </h1>
+          <JobMatchCard result={jobLine} variant="compact" link={false} className="mt-2 pr-8" />
 
           {/* Membership Card */}
           <div className="mt-6 rounded-2xl border border-brand-200 bg-gradient-to-b from-brand-50 to-white p-5">

@@ -1,0 +1,197 @@
+[
+  {
+    "slug": "underskoterska",
+    "label": "undersköterska",
+    "searchTerm": "undersköterska",
+    "query": { "occupationGroup": ["jY19_knH_MJp", "LP4Z_ABV_gRm"] },
+    "cvExampleSlug": "underskoterska",
+    "coverLetterSlug": "underskoterska"
+  },
+  {
+    "slug": "sjukskoterska",
+    "label": "sjuksköterska",
+    "searchTerm": "sjuksköterska",
+    "query": { "occupationGroup": ["Z8ci_bBE_tmx"] },
+    "cvExampleSlug": "sjukskoterska",
+    "coverLetterSlug": "sjukskoterska"
+  },
+  {
+    "slug": "vardbitrade",
+    "label": "vårdbiträde",
+    "searchTerm": "vårdbiträde",
+    "query": { "occupationGroup": ["tAJS_JNb_hDH"] },
+    "cvExampleSlug": "vardbitrade",
+    "coverLetterSlug": "vardbitrade"
+  },
+  {
+    "slug": "personlig-assistent",
+    "label": "personlig assistent",
+    "searchTerm": "personlig assistent",
+    "query": { "occupationName": ["eU1q_zvL_9Rf"] },
+    "cvExampleSlug": "personlig-assistent",
+    "coverLetterSlug": "personlig-assistent"
+  },
+  {
+    "slug": "lakare",
+    "label": "läkare",
+    "searchTerm": "läkare",
+    "query": { "occupationGroup": ["gXqW_s5Q_ZjN", "nu7c_QuB_KVQ", "seu9_VoQ_VNo", "ek9W_qqp_XpF"] },
+    "cvExampleSlug": "lakare",
+    "coverLetterSlug": "lakare"
+  },
+  {
+    "slug": "barnskotare",
+    "label": "barnskötare",
+    "searchTerm": "barnskötare",
+    "query": { "occupationGroup": ["Hi9c_iTe_gHH"] },
+    "cvExampleSlug": "barnskotare",
+    "coverLetterSlug": "barnskotare"
+  },
+  {
+    "slug": "forskollarare",
+    "label": "förskollärare",
+    "searchTerm": "förskollärare",
+    "query": { "occupationGroup": ["5ek3_Cgq_WeZ"] },
+    "cvExampleSlug": "forskollarare",
+    "coverLetterSlug": "forskollarare"
+  },
+  {
+    "slug": "larare",
+    "label": "lärare",
+    "searchTerm": "lärare",
+    "query": { "occupationGroup": ["oQUQ_D11_HPx", "4KhP_FxL_uZ5"] },
+    "cvExampleSlug": "larare",
+    "coverLetterSlug": "larare"
+  },
+  {
+    "slug": "elevassistent",
+    "label": "elevassistent",
+    "searchTerm": "elevassistent",
+    "query": { "occupationName": ["Sbzf_iBA_MAS"] },
+    "cvExampleSlug": null,
+    "coverLetterSlug": "elevassistent"
+  },
+  {
+    "slug": "lagerarbetare",
+    "label": "lagerarbetare",
+    "searchTerm": "lagerarbetare",
+    "query": { "occupationName": ["DLEi_bTh_oLA"] },
+    "cvExampleSlug": "lagerarbetare",
+    "coverLetterSlug": "lagerarbetare"
+  },
+  {
+    "slug": "lastbilschauffor",
+    "label": "lastbilschaufför",
+    "searchTerm": "lastbilsförare",
+    "query": { "occupationGroup": ["3MBw_pDA_P2F"] },
+    "cvExampleSlug": "lastbilschauffor",
+    "coverLetterSlug": "lastbilschauffor"
+  },
+  {
+    "slug": "snickare",
+    "label": "snickare",
+    "searchTerm": "snickare",
+    "query": { "occupationGroup": ["9mJN_VwW_Xjg"] },
+    "cvExampleSlug": "snickare",
+    "coverLetterSlug": "snickare"
+  },
+  {
+    "slug": "lokalvardare",
+    "label": "lokalvårdare",
+    "searchTerm": "lokalvårdare",
+    "query": { "occupationGroup": ["Z6TY_xDf_Yup"] },
+    "cvExampleSlug": "lokalvardare",
+    "coverLetterSlug": "lokalvardare"
+  },
+  {
+    "slug": "butiksbitrade",
+    "label": "butiksbiträde",
+    "searchTerm": "butikssäljare",
+    "aliases": ["butiksmedarbetare"],
+    "query": { "occupationName": ["ek9W_CmD_y2M", "pBhS_6fg_727"] },
+    "cvExampleSlug": "butiksbitrade",
+    "coverLetterSlug": "butiksbitrade"
+  },
+  {
+    "slug": "saljare",
+    "label": "säljare",
+    "searchTerm": "säljare",
+    "query": { "occupationGroup": ["oXSW_fbY_XrY", "PxXc_16t_oZo"] },
+    "cvExampleSlug": "saljare",
+    "coverLetterSlug": null
+  },
+  {
+    "slug": "kundtjanst",
+    "label": "kundtjänstmedarbetare",
+    "searchTerm": "kundtjänstmedarbetare",
+    "aliases": ["kundtjänst"],
+    "query": { "occupationGroup": ["pwRH_MT1_8nR"] },
+    "cvExampleSlug": "kundtjanst",
+    "coverLetterSlug": "kundtjanst"
+  },
+  {
+    "slug": "receptionist",
+    "label": "receptionist",
+    "searchTerm": "receptionist",
+    "query": { "occupationName": ["srEz_jK8_dQ5", "3kFW_XLk_v9H"] },
+    "cvExampleSlug": null,
+    "coverLetterSlug": "receptionist"
+  },
+  {
+    "slug": "administrator",
+    "label": "administratör",
+    "searchTerm": "administratör",
+    "query": { "occupationName": ["soBq_ia8_xcx"] },
+    "cvExampleSlug": "administrator",
+    "coverLetterSlug": "administrator"
+  },
+  {
+    "slug": "handlaggare",
+    "label": "handläggare",
+    "searchTerm": "handläggare",
+    "query": { "occupationName": ["YG1s_tUg_jWJ"] },
+    "cvExampleSlug": null,
+    "coverLetterSlug": "handlaggare"
+  },
+  {
+    "slug": "jurist",
+    "label": "jurist",
+    "searchTerm": "jurist",
+    "query": { "occupationGroup": ["br6a_VVS_V3y", "JfYV_ZGg_6rm", "DZVN_v5g_Fco"] },
+    "cvExampleSlug": null,
+    "coverLetterSlug": "jurist"
+  },
+  {
+    "slug": "projektledare",
+    "label": "projektledare",
+    "searchTerm": "projektledare",
+    "query": { "q": "projektledare" },
+    "cvExampleSlug": "projektledare",
+    "coverLetterSlug": "projektledare"
+  },
+  {
+    "slug": "kock",
+    "label": "kock",
+    "searchTerm": "kock",
+    "query": { "occupationGroup": ["BStc_SJh_DKG"] },
+    "cvExampleSlug": "kock",
+    "coverLetterSlug": "kock"
+  },
+  {
+    "slug": "kokbitrade",
+    "label": "köksbiträde",
+    "searchTerm": "köksbiträde",
+    "query": { "occupationName": ["oRB5_b7i_Qzv"] },
+    "cvExampleSlug": null,
+    "coverLetterSlug": "kokbitrade"
+  },
+  {
+    "slug": "servitor-servitris",
+    "label": "servitör eller servitris",
+    "searchTerm": "servitör",
+    "aliases": ["servitris", "serveringspersonal"],
+    "query": { "occupationName": ["rGGf_KLs_To7"] },
+    "cvExampleSlug": "servitor-servitris",
+    "coverLetterSlug": "servitris"
+  }
+]

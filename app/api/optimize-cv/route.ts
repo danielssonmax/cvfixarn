@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import Anthropic from "@anthropic-ai/sdk"
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
+import { jsonSchemaOutputFormat } from "@anthropic-ai/sdk/helpers/json-schema"
 import {
   OptimizeOutputSchema,
   SYSTEM_PROMPT,
@@ -11,6 +11,9 @@ import {
 } from "@/lib/cv-optimize/prompt"
 import { buildRuleProposals } from "@/lib/cv-optimize/rules"
 import type { OptimizeCvInput, OptimizeResult, Proposal } from "@/lib/cv-optimize/types"
+import { Ratelimit } from "@upstash/ratelimit"
+import { upstashRedis } from "@/lib/rate-limit"
+import { getSubscriptionStatus, getUserIdFromRequest } from "@/lib/subscription"
 
 export const runtime = "nodejs"
 // Adaptive thinking over a job ad plus a full CV takes a while; give it room.
@@ -26,9 +29,102 @@ export const maxDuration = 120
  * structural half of ATS optimisation does not need an LLM.
  *
  * The response is a list of proposals, never a rewritten CV. See types.ts.
+ *
+ * Every call can cost real money, so it is for signed-in subscribers only
+ * (Authorization: Bearer <Supabase access token>; a trial counts) and limited
+ * per user. Errors carry a Swedish `error` and, where the dialog offers a way
+ * forward, a `code`: 401 login_required, 402 premium_required, 429 rate_limited.
  */
 
 const MAX_EXPERIENCE_ITEMS = 12
+const MAX_SKILLS = 100
+const MAX_SECTIONS = 40
+// A full CV as plain text is a few kB. This only stops a request built by hand
+// from sending the model a novel.
+const MAX_BODY_LENGTH = 100_000
+
+// One analysis is a large model call. A person tailoring a CV runs a handful;
+// these numbers leave room for that and little else.
+const BURST = { max: 5, window: "10 m", windowMs: 10 * 60 * 1000 } as const
+const DAILY = { max: 12, window: "1 d", windowMs: 24 * 60 * 60 * 1000 } as const
+
+// lib/rate-limit.ts has no limiter this slow, so these are built here on its
+// Upstash client (null unless a usable URL and token are set). Without Upstash,
+// or when Upstash does not answer, the count is kept per instance instead, which
+// is weak on serverless but never unlimited.
+const redis = upstashRedis
+
+const burstLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(BURST.max, BURST.window), prefix: "optimize-cv" })
+  : null
+const dailyLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.fixedWindow(DAILY.max, DAILY.window), prefix: "optimize-cv-day" })
+  : null
+
+const localHits = new Map<string, number[]>()
+
+function allowedLocally(key: string, max: number, windowMs: number): boolean {
+  const now = Date.now()
+  if (localHits.size > 5000) localHits.clear()
+  const recent = (localHits.get(key) || []).filter((time) => now - time < windowMs)
+  const allowed = recent.length < max
+  if (allowed) recent.push(now)
+  localHits.set(key, recent)
+  return allowed
+}
+
+async function withinLimit(
+  limiter: Ratelimit | null,
+  scope: typeof BURST | typeof DAILY,
+  userId: string
+): Promise<boolean> {
+  const countLocally = () => allowedLocally(`${scope.window}:${userId}`, scope.max, scope.windowMs)
+  if (!limiter) return countLocally()
+  try {
+    const result = await limiter.limit(userId)
+    // The library answers "allowed" when Redis has not replied in time.
+    if (result.reason === "timeout") return countLocally()
+    return result.success
+  } catch (error) {
+    console.error(
+      "[optimize-cv] rate limiter unavailable, counting locally:",
+      error instanceof Error ? error.message : error
+    )
+    return countLocally()
+  }
+}
+
+const fail = (status: number, error: string, code?: string) =>
+  NextResponse.json(code ? { error, code } : { error }, { status })
+
+/**
+ * OptimizeOutputSchema as the JSON schema the API is given.
+ *
+ * The SDK's zodOutputFormat only reads schemas built with "zod/v4"; prompt.ts
+ * builds this one with the classic "zod" import, and zodOutputFormat throws on
+ * it ("Cannot read properties of undefined (reading 'def')"). The schema only
+ * uses objects, arrays, strings and booleans, so it is described here from its
+ * public properties, which are the same in both zod versions, and the answer is
+ * still validated against the zod schema itself.
+ */
+function describeSchema(schema: any): Record<string, unknown> {
+  const description = typeof schema?.description === "string" ? { description: schema.description } : {}
+  if (schema?.shape && typeof schema.shape === "object") {
+    return {
+      type: "object",
+      properties: Object.fromEntries(
+        Object.entries(schema.shape).map(([key, value]) => [key, describeSchema(value)])
+      ),
+      required: Object.keys(schema.shape),
+      additionalProperties: false,
+      ...description,
+    }
+  }
+  if (schema?.element) return { type: "array", items: describeSchema(schema.element), ...description }
+  if (schema?.safeParse?.("").success) return { type: "string", ...description }
+  if (schema?.safeParse?.(true).success) return { type: "boolean", ...description }
+  throw new Error("OptimizeOutputSchema has a field type this route cannot describe")
+}
 
 /** The set of paths the model is allowed to write to, for this specific CV. */
 function allowedPaths(cv: OptimizeCvInput): Set<string> {
@@ -64,7 +160,7 @@ function labelFor(cv: OptimizeCvInput, path: string): string {
     const index = Number(match[1])
     const job = cv.workExperience[index]
     const where = (job?.company || "").trim() || `tjänst ${index + 1}`
-    return match[2] === "title" ? `Titel — ${where}` : `Beskrivning — ${where}`
+    return match[2] === "title" ? `Titel, ${where}` : `Beskrivning, ${where}`
   }
   return path
 }
@@ -89,7 +185,7 @@ function sanitiseCv(raw: unknown): OptimizeCvInput | null {
     },
     workExperience,
     skills: Array.isArray(cv.skills)
-      ? cv.skills.map((skill: any) => ({
+      ? cv.skills.slice(0, MAX_SKILLS).map((skill: any) => ({
           name: typeof skill?.name === "string" ? skill.name : "",
           level: typeof skill?.level === "string" ? skill.level : "",
         }))
@@ -103,10 +199,18 @@ function sanitiseCv(raw: unknown): OptimizeCvInput | null {
       },
     },
     sectionOrder: Array.isArray(cv.sectionOrder)
-      ? cv.sectionOrder.filter((id: unknown) => typeof id === "string")
+      ? cv.sectionOrder.filter((id: unknown) => typeof id === "string").slice(0, MAX_SECTIONS)
       : [],
-    sectionTitles:
-      cv.sectionTitles && typeof cv.sectionTitles === "object" ? cv.sectionTitles : {},
+    // The rules call string methods on these, so anything else is dropped.
+    sectionTitles: Object.fromEntries(
+      Object.entries(
+        cv.sectionTitles && typeof cv.sectionTitles === "object" && !Array.isArray(cv.sectionTitles)
+          ? (cv.sectionTitles as Record<string, unknown>)
+          : {}
+      )
+        .filter((entry): entry is [string, string] => typeof entry[1] === "string")
+        .slice(0, MAX_SECTIONS)
+    ),
   }
 }
 
@@ -118,33 +222,58 @@ function cvContains(haystack: string, term: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  let userId: string | null
+  try {
+    userId = await getUserIdFromRequest(request)
+  } catch (error) {
+    console.error("[optimize-cv] could not verify session:", error instanceof Error ? error.message : error)
+    return fail(503, "Vi kunde inte kontrollera din inloggning just nu. Försök igen om en stund.")
+  }
+  if (!userId) {
+    return fail(401, "Logga in för att anpassa ditt CV efter en annons.", "login_required")
+  }
+
+  // Before the subscription check, which can itself mean a call to Stripe.
+  if (!(await withinLimit(burstLimiter, BURST, userId))) {
+    return fail(429, "Du har gjort flera analyser på kort tid. Vänta några minuter och försök igen.", "rate_limited")
+  }
+
+  let subscribed: boolean
+  try {
+    subscribed = (await getSubscriptionStatus(userId)).subscribed
+  } catch (error) {
+    console.error("[optimize-cv] could not check subscription:", error instanceof Error ? error.message : error)
+    return fail(503, "Vi kunde inte kontrollera ditt medlemskap just nu. Försök igen om en stund.")
+  }
+  if (!subscribed) {
+    return fail(402, "Att anpassa CV:t efter en annons ingår i Premium.", "premium_required")
+  }
+
   let body: any
   try {
-    body = await request.json()
+    const raw = await request.text()
+    if (raw.length > MAX_BODY_LENGTH) {
+      return fail(413, "Ditt CV är för långt för att analyseras i ett svep. Korta ned de längsta texterna och försök igen.")
+    }
+    body = JSON.parse(raw)
   } catch {
-    return NextResponse.json({ error: "Ogiltig förfrågan." }, { status: 400 })
+    return fail(400, "Ogiltig förfrågan.")
   }
 
   const jobAd = typeof body?.jobAd === "string" ? body.jobAd.trim() : ""
   const cv = sanitiseCv(body?.cv)
 
   if (!cv) {
-    return NextResponse.json({ error: "CV-data saknas." }, { status: 400 })
+    return fail(400, "CV-data saknas.")
   }
   if (jobAd.length < JOB_AD_MIN_LENGTH) {
-    return NextResponse.json(
-      {
-        error:
-          "Klistra in hela jobbannonsen så att vi har tillräckligt att gå på — gärna kraven och arbetsuppgifterna.",
-      },
-      { status: 400 }
+    return fail(
+      400,
+      "Klistra in hela jobbannonsen så att vi har tillräckligt att gå på, gärna med kraven och arbetsuppgifterna."
     )
   }
   if (jobAd.length > JOB_AD_MAX_LENGTH) {
-    return NextResponse.json(
-      { error: "Annonsen är för lång. Klistra in annonstexten utan sidfot och övrigt innehåll." },
-      { status: 413 }
-    )
+    return fail(413, "Annonsen är för lång. Klistra in annonstexten utan sidfot och övrigt innehåll.")
   }
 
   // Structural rules first — they never fail and never cost anything.
@@ -162,6 +291,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result)
   }
 
+  // Counted here, after validation, so only requests that reach the model use it up.
+  if (!(await withinLimit(dailyLimiter, DAILY, userId))) {
+    return fail(429, "Du har nått dagens gräns för analyser. Försök igen i morgon.", "rate_limited")
+  }
+
   const client = new Anthropic({ apiKey })
 
   let parsed
@@ -172,7 +306,9 @@ export async function POST(request: NextRequest) {
       thinking: { type: "adaptive" },
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: buildUserMessage(cv, jobAd) }],
-      output_config: { format: zodOutputFormat(OptimizeOutputSchema) },
+      output_config: {
+        format: jsonSchemaOutputFormat(describeSchema(OptimizeOutputSchema) as { type: "object" }),
+      },
     })
 
     if (response.stop_reason === "refusal") {
@@ -183,7 +319,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    parsed = response.parsed_output
+    const checked = OptimizeOutputSchema.safeParse(response.parsed_output)
+    parsed = checked.success ? checked.data : null
   } catch (error: unknown) {
     if (error instanceof Anthropic.RateLimitError) {
       return NextResponse.json(
@@ -272,7 +409,7 @@ export async function POST(request: NextRequest) {
       before: cv.skills.map((skill) => (skill.name || "").trim()).filter(Boolean).join(", ") || "(inga)",
       after: combined.join(", "),
       keywords: newSkills.map((skill) => skill.name.trim()),
-      evidence: newSkills.map((skill) => `"${skill.name.trim()}" — ${skill.evidence.trim()}`).join("\n"),
+      evidence: newSkills.map((skill) => `"${skill.name.trim()}": ${skill.evidence.trim()}`).join("\n"),
       defaultChecked: false,
       automatic: false,
     })

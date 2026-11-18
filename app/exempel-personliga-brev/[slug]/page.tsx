@@ -17,6 +17,7 @@ import {
   letterAsPlainText,
 } from "@/lib/cover-letter-examples"
 import { cvExamples } from "@/lib/cv-examples"
+import { professionLandingForExample } from "@/lib/jobs/landing"
 
 const BASE_URL = "https://www.cvfixaren.se"
 
@@ -71,6 +72,7 @@ export default async function CoverLetterExamplePage({ params }: Props) {
   const { letter } = example
   const cvSlug = cvSlugForLetter(slug)
   const cvExample = cvExamples[cvSlug]
+  const jobsPage = professionLandingForExample("letter", slug)
   const related = [
     ...coverLetterExamples.filter((other) => other.slug !== slug && other.category === example.category),
     ...coverLetterExamples.filter((other) => other.slug !== slug && other.category !== example.category),
@@ -245,6 +247,16 @@ export default async function CoverLetterExamplePage({ params }: Props) {
                 </Button>
               )}
             </div>
+            {jobsPage && (
+              <p className="mt-6 text-sm">
+                <Link
+                  href={jobsPage.path}
+                  className="font-medium text-ink-200 underline underline-offset-4 hover:text-white"
+                >
+                  Se {jobsPage.heading.toLowerCase()}
+                </Link>
+              </p>
+            )}
           </div>
         </Section>
 

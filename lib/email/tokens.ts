@@ -27,8 +27,18 @@ function sign(payload: string): string {
     .digest("base64url")
 }
 
+/**
+ * What a token switches off. The scope is part of the signed payload, so a
+ * link from one kind of email cannot be turned into the other.
+ *   marketing  all lifecycle email (premium.marketing_opt_out)
+ *   job_alert  only the weekly job email (job_alerts.active)
+ * A scope must not contain a dot: the token is split on dots.
+ */
+export const UNSUBSCRIBE_SCOPE_MARKETING = "marketing"
+export const UNSUBSCRIBE_SCOPE_JOB_ALERT = "job_alert"
+
 /** Token format: `<uid>.<scope>.<hmac>` — opaque enough, and self-verifying. */
-export function createUnsubscribeToken(uid: string, scope = "marketing"): string {
+export function createUnsubscribeToken(uid: string, scope = UNSUBSCRIBE_SCOPE_MARKETING): string {
   const payload = `${uid}.${scope}`
   return `${payload}.${sign(payload)}`
 }

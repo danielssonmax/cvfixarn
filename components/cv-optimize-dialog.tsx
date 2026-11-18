@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,18 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { AlertCircle, ArrowRight, Check, Info, Loader2, Sparkles, Wand2 } from "lucide-react"
-import { JOB_AD_MIN_LENGTH } from "@/lib/cv-optimize/prompt"
+import { JOB_AD_MAX_LENGTH, JOB_AD_MIN_LENGTH } from "@/lib/cv-optimize/prompt"
 import type { OptimizeCvInput, OptimizeResult, Proposal } from "@/lib/cv-optimize/types"
+import { JOBS_SOURCE_LABEL } from "@/lib/jobs/format"
+import { supabase } from "@/lib/supabase"
+
+/** An ad from /api/jobs/ad/<id>, used to start the dialog with the text already in place. */
+export interface CvOptimizeJobAd {
+  id: string
+  headline: string
+  employer: string | null
+  text: string
+}
 
 interface CvOptimizeDialogProps {
   isOpen: boolean
@@ -20,7 +30,16 @@ interface CvOptimizeDialogProps {
   getCv: () => OptimizeCvInput
   /** Applies the proposals the user ticked. */
   onApply: (proposals: Proposal[]) => void
+  /** The ad the user came from. Leave out to start with an empty box. */
+  jobAd?: CvOptimizeJobAd | null
+  /** Opens the paywall; offered when the server says the feature needs Premium. */
+  onUpgrade?: () => void
+  /** Opens sign-up; offered when nobody is signed in. */
+  onSignIn?: () => void
 }
+
+// What the user can do about an answer that is not a fault: 401 and 402.
+type NextStep = "signin" | "upgrade" | null
 
 const KIND_LABEL: Record<Proposal["kind"], string> = {
   heading: "Rubrik",
@@ -31,17 +50,52 @@ const KIND_LABEL: Record<Proposal["kind"], string> = {
   skill: "Kompetenser",
 }
 
-export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimizeDialogProps) {
+export function CvOptimizeDialog({
+  isOpen,
+  onClose,
+  getCv,
+  onApply,
+  jobAd: sourceAd,
+  onUpgrade,
+  onSignIn,
+}: CvOptimizeDialogProps) {
   const [jobAd, setJobAd] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle")
   const [error, setError] = useState("")
+  const [nextStep, setNextStep] = useState<NextStep>(null)
   const [result, setResult] = useState<OptimizeResult | null>(null)
   const [checked, setChecked] = useState<Record<string, boolean>>({})
 
+  // The headline goes first: it is usually the job title, the one keyword the
+  // ad's body text often leaves out.
+  const sourceText = useMemo(
+    () => (sourceAd ? `${sourceAd.headline}\n\n${sourceAd.text}`.trim().slice(0, JOB_AD_MAX_LENGTH) : ""),
+    [sourceAd]
+  )
+  // Once the user has asked for another ad, reopening must not bring this one back.
+  const dismissedAdId = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!isOpen || !sourceAd || !sourceText || dismissedAdId.current === sourceAd.id) return
+    setJobAd((current) => current || sourceText)
+  }, [isOpen, sourceAd, sourceText])
+
+  const showsSourceAd = !!sourceAd && sourceText !== "" && jobAd === sourceText
+
+  // The analysis the dialog is waiting for. Closing the dialog or starting a new
+  // analysis moves the id on, so an answer that arrives late is dropped.
+  const requestRef = useRef<{ id: number; controller: AbortController | null }>({
+    id: 0,
+    controller: null,
+  })
+
   const reset = useCallback(() => {
+    requestRef.current.controller?.abort()
+    requestRef.current = { id: requestRef.current.id + 1, controller: null }
     setJobAd("")
     setStatus("idle")
     setError("")
+    setNextStep(null)
     setResult(null)
     setChecked({})
   }, [])
@@ -52,19 +106,54 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
   }, [onClose, reset])
 
   const analyse = useCallback(async () => {
+    requestRef.current.controller?.abort()
+    const controller = new AbortController()
+    const id = requestRef.current.id + 1
+    requestRef.current = { id, controller }
+    const superseded = () => id !== requestRef.current.id
+
     setStatus("loading")
     setError("")
+    setNextStep(null)
 
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (superseded()) return
+      if (!session?.access_token) {
+        setError("Logga in eller skapa ett konto för att anpassa ditt CV efter en annons.")
+        setNextStep("signin")
+        setStatus("error")
+        return
+      }
+
       const response = await fetch("/api/optimize-cv", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({ jobAd, cv: getCv() }),
+        signal: controller.signal,
       })
+      if (superseded()) return
 
-      const payload = await response.json()
+      const payload = await response.json().catch(() => null)
+      if (superseded()) return
       if (!response.ok) {
-        setError(payload?.error || "Analysen misslyckades. Försök igen.")
+        setError(payload?.error || payload?.message || "Analysen misslyckades. Försök igen.")
+        setNextStep(response.status === 401 ? "signin" : response.status === 402 ? "upgrade" : null)
+        setStatus("error")
+        return
+      }
+      if (
+        !payload ||
+        !Array.isArray(payload.proposals) ||
+        !Array.isArray(payload.keywords) ||
+        !Array.isArray(payload.gaps)
+      ) {
+        setError("Analysen misslyckades. Försök igen.")
         setStatus("error")
         return
       }
@@ -76,6 +165,7 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
       )
       setStatus("ready")
     } catch {
+      if (superseded()) return
       setError("Kunde inte nå servern. Kontrollera din uppkoppling och försök igen.")
       setStatus("error")
     }
@@ -91,7 +181,17 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
     handleClose()
   }, [onApply, selected, handleClose])
 
-  const tooShort = jobAd.trim().length < JOB_AD_MIN_LENGTH
+  const adLength = jobAd.trim().length
+  const tooShort = adLength < JOB_AD_MIN_LENGTH
+  const tooLong = adLength > JOB_AD_MAX_LENGTH
+
+  // 401 and 402 are not faults: say what the next step is and offer it.
+  const stepAction =
+    nextStep === "upgrade" && onUpgrade
+      ? { label: "Visa Premium", run: onUpgrade }
+      : nextStep === "signin" && onSignIn
+        ? { label: "Skapa konto eller logga in", run: onSignIn }
+        : null
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
@@ -99,12 +199,14 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-[#00bf63]" />
-            Optimera mitt CV
+            Anpassa mitt CV efter en annons
           </DialogTitle>
           <DialogDescription>
             {status === "ready"
               ? "Gå igenom förslagen och välj vilka du vill använda."
-              : "Klistra in jobbannonsen du söker. Vi anpassar ditt CV mot just den tjänsten."}
+              : showsSourceAd
+                ? "Du får förslag på hur ditt CV kan anpassas till just den här tjänsten. Ingår i Premium."
+                : "Klistra in jobbannonsen du söker, så får du förslag på hur ditt CV kan anpassas till just den tjänsten. Ingår i Premium."}
           </DialogDescription>
         </DialogHeader>
 
@@ -115,16 +217,39 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
               <label htmlFor="job-ad" className="mb-1.5 block text-sm font-medium text-gray-900">
                 Jobbannons
               </label>
+              {sourceAd && showsSourceAd && (
+                <div className="mb-2 rounded-lg bg-gray-50 p-3">
+                  <p className="text-sm font-medium text-gray-900">{sourceAd.headline}</p>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    {sourceAd.employer ? `${sourceAd.employer} · ` : ""}
+                    {JOBS_SOURCE_LABEL}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      dismissedAdId.current = sourceAd.id
+                      setJobAd("")
+                    }}
+                    className="mt-1.5 text-xs font-medium text-gray-600 underline underline-offset-2 hover:text-gray-900"
+                  >
+                    Använd en annan annons
+                  </button>
+                </div>
+              )}
               <textarea
                 id="job-ad"
                 value={jobAd}
                 onChange={(event) => setJobAd(event.target.value)}
                 rows={10}
-                placeholder="Klistra in hela annonsen här – arbetsuppgifter, krav och meriterande."
+                placeholder="Klistra in hela annonsen här: arbetsuppgifter, krav och meriterande."
                 className="w-full resize-y rounded-lg border border-gray-300 p-3 text-sm outline-none focus:border-[#00bf63] focus:ring-2 focus:ring-[#00bf63]/20"
               />
               <p className="mt-1.5 text-xs text-gray-500">
-                Ju mer av annonsen du tar med, desto träffsäkrare blir nyckelorden.
+                {tooLong
+                  ? "Annonsen är för lång. Ta bort sidfot och annat som inte hör till själva annonsen."
+                  : adLength > 0 && tooShort
+                    ? "Texten är för kort för att analyseras. Ta med arbetsuppgifterna och kraven."
+                    : "Ju mer av annonsen du tar med, desto träffsäkrare blir nyckelorden."}
               </p>
             </div>
 
@@ -132,12 +257,30 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
               <Info className="mt-0.5 h-4 w-4 shrink-0" />
               <p>
                 Vi skriver bara om det som redan står i ditt CV. Saknar du något annonsen
-                kräver säger vi till – vi hittar aldrig på erfarenhet åt dig.
+                kräver säger vi till. Vi hittar aldrig på erfarenhet åt dig.
               </p>
             </div>
 
-            {error && (
-              <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+            {error && nextStep && (
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-800" role="status">
+                <p>{error}</p>
+                {stepAction && (
+                  <Button
+                    size="sm"
+                    className="mt-2.5"
+                    onClick={() => {
+                      handleClose()
+                      stepAction.run()
+                    }}
+                  >
+                    {stepAction.label}
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {error && !nextStep && (
+              <div className="flex items-start gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>{error}</p>
               </div>
@@ -149,8 +292,7 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
               </Button>
               <Button
                 onClick={analyse}
-                disabled={tooShort || status === "loading"}
-               
+                disabled={tooShort || tooLong || status === "loading"}
               >
                 {status === "loading" ? (
                   <>
@@ -213,8 +355,8 @@ export function CvOptimizeDialog({ isOpen, onClose, getCv, onApply }: CvOptimize
                 {result.gaps.length > 0 && (
                   <p className="mt-3 text-[13px] leading-relaxed text-gray-600">
                     De gulmarkerade orden saknas i ditt CV. Har du erfarenheten men
-                    har glömt skriva ut den — lägg till den själv. Har du den inte,
-                    lämna den. Vi lägger aldrig in den åt dig.
+                    har glömt att skriva ut den kan du lägga till den själv. Har du
+                    den inte, lämna den. Vi lägger aldrig in den åt dig.
                   </p>
                 )}
               </div>

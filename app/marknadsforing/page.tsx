@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
@@ -39,7 +40,8 @@ export default function MarknadsforingPage() {
           <h2>2. Personaliserad marknadsföring</h2>
           <p>
             Vi kan använda information om din användning av tjänsten för att skräddarsy marknadsföring och
-            rekommendationer till dig. Detta görs alltid i enlighet med vår integritetspolicy.
+            rekommendationer till dig. Detta görs alltid i enlighet med vår{" "}
+            <Link href="/integritetspolicy">integritetspolicy</Link>.
           </p>
 
           <h2>3. Sociala medier</h2>

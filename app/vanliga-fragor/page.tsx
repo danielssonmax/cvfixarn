@@ -3,6 +3,7 @@ import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import Script from "next/script"
+import Link from "next/link"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ const faqs = [
     question: "Är mina personuppgifter säkra på CVfixaren.se?",
     answer:
       "Vi tar datasäkerhet på största allvar. All information du anger krypteras och lagras säkert. Vi delar aldrig dina personuppgifter med tredje part utan ditt samtycke. För mer information, se vår integritetspolicy.",
+    link: { href: "/integritetspolicy", label: "Läs integritetspolicyn" },
   },
   {
     question: "Vad är ett ATS-system och varför är det viktigt?",
@@ -128,7 +130,17 @@ export default function VanligaFragorPage() {
             {faqs.map((faq, index) => (
               <AccordionItem value={`item-${index}`} key={index}>
                 <AccordionTrigger>{faq.question}</AccordionTrigger>
-                <AccordionContent>{faq.answer}</AccordionContent>
+                <AccordionContent>
+                  {faq.answer}
+                  {faq.link && (
+                    <>
+                      {" "}
+                      <Link href={faq.link.href} className="underline">
+                        {faq.link.label}
+                      </Link>
+                    </>
+                  )}
+                </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>

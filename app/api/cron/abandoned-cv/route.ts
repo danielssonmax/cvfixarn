@@ -8,8 +8,10 @@ import {
   getReplyToAddress,
 } from "@/lib/email/client"
 import { buildAbandonedCvEmail } from "@/lib/email/templates/abandoned-cv"
+import type { AbandonedCvJobLine } from "@/lib/email/templates/abandoned-cv"
 import { createUnsubscribeToken } from "@/lib/email/tokens"
 import { scoreCv, CV_SCORING_COLUMNS } from "@/lib/cv-completeness"
+import type { JobMatchInput } from "@/lib/jobs/types"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -46,6 +48,114 @@ interface SendResult {
   reason?: string
   percent?: number
   cvId?: string
+  jobLine?: AbandonedCvJobLine
+}
+
+// One allowance for the whole run, not per recipient: with the jobs API down a
+// run loses these seconds once and then sends exactly as it did before.
+const JOB_LOOKUP_BUDGET_MS = 4_000
+const JOB_LOOKUP_CONCURRENCY = 4
+
+interface JobLookup {
+  uid: string
+  input: JobMatchInput
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+}
+
+function asText(value: unknown): string {
+  return typeof value === "string" ? value.trim() : ""
+}
+
+/** Job title, ort and recent job titles, from the same shapes scoreCv reads. */
+function jobMatchInputFor(cv: Record<string, unknown>): JobMatchInput | null {
+  const data = asRecord(cv.data)
+  const personal = asRecord(data.personalInfo)
+
+  let work: unknown[] = []
+  for (const candidate of [data.experience, data.workExperience, asRecord(data.sections).experience]) {
+    const list = Array.isArray(candidate) ? candidate : asRecord(candidate).items
+    if (Array.isArray(list) && list.length > 0) {
+      work = list
+      break
+    }
+  }
+
+  const title = asText(personal.title)
+  const experienceTitles = work
+    .map((entry) => asText(asRecord(entry).title))
+    .filter(Boolean)
+    .slice(0, 3)
+  if (!title && experienceTitles.length === 0) return null
+
+  return { title, location: asText(personal.location), experienceTitles }
+}
+
+/**
+ * "N lediga jobb som <yrke> i <ort>" per recipient, for the narrowest area that
+ * has any ads. Never throws and never takes longer than JOB_LOOKUP_BUDGET_MS:
+ * whoever has no entry in the returned map simply gets the email without the line.
+ */
+async function findJobLines(
+  lookups: JobLookup[],
+  siteUrl: string
+): Promise<Map<string, AbandonedCvJobLine>> {
+  const found = new Map<string, AbandonedCvJobLine>()
+  if (lookups.length === 0 || process.env.ABANDONED_CV_JOB_LINE === "false") return found
+
+  const queue = lookups.slice()
+  let open = true
+
+  const worker = async () => {
+    // Imported here so that not even a load error in the jobs code can reach the sends.
+    const { matchJobsForCv } = await import("@/lib/jobs/match")
+    while (open && queue.length > 0) {
+      const { uid, input } = queue.shift() as JobLookup
+      const match = await matchJobsForCv(input, { withJobs: false })
+      // Past the deadline the caller is already reading the map: leave it alone.
+      if (!open) return
+      if (match.status === "unavailable") {
+        // The API is slow or down. Stop asking instead of using up the allowance.
+        open = false
+        return
+      }
+      if (match.status !== "ok") continue
+      const tier = match.tiers.find((candidate) => candidate.count > 0)
+      if (!tier) continue
+      found.set(uid, {
+        count: tier.count,
+        occupation: match.occupationLabel,
+        place: tier.name,
+        url: `${siteUrl}${tier.href}`,
+      })
+    }
+  }
+
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    await Promise.race([
+      Promise.all(
+        Array.from({ length: Math.min(JOB_LOOKUP_CONCURRENCY, queue.length) }, worker)
+      ),
+      new Promise((resolve) => {
+        timer = setTimeout(resolve, JOB_LOOKUP_BUDGET_MS)
+      }),
+    ])
+  } catch (error: unknown) {
+    console.warn(
+      "[abandoned-cv] job lookup failed:",
+      error instanceof Error ? error.message : String(error)
+    )
+  } finally {
+    open = false
+    clearTimeout(timer)
+  }
+
+  return found
 }
 
 async function handle(request: NextRequest) {
@@ -190,7 +300,22 @@ async function handle(request: NextRequest) {
     }
   }
 
-  // --- 4. Send -------------------------------------------------------------
+  // --- 4. Job line (optional) ------------------------------------------------
+  // Looked up for the whole batch before anything is reserved, so the jobs API
+  // never sits between a reserved email_reminders row and its send.
+  const jobLookups: JobLookup[] = []
+  let sendable = 0
+  for (const account of pending) {
+    if (sendable >= batchLimit) break
+    const cv = latestCvByUser.get(account.uid as string)
+    if (!cv || !scoreCv(cv).hasMeaningfulContent) continue
+    sendable += 1
+    const input = jobMatchInputFor(cv)
+    if (input) jobLookups.push({ uid: account.uid as string, input })
+  }
+  const jobLines = await findJobLines(jobLookups, siteUrl)
+
+  // --- 5. Send -------------------------------------------------------------
   const results: SendResult[] = []
   let sentCount = 0
   let stoppedEarly = false
@@ -225,6 +350,7 @@ async function handle(request: NextRequest) {
     // autosave would write a duplicate instead of updating this one.
     const destinationPath = `/profil/skapa-cv?id=${encodeURIComponent(cvId)}&pay=true`
     const fallbackUrl = `${siteUrl}${destinationPath}`
+    const jobLine = jobLines.get(uid)
 
     if (dryRun) {
       results.push({
@@ -234,6 +360,7 @@ async function handle(request: NextRequest) {
         reason: "dry_run",
         percent: score.percent,
         cvId,
+        jobLine,
       })
       continue
     }
@@ -297,6 +424,7 @@ async function handle(request: NextRequest) {
         resumeUrl,
         fallbackUrl,
         unsubscribeUrl,
+        jobLine,
       })
 
       const { data: sendData, error: sendError } = await resend.emails.send(
@@ -328,7 +456,7 @@ async function handle(request: NextRequest) {
         .eq("id", reservation.id)
 
       sentCount += 1
-      results.push({ uid, email, status: "sent", percent: score.percent, cvId })
+      results.push({ uid, email, status: "sent", percent: score.percent, cvId, jobLine })
     } catch (error: unknown) {
       // Roll the reservation back so the next hourly run tries again.
       await releaseReservation().catch(() => {})
@@ -349,6 +477,7 @@ async function handle(request: NextRequest) {
     window: { from: createdAfter, to: createdBefore },
     considered: eligible.length,
     sent: sentCount,
+    jobLines: { lookedUp: jobLookups.length, found: jobLines.size },
     results,
   })
 }

@@ -224,7 +224,15 @@ export function SignupPopup({ isOpen, onClose, onOpenLogin, onSignupSuccess }: S
 
               {/* Info text instead of terms checkbox */}
               <p className="mt-4 text-xs leading-relaxed text-ink-400">
-                Genom att fortsätta godkänner du våra villkor. 
+                Genom att fortsätta godkänner du våra{" "}
+                <a href="/anvandarvillkor" target="_blank" rel="noopener" className="underline hover:text-ink-600">
+                  villkor
+                </a>
+                . Läs hur vi hanterar dina uppgifter i vår{" "}
+                <a href="/integritetspolicy" target="_blank" rel="noopener" className="underline hover:text-ink-600">
+                  integritetspolicy
+                </a>
+                .
               </p>
 
               {/* Login link */}

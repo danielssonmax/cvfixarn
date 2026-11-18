@@ -190,7 +190,11 @@ export function CookieConsent() {
           </div>
           
           <p className="text-sm text-gray-600 mb-6">
-            Vi respekterar din rätt till integritet. Du kan välja att inte tillåta vissa typer av cookies.
+            Vi respekterar din rätt till integritet. Du kan välja att inte tillåta vissa typer av cookies.{" "}
+            <a href="/integritetspolicy" target="_blank" rel="noopener" className="underline">
+              Läs vår integritetspolicy
+            </a>
+            .
           </p>
           
           <div className="space-y-4">
@@ -289,7 +293,11 @@ export function CookieConsent() {
               Vi använder enhetsidentifierare för att anpassa innehållet och annonserna till användarna, 
               tillhandahålla funktioner för sociala medier och analysera vår trafik. Vi vidarebefordrar 
               även sådana identifierare och annan information från din enhet till de sociala medier och 
-              annons- och analysföretag som vi samarbetar med.
+              annons- och analysföretag som vi samarbetar med.{" "}
+              <a href="/integritetspolicy" target="_blank" rel="noopener" className="underline">
+                Läs vår integritetspolicy
+              </a>
+              .
             </p>
           </div>
         </div>

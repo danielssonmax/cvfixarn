@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import { verifyUnsubscribeToken } from "@/lib/email/tokens"
+import { verifyUnsubscribeToken, UNSUBSCRIBE_SCOPE_JOB_ALERT } from "@/lib/email/tokens"
 import { BRAND, getSiteUrl } from "@/lib/email/client"
 
 export const runtime = "nodejs"
@@ -17,6 +17,10 @@ export const dynamic = "force-dynamic"
  *   POST — RFC 8058 one-click, which Gmail and Yahoo call on the user's behalf
  *          when they hit the unsubscribe button in the client chrome. Required
  *          for bulk senders; must not render anything.
+ *
+ * What gets switched off depends on the scope signed into the token: a link
+ * from the weekly job email ("job_alert") turns off that email only, every
+ * other token opts out of all lifecycle email as before.
  */
 
 function page(title: string, body: string, actionHtml = ""): string {
@@ -53,15 +57,20 @@ function html(body: string, status = 200) {
   })
 }
 
-/** Flips marketing_opt_out. Returns an error string, or null on success. */
-async function setOptOut(uid: string, optOut: boolean): Promise<string | null> {
+function getAdmin() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!supabaseUrl || !serviceRoleKey) return "Server is not configured"
+  if (!supabaseUrl || !serviceRoleKey) return null
 
-  const admin = createClient(supabaseUrl, serviceRoleKey, {
+  return createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   })
+}
+
+/** Flips marketing_opt_out. Returns an error string, or null on success. */
+async function setOptOut(uid: string, optOut: boolean): Promise<string | null> {
+  const admin = getAdmin()
+  if (!admin) return "Server is not configured"
 
   const { error } = await admin
     .from("premium")
@@ -69,6 +78,35 @@ async function setOptOut(uid: string, optOut: boolean): Promise<string | null> {
     .eq("uid", uid)
 
   return error ? error.message : null
+}
+
+/**
+ * Switches the weekly job email off (or back on, for the undo link). Only ever
+ * touches a row the user created themselves, so the undo cannot opt anyone in.
+ *
+ * Switching off here also stamps unsubscribed_at. While that is set the editor
+ * cannot switch the email back on (app/api/jobs/alerts/route.ts) and the cron
+ * skips the row: the stop came from whoever reads the mailbox, and only the
+ * undo link from that same mailbox clears it.
+ */
+async function setJobAlertActive(uid: string, active: boolean): Promise<string | null> {
+  const admin = getAdmin()
+  if (!admin) return "Server is not configured"
+
+  const now = new Date().toISOString()
+  const { error } = await admin
+    .from("job_alerts")
+    .update({ active, unsubscribed_at: active ? null : now, updated_at: now })
+    .eq("uid", uid)
+
+  return error ? error.message : null
+}
+
+/** Applies the opt-out (or its undo) that the token's scope stands for. */
+function applyChoice(payload: { uid: string; scope: string }, optOut: boolean): Promise<string | null> {
+  return payload.scope === UNSUBSCRIBE_SCOPE_JOB_ALERT
+    ? setJobAlertActive(payload.uid, !optOut)
+    : setOptOut(payload.uid, optOut)
 }
 
 export async function GET(request: NextRequest) {
@@ -86,7 +124,7 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const error = await setOptOut(payload.uid, !undo)
+  const error = await applyChoice(payload, !undo)
   if (error) {
     console.error("[unsubscribe] update failed:", error)
     return html(
@@ -95,18 +133,38 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  const jobAlert = payload.scope === UNSUBSCRIBE_SCOPE_JOB_ALERT
+
   if (undo) {
     return html(
-      page(
-        "Du är påslagen igen",
-        "Du kommer återigen att få påminnelser och tips från oss."
-      )
+      jobAlert
+        ? page(
+            "Jobbmejlet är påslaget igen",
+            "Du får nya jobb på mejl på måndagar, de veckor det finns nya annonser."
+          )
+        : page(
+            "Du är påslagen igen",
+            "Du kommer återigen att få påminnelser och tips från oss."
+          )
     )
   }
 
   const undoUrl = `${getSiteUrl()}/api/email/unsubscribe?token=${encodeURIComponent(
     token as string
   )}&undo=1`
+
+  if (jobAlert) {
+    return html(
+      page(
+        "Jobbmejlet är avstängt",
+        "Du får inga fler jobbmejl från oss. Andra mejl från oss påverkas inte.",
+        `<p style="margin:18px 0 0;font-size:13px;line-height:20px;color:${BRAND.muted};">
+           Stängde du av det av misstag?
+           <a href="${undoUrl}" style="color:${BRAND.green};">Ångra</a>
+         </p>`
+      )
+    )
+  }
 
   return html(
     page(
@@ -127,7 +185,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Invalid token" }, { status: 400 })
   }
 
-  const error = await setOptOut(payload.uid, true)
+  const error = await applyChoice(payload, true)
   if (error) {
     console.error("[unsubscribe] one-click update failed:", error)
     return NextResponse.json({ ok: false, error }, { status: 500 })

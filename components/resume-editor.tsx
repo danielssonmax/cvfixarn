@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from "react"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import Image from "next/image"
 import { useForm, FormProvider, useWatch } from "react-hook-form"
@@ -32,6 +33,7 @@ import {
   Pencil,
   List,
   Upload,
+  Wand2,
 } from "lucide-react"
 import {
   DndContext,
@@ -82,6 +84,12 @@ import { Volunteering } from "@/components/resume-sections/Volunteering"
 import { Licenses } from "@/components/resume-sections/Licenses"
 import { CustomSection } from "@/components/resume-sections/CustomSection"
 import { CvImportDialog } from "@/components/cv-import-dialog"
+import { JobMatchCard } from "@/components/job-match-card"
+import { useJobMatch } from "@/hooks/use-job-match"
+import type { JobMatchResult } from "@/lib/jobs/types"
+import type { CvOptimizeJobAd } from "@/components/cv-optimize-dialog"
+import { PREFERRED_ORDER } from "@/lib/cv-optimize/rules"
+import type { OptimizeCvInput, Proposal } from "@/lib/cv-optimize/types"
 import { buildCvFileName, isDerivedCvName, DEFAULT_CV_FILENAME } from "@/lib/cv-filename"
 import { templates } from "@/components/templates"
 import { CV_THEME_IDS, getCvTheme } from "@/lib/cv-templates/themes"
@@ -186,6 +194,8 @@ export interface ResumeEditorHandle {
   }) => void
   /** Same as clicking "Ladda ned": downloads if paid, otherwise opens checkout. */
   download: () => void
+  /** The jobs answer the editor currently shows for this CV, or null. */
+  getJobMatch: () => JobMatchResult | null
 }
 
 interface ResumeEditorProps {
@@ -519,6 +529,141 @@ const sectionItems = (sections: any, id: string, fallback?: any): any[] => {
   const items = Array.isArray(value) ? value : (Array.isArray(value?.items) ? value.items : [])
   if (items.length > 0) return items
   return Array.isArray(fallback) ? fallback : items
+}
+
+// ---- Anpassa CV:t efter en jobbannons ---------------------------------
+// Off unless the flag is set: no entry point, no dialog, and ?jobb= is ignored.
+const CV_OPTIMIZE_ENABLED = process.env.NEXT_PUBLIC_CV_OPTIMIZE_ENABLED === "true"
+
+// Loaded on first use, so the dialog (and the prompt module it imports) stays
+// out of the editor bundle for everyone who never opens it.
+const CvOptimizeDialog = dynamic(
+  () => import("@/components/cv-optimize-dialog").then((module) => module.CvOptimizeDialog),
+  { ssr: false },
+)
+
+const asText = (value: unknown): string => (typeof value === "string" ? value : "")
+
+const decodeEntities = (value: string): string =>
+  value
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+
+const TEXT_BLOCK_TAGS = new Set(["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "pre"])
+
+/**
+ * The rich text fields hold HTML. The optimiser reads and writes plain text,
+ * one paragraph or list item per line, so its "Nu:" and "Nytt:" are readable
+ * and nothing it writes can carry markup into the CV.
+ */
+function htmlToPlainText(value: unknown): string {
+  if (typeof value !== "string" || !value.trim()) return ""
+  if (!/<\/?[a-z][^>]*>/i.test(value)) return value.trim()
+
+  const lists: Array<{ ordered: boolean; count: number }> = []
+  const tag = /<(\/?)([a-z][a-z0-9]*)\b[^>]*>/gi
+  let out = ""
+  let last = 0
+  let match: RegExpExecArray | null
+  while ((match = tag.exec(value))) {
+    out += decodeEntities(value.slice(last, match.index))
+    last = tag.lastIndex
+    const closing = match[1] === "/"
+    const name = match[2].toLowerCase()
+    if (name === "br") {
+      out += "\n"
+    } else if (name === "ul" || name === "ol") {
+      if (closing) lists.pop()
+      else lists.push({ ordered: name === "ol", count: 0 })
+      out += "\n"
+    } else if (name === "li") {
+      const list = lists[lists.length - 1]
+      if (closing || !list) {
+        out += "\n"
+      } else {
+        list.count += 1
+        out += `\n${list.ordered ? `${list.count}.` : "-"} `
+      }
+    } else if (TEXT_BLOCK_TAGS.has(name)) {
+      out += "\n"
+    }
+  }
+  out += decodeEntities(value.slice(last))
+
+  return out
+    .replace(/[ \t]+\n/g, "\n")
+    // "<li><p>" leaves the marker alone on its line; join it with its text.
+    .replace(/(^|\n)(-|\d+\.)[ \t]*\n+[ \t]*/g, "$1$2 ")
+    .replace(/\n{2,}/g, "\n")
+    .trim()
+}
+
+const escapeHtml = (value: string): string =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+
+/** The reverse, in the markup the rich text editor itself produces. Everything is escaped. */
+function plainTextToHtml(text: string): string {
+  const out: string[] = []
+  let open: "ul" | "ol" | null = null
+  const close = () => {
+    if (open) out.push(`</${open}>`)
+    open = null
+  }
+  for (const raw of text.replace(/\r\n?/g, "\n").split("\n")) {
+    const line = raw.trim()
+    if (!line) {
+      close()
+      continue
+    }
+    const bullet = line.match(/^[-•*]\s+(.+)$/)
+    const numbered = bullet ? null : line.match(/^\d{1,2}[.)]\s+(.+)$/)
+    const wanted = bullet ? "ul" : numbered ? "ol" : null
+    if (!wanted) {
+      close()
+      out.push(`<p>${escapeHtml(line)}</p>`)
+      continue
+    }
+    if (open !== wanted) {
+      close()
+      out.push(wanted === "ul" ? '<ul class="list-disc list-outside ml-4">' : '<ol class="list-decimal list-outside ml-4">')
+      open = wanted
+    }
+    out.push(`<li><p>${escapeHtml((bullet || numbered)![1])}</p></li>`)
+  }
+  close()
+  return out.join("")
+}
+
+/** Is there a CV here to adapt, or just an empty form? */
+function hasCvContent(values: any): boolean {
+  const filled = (value: unknown) => htmlToPlainText(value) !== ""
+  return (
+    filled(values?.personalInfo?.title) ||
+    filled(values?.sections?.profile?.description) ||
+    (Array.isArray(values?.workExperience) &&
+      values.workExperience.some((job: any) => filled(job?.title) || filled(job?.description)))
+  )
+}
+
+async function fetchLinkedJobAd(id: string, signal: AbortSignal): Promise<CvOptimizeJobAd | null> {
+  try {
+    const response = await fetch(`/api/jobs/ad/${id}`, { signal })
+    if (!response.ok) return null
+    const data = await response.json()
+    if (!data || typeof data.headline !== "string" || typeof data.text !== "string") return null
+    return {
+      id,
+      headline: data.headline,
+      employer: typeof data.employer === "string" ? data.employer : null,
+      text: data.text,
+    }
+  } catch {
+    return null
+  }
 }
 
 // Helper function to generate UUID
@@ -895,6 +1040,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     download: () => {
       downloadHandlerRef.current?.()
     },
+    getJobMatch: () => jobMatchRef.current,
   }), [selectedTemplate, selectedFont, fontSize, fontSizePixels, lineHeight, selectedColor, headerColor, addedSections])
   const downloadHandlerRef = useRef<(() => void) | null>(null)
   const lineHeightDropdownRef = useRef<HTMLDivElement>(null)
@@ -1579,6 +1725,18 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
   // Build CV data from form
   const formData = useWatch({ control: form.control })
 
+  // Open jobs for this CV's role and place. The hook waits for typing to stop
+  // and never throws; only an "ok" answer is ever shown.
+  const jobMatch = useJobMatch({
+    title: formData?.personalInfo?.title,
+    location: formData?.personalInfo?.location,
+    experienceTitles: Array.isArray(formData?.workExperience)
+      ? formData.workExperience.map((entry: any) => entry?.title)
+      : [],
+  })
+  const jobMatchRef = useRef<JobMatchResult | null>(null)
+  jobMatchRef.current = jobMatch
+
   // ---- CV completeness ------------------------------------------------
   // Filling in every field of the visible base sections gets the user to 80%.
   // Each extra section they add is worth another 10%, so two of them - say
@@ -1951,7 +2109,8 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     } finally {
       setTimeout(() => setIsSavingChanges(false), 1000)
     }
-  }, [user, cvId, currentVersion, supabaseClient, form, cvName, selectedTemplate, selectedFont, fontSize, fontSizePixels, lineHeight, selectedColor, headerColor, addedSections])
+    // sectionNamesMap: without it a heading rename is saved with the headings from an older render.
+  }, [user, cvId, currentVersion, supabaseClient, form, cvName, selectedTemplate, selectedFont, fontSize, fontSizePixels, lineHeight, selectedColor, headerColor, addedSections, sectionNamesMap])
 
   // Use debounced autosave
   useDebouncedAutosave(cvData, {
@@ -2524,6 +2683,226 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
     }
   }
 
+  // ---- Anpassa CV:t efter en jobbannons (only with CV_OPTIMIZE_ENABLED) ----
+  // Read on first render: the effects above rewrite the URL to ?id=<uuid>
+  // and drop every other parameter.
+  const [linkedJobAdId] = useState<string | null>(() => {
+    if (!CV_OPTIMIZE_ENABLED) return null
+    const raw = searchParams.get("jobb")
+    return raw && /^\d{1,12}$/.test(raw) ? raw : null
+  })
+  const [linkedJobAd, setLinkedJobAd] = useState<CvOptimizeJobAd | null>(null)
+  const [isOptimizeOpen, setIsOptimizeOpen] = useState(false)
+  const [hasOpenedOptimize, setHasOpenedOptimize] = useState(false)
+  const optimizeAutoOpenSettled = useRef(false)
+
+  const openOptimize = useCallback(() => {
+    setHasOpenedOptimize(true)
+    setIsOptimizeOpen(true)
+  }, [])
+
+  // A failed or slow lookup leaves linkedJobAd empty, and then nothing happens.
+  useEffect(() => {
+    if (!linkedJobAdId) return
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 8000)
+    fetchLinkedJobAd(linkedJobAdId, controller.signal).then((ad) => {
+      if (ad && !controller.signal.aborted) setLinkedJobAd(ad)
+    })
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+    }
+  }, [linkedJobAdId])
+
+  // Someone who has already started working in the form is not interrupted.
+  useEffect(() => {
+    const container = formContainerRef.current
+    if (!linkedJobAdId || !container) return
+    const settle = () => {
+      optimizeAutoOpenSettled.current = true
+    }
+    container.addEventListener("keydown", settle, { once: true })
+    container.addEventListener("pointerdown", settle, { once: true })
+    return () => {
+      container.removeEventListener("keydown", settle)
+      container.removeEventListener("pointerdown", settle)
+    }
+  }, [linkedJobAdId])
+
+  // Arriving from an ad page: open the dialog once, for a signed-in user, when
+  // the CV has loaded and has something in it to adapt. An empty new CV gets no
+  // dialog; the ad is still there when the user opens it from the link below.
+  useEffect(() => {
+    if (optimizeAutoOpenSettled.current || !linkedJobAd || !user) return
+    if (!hasCvContent(formData)) return
+    optimizeAutoOpenSettled.current = true
+    // A reload should not open it again.
+    const url = new URL(window.location.href)
+    if (url.searchParams.has("jobb")) {
+      url.searchParams.delete("jobb")
+      window.history.replaceState(null, "", url.pathname + url.search)
+    }
+    openOptimize()
+  }, [linkedJobAd, user, formData, openOptimize])
+
+  const isSectionShown = (id: string) =>
+    addedSections.includes(id) && staticSectionSections.find((section) => section.id === id)?.hidden !== true
+
+  const getOptimizeCv = (): OptimizeCvInput => {
+    const values = form.getValues()
+    const shown = addedSections.filter(isSectionShown)
+    return {
+      personalInfo: {
+        title: asText(values?.personalInfo?.title),
+        phone: asText(values?.personalInfo?.phone),
+      },
+      // Same positions as the form, page breaks included, so workExperience.<n>
+      // in a proposal points at the entry it was written for.
+      workExperience: (Array.isArray(values?.workExperience) ? values.workExperience : []).map((job: any) =>
+        !job || job.isPageBreak
+          ? { title: "", company: "", description: "" }
+          : {
+              title: asText(job.title),
+              company: asText(job.company),
+              description: htmlToPlainText(job.description),
+            },
+      ),
+      skills: (Array.isArray(values?.skills) ? values.skills : []).map((skill: any) => ({
+        name: asText(skill?.name),
+        level: asText(skill?.level),
+      })),
+      sections: {
+        profile: { description: htmlToPlainText(values?.sections?.profile?.description) },
+      },
+      sectionOrder: shown,
+      // The personal details block has no heading on the CV itself, so there is
+      // nothing for the heading rule to standardise.
+      sectionTitles: Object.fromEntries(
+        shown.filter((id) => id !== "personalInfo").map((id) => [id, sectionNamesMap[id] || ""]),
+      ),
+    }
+  }
+
+  /**
+   * Writes one ticked proposal into the form, through the same fields and
+   * handlers the form itself uses, so the preview and autosave follow.
+   * Returns false, and changes nothing, for a path it does not know, an entry
+   * that is gone, or a field that no longer holds the text the proposal was
+   * written against (its "Nu:").
+   */
+  const applyOptimizeProposal = (proposal: Proposal): boolean => {
+    const path = asText(proposal?.path)
+    const after = asText(proposal?.after).trim()
+    if (!after) return false
+    const stillReads = (current: string) => current.trim() === asText(proposal.before).trim()
+    const oneLine = (value: string) => value.replace(/\s+/g, " ").trim()
+    const write = (name: string, value: unknown) => form.setValue(name, value, { shouldDirty: true })
+
+    if (path === "personalInfo.phone" || path === "personalInfo.title") {
+      if (!stillReads(asText(form.getValues(path)))) return false
+      write(path, oneLine(after))
+      return true
+    }
+
+    if (path === "sections.profile.description") {
+      const profile = form.getValues("sections.profile")
+      const isObject = !!profile && typeof profile === "object" && !Array.isArray(profile)
+      if (!stillReads(htmlToPlainText(isObject ? profile.description : ""))) return false
+      const html = plainTextToHtml(after)
+      if (isObject) write(path, html)
+      else write("sections.profile", { description: html })
+      if (!addedSections.includes("profile")) handleAddSection("profile")
+      return true
+    }
+
+    const experience = path.match(/^workExperience\.(\d+)\.(title|description)$/)
+    if (experience) {
+      const list = form.getValues("workExperience")
+      const entry = Array.isArray(list) ? list[Number(experience[1])] : null
+      if (!entry || entry.isPageBreak) return false
+      if (experience[2] === "title") {
+        if (!stillReads(asText(entry.title))) return false
+        write(path, oneLine(after))
+      } else {
+        if (!stillReads(htmlToPlainText(entry.description))) return false
+        write(path, plainTextToHtml(after))
+      }
+      return true
+    }
+
+    const heading = path.match(/^sectionTitle\.([A-Za-z]+)$/)
+    if (heading) {
+      const id = heading[1]
+      if (id === "personalInfo" || !isSectionShown(id)) return false
+      if (!stillReads(sectionNamesMap[id] || "")) return false
+      handleRenameSection(id, oneLine(after).slice(0, 60))
+      return true
+    }
+
+    if (path === "sectionOrder") {
+      // The proposal only carries the order as display text, so it is worked
+      // out again here with the rule's own ranking (lib/cv-optimize/rules.ts).
+      const ranked = (ids: string[]) => {
+        const rank = (id: string) => {
+          const preferred = PREFERRED_ORDER.indexOf(id)
+          return preferred === -1 ? PREFERRED_ORDER.length + ids.indexOf(id) : preferred
+        }
+        return [...ids].sort((a, b) => rank(a) - rank(b))
+      }
+      if (ranked(addedSections).join(",") === addedSections.join(",")) return false
+      // Updater functions, as in handleDragEnd, so a section added by another
+      // proposal in the same batch is kept.
+      setAddedSections((prev) => ranked(prev))
+      setStaticSectionSections((prev) => {
+        const order = ranked(prev.map((section) => section.id))
+        return [...prev].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
+      })
+      return true
+    }
+
+    if (path === "skills") {
+      const current = form.getValues("skills")
+      const kept = (Array.isArray(current) ? current : []).filter((skill: any) => asText(skill?.name).trim() !== "")
+      const known = new Set(kept.map((skill: any) => asText(skill.name).trim().toLowerCase()))
+      const added: Array<{ name: string; level: string }> = []
+      for (const keyword of Array.isArray(proposal.keywords) ? proposal.keywords : []) {
+        const name = oneLine(asText(keyword)).slice(0, 80)
+        if (!name || known.has(name.toLowerCase())) continue
+        known.add(name.toLowerCase())
+        // No level: the CV text shows the skill, not how good the person is at it.
+        added.push({ name, level: "" })
+      }
+      if (added.length === 0) return false
+      write("skills", [...kept, ...added])
+      if (!isSectionShown("skills")) handleAddSection("skills")
+      return true
+    }
+
+    return false
+  }
+
+  const applyOptimizeProposals = (proposals: Proposal[]) => {
+    let applied = 0
+    let skipped = 0
+    for (const proposal of Array.isArray(proposals) ? proposals : []) {
+      try {
+        if (applyOptimizeProposal(proposal)) applied += 1
+        else skipped += 1
+      } catch (error) {
+        skipped += 1
+        console.error("Could not apply proposal:", proposal?.path, error)
+      }
+    }
+    if (applied === 0 && skipped === 0) return
+    const done = applied === 1 ? "1 ändring är införd i ditt CV." : `${applied} ändringar är införda i ditt CV.`
+    const left = skipped === 0 ? "" : ` ${skipped} förslag kunde inte införas.`
+    toast({
+      title: applied > 0 ? "CV:t är uppdaterat" : "Inga ändringar gjordes",
+      description: applied > 0 ? `${done}${left} Läs igenom texterna innan du skickar din ansökan.` : left.trim(),
+    })
+  }
+
   return (
     <FormProvider {...form}>
       <div className="flex flex-col h-screen">
@@ -2664,7 +3043,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
             </button>
 
             {/* Completeness meter */}
-            <div className="mb-6">
+            <div className="mb-1.5">
               <div className="flex items-baseline justify-between mb-2">
                 <span className="text-sm font-medium text-gray-900">Färdigställt</span>
                 <span className="text-sm font-semibold text-[#00bf63] tabular-nums">
@@ -2686,6 +3065,24 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-gray-500">{progressMessage}</p>
             </div>
+
+            {/*
+              Open jobs for the role and place in the CV. One line whose room is
+              always reserved, so an answer arriving while the user types moves
+              nothing; the rest opens only when the user clicks "Visa".
+            */}
+            <JobMatchCard result={jobMatch} className="mb-4" />
+
+            {CV_OPTIMIZE_ENABLED && (
+              <button
+                type="button"
+                onClick={openOptimize}
+                className="mb-6 flex w-fit items-center gap-1.5 text-left text-[13px] font-medium text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline"
+              >
+                <Wand2 className="h-3.5 w-3.5 shrink-0 text-[#00bf63]" />
+                Anpassa CV:t efter en jobbannons
+              </button>
+            )}
 
             {/* Main sections */}
             {!isMounted ? (
@@ -3150,6 +3547,18 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
         onImport={applyImportedCv}
       />
 
+      {CV_OPTIMIZE_ENABLED && hasOpenedOptimize && (
+        <CvOptimizeDialog
+          isOpen={isOptimizeOpen}
+          onClose={() => setIsOptimizeOpen(false)}
+          getCv={getOptimizeCv}
+          onApply={applyOptimizeProposals}
+          jobAd={linkedJobAd}
+          onUpgrade={() => setShowCapturePayment(true)}
+          onSignIn={() => setShowSignupPopup(true)}
+        />
+      )}
+
       {/* ── Mobile: sticky action bar ─────────────────────────────
           The side-by-side preview is hidden below `sm`, so this bar is the
           way into the preview and template picker on phones. */}
@@ -3375,8 +3784,9 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(({ select
 
       {/* Add payment and signup popups */}
       {showCapturePayment && (
-        <CapturePayment 
+        <CapturePayment
           isOpen={showCapturePayment}
+          jobMatch={jobMatch}
           onClose={() => setShowCapturePayment(false)}
           onPaymentSuccess={() => {
             setShowCapturePayment(false)

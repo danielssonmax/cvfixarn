@@ -4,6 +4,7 @@ import { getStripeInstance } from "@/lib/stripe"
 import { createClient } from "@supabase/supabase-js"
 import { logSecurityEvent, SecurityEventType } from "@/lib/security-logger"
 import { createSecureApiResponse, createSecureErrorResponse } from "@/lib/security-headers"
+import { ENDED_STATUSES, syncPremiumWithSubscription } from "@/lib/subscription"
 import type Stripe from "stripe"
 
 const stripe = getStripeInstance()
@@ -62,6 +63,51 @@ export async function POST(req: Request) {
     const customerEmail = session.customer_email || session.customer_details?.email
 
     if (userId) {
+      // This event can arrive late: Stripe retries for days, and failed events
+      // can be resent from the dashboard. If the subscription it started has
+      // ended since, granting now would hand premium back with nothing left to
+      // take it away again. "incomplete" is left out on purpose: that is a first
+      // payment still in progress, not an ended subscription.
+      const subscriptionId =
+        typeof session.subscription === "string" ? session.subscription : session.subscription?.id
+      if (subscriptionId) {
+        let currentStatus: string | null = null
+        try {
+          const current = await stripe.subscriptions.retrieve(
+            subscriptionId,
+            {},
+            { timeout: 5_000, maxNetworkRetries: 0 }
+          )
+          currentStatus = current.status
+        } catch (error) {
+          // Stripe could not be asked: grant as before. A new customer must
+          // never be kept waiting because of this check.
+          console.warn(
+            "Could not check subscription before granting premium:",
+            error instanceof Error ? error.message : error
+          )
+        }
+
+        if (currentStatus && currentStatus !== "incomplete" && ENDED_STATUSES.has(currentStatus)) {
+          logSecurityEvent(
+            SecurityEventType.PAYMENT_ATTEMPT,
+            req as any,
+            {
+              eventType: event.type,
+              sessionId: session.id,
+              subscriptionId,
+              status: currentStatus,
+              skipped: 'subscription_ended',
+              endpoint: '/api/webhooks/stripe'
+            },
+            userId,
+            undefined,
+            'low'
+          )
+          return createSecureApiResponse({ received: true })
+        }
+      }
+
       // Log successful payment
       logSecurityEvent(
         SecurityEventType.PAYMENT_SUCCESS,
@@ -120,6 +166,66 @@ export async function POST(req: Request) {
         
         return createSecureErrorResponse("Failed to update premium status", 500)
       }
+    }
+  }
+
+  // Ending a subscription is what takes premium away again. invoice.payment_failed
+  // is deliberately not handled: a failed charge moves the subscription to
+  // past_due (still access) and, once Stripe gives up, to canceled or unpaid,
+  // and both moves arrive here as subscription events anyway.
+  if (
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
+  ) {
+    const subscription = event.data.object as Stripe.Subscription
+    const logDetails = {
+      eventType: event.type,
+      subscriptionId: subscription.id,
+      eventStatus: subscription.status,
+      endpoint: '/api/webhooks/stripe'
+    }
+
+    try {
+      const result = await syncPremiumWithSubscription(subscription.id)
+      const revoked = result.decision === "revoke" && result.changed
+      const unresolved = result.reason === "user_not_resolved" || result.reason === "incomplete_lookup"
+
+      logSecurityEvent(
+        result.decision === "grant"
+          ? SecurityEventType.PAYMENT_SUCCESS
+          : unresolved
+            ? SecurityEventType.PAYMENT_FAILURE
+            : SecurityEventType.PAYMENT_ATTEMPT,
+        req as any,
+        {
+          ...logDetails,
+          status: result.status,
+          decision: result.decision,
+          premiumChanged: result.changed,
+          resolvedVia: result.via,
+          reason: result.reason
+        },
+        result.userId ?? undefined,
+        undefined,
+        revoked || unresolved ? 'medium' : 'low'
+      )
+    } catch (error) {
+      console.error("Error syncing premium status with subscription:", error)
+
+      logSecurityEvent(
+        SecurityEventType.PAYMENT_FAILURE,
+        req as any,
+        {
+          ...logDetails,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        },
+        undefined,
+        undefined,
+        'high'
+      )
+
+      // Nothing was changed. A 500 makes Stripe deliver the event again later.
+      return createSecureErrorResponse("Failed to sync premium status", 500)
     }
   }
 

@@ -51,3 +51,15 @@ ABANDONED_CV_BATCH_LIMIT=40
 ABANDONED_CV_THROTTLE_MS=550
 # Sätt till "true" för att logga utan att skicka
 ABANDONED_CV_DRY_RUN=false
+
+# Jobbmejl (veckomejl med nya jobbannonser, skickas måndagar 07:00 UTC till dem
+# som själva slagit på det i CV-redigeraren). Alla valfria - värdena nedan är standard.
+# Kräver tabellen job_alerts: kör supabase/migrations/20261118000000_create_job_alerts.sql
+# Max antal mail per körning
+JOB_ALERTS_BATCH_LIMIT=30
+# Paus mellan utskick i ms (Resend tillåter ca 2 req/s)
+JOB_ALERTS_THROTTLE_MS=550
+# Avbryt körningen efter så här många ms (funktionen får köra max 60 s)
+JOB_ALERTS_TIME_BUDGET_MS=45000
+# Sätt till "true" för att söka och logga utan att skicka
+JOB_ALERTS_DRY_RUN=false

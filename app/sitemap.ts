@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { cvExamples } from "@/lib/cv-examples"
 import { COVER_LETTERS_UPDATED, coverLetterExamples } from "@/lib/cover-letter-examples"
+import { listLandings } from "@/lib/jobs/landing"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.cvfixaren.se"
@@ -60,6 +61,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(COVER_LETTERS_UPDATED),
       changeFrequency: "monthly" as const,
       priority: 0.7,
+    })),
+    {
+      url: `${baseUrl}/lediga-jobb`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.6,
+    },
+    // Profession and place pages for jobs; the list lives in lib/jobs/landing.ts.
+    ...listLandings().map((landing) => ({
+      url: `${baseUrl}${landing.path}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.5,
     })),
     {
       url: `${baseUrl}/blogg`,
@@ -201,6 +215,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/anvandarvillkor`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/integritetspolicy`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,

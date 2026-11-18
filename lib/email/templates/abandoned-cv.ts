@@ -1,4 +1,5 @@
 import { BRAND } from "../client"
+import { JOBS_SOURCE_LABEL, formatJobCount } from "../../jobs/format"
 
 /**
  * "Abandoned cart" email for people who built a CV but never started their
@@ -24,6 +25,19 @@ export interface AbandonedCvEmailInput {
   fallbackUrl: string
   /** Signed one-click opt-out. */
   unsubscribeUrl: string
+  /** Live ad count for the CV's occupation. Without it the email is exactly as before. */
+  jobLine?: AbandonedCvJobLine | null
+}
+
+/** "Just nu finns <count> lediga jobb som <occupation> i <place>." */
+export interface AbandonedCvJobLine {
+  count: number
+  /** Lowercase, reads after "som": "undersköterska". */
+  occupation: string
+  /** Reads after "i": "Västerås", "Västmanlands län" or "hela Sverige". */
+  place: string
+  /** Absolute link to the same search on /lediga-jobb, so the page shows the same number. */
+  url: string
 }
 
 function escapeHtml(value: string): string {
@@ -55,6 +69,7 @@ export function buildAbandonedCvEmail(input: AbandonedCvEmailInput): {
     resumeUrl,
     fallbackUrl,
     unsubscribeUrl,
+    jobLine,
   } = input
 
   const name = firstName ? escapeHtml(firstName) : null
@@ -77,6 +92,32 @@ export function buildAbandonedCvEmail(input: AbandonedCvEmailInput): {
 
   const doneLine = escapeHtml(doneSentence)
   const missingLine = escapeHtml(missingSentence)
+
+  // Both stay empty strings without a usable job line, which keeps the email
+  // identical to the version without the jobs add-on.
+  let jobLineHtml = ""
+  let jobLineText = ""
+  if (
+    jobLine &&
+    jobLine.count > 0 &&
+    jobLine.occupation &&
+    jobLine.place &&
+    /^https?:\/\//.test(jobLine.url)
+  ) {
+    const jobs = `${formatJobCount(jobLine.count)} som ${jobLine.occupation} i ${jobLine.place}`
+    jobLineHtml = `
+                          <div style="font-size:15px;line-height:23px;color:${BRAND.ink};font-weight:bold;">
+                            Just nu finns <a href="${escapeHtml(jobLine.url)}" target="_blank" style="color:${BRAND.ink};text-decoration:underline;">${escapeHtml(jobs)}</a>.
+                          </div>
+                          <div style="font-size:12px;line-height:18px;color:${BRAND.muted};padding:2px 0 10px 0;">
+                            ${escapeHtml(JOBS_SOURCE_LABEL)}
+                          </div>`
+    jobLineText = `Just nu finns ${jobs}.
+${jobLine.url}
+${JOBS_SOURCE_LABEL}
+
+`
+  }
 
   // Progress bar as two table cells: the only technique that survives Outlook.
   const filled = Math.max(4, Math.min(100, percent))
@@ -259,7 +300,7 @@ export function buildAbandonedCvEmail(input: AbandonedCvEmailInput): {
                   <td class="sm-px" style="padding:6px 44px 0 44px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f8f9fa;border-radius:12px;">
                       <tr>
-                        <td style="padding:18px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:${BRAND.body};">
+                        <td style="padding:18px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:${BRAND.body};">${jobLineHtml}
                           De flesta jobbannonser får sin största del av ansökningarna under de
                           första dygnen. Ju snabbare ditt CV är nedladdningsbart, desto fler
                           tjänster hinner du söka medan de fortfarande är färska.
@@ -318,7 +359,7 @@ ${resumeUrl}
 DET HÄR FÅR DU NÄR DU SLUTFÖR
 ${benefits.map(([t, b]) => `* ${t} - ${b}`).join("\n")}
 
-De flesta jobbannonser får sin största del av ansökningarna under de första
+${jobLineText}De flesta jobbannonser får sin största del av ansökningarna under de första
 dygnen. Ju snabbare ditt CV är nedladdningsbart, desto fler tjänster hinner du
 söka medan de fortfarande är färska.
 

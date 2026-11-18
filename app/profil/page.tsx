@@ -13,6 +13,8 @@ import Link from "next/link"
 import { Header } from "@/components/header"
 import { SignupPopup } from "@/components/signup-popup"
 import { CVThumbnail } from "@/components/cv-thumbnail"
+import { JobMatchCard } from "@/components/job-match-card"
+import { useJobMatch } from "@/hooks/use-job-match"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +42,17 @@ export default function ProfilePage() {
   const [popupMode, setPopupMode] = useState<"signup" | "login">("login")
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
+
+  // Open jobs for the CV worked on last (the list comes newest first). Null
+  // until there is an answer, and on any failure.
+  const latestCv = cvs[0]?.cvData
+  const jobMatch = useJobMatch({
+    title: latestCv?.personal_info?.title,
+    location: latestCv?.personal_info?.location,
+    experienceTitles: Array.isArray(latestCv?.work_experience)
+      ? latestCv.work_experience.map((entry: any) => entry?.title)
+      : [],
+  })
 
   useEffect(() => {
     if (user) {
@@ -236,9 +249,11 @@ export default function ProfilePage() {
         {/* Main Content Area */}
         <div className="min-w-0 flex-1 px-4 py-6 sm:px-6">
             {/* Header Bar */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="relative flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold tracking-tight text-ink">CV:n</h1>
-          
+              {/* Sits in the gap under the heading, so the CV list does not move when it arrives */}
+              <JobMatchCard result={jobMatch} variant="compact" className="absolute inset-x-0 top-full" />
+
           <div className="flex items-center gap-3">
             {/* View Toggle */}
             <div className="flex items-center border rounded-lg">

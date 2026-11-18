@@ -19,6 +19,7 @@ import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 import { supabase } from "@/lib/supabase"
 import { useSearchParams } from "next/navigation"
+import type { JobMatchResult } from "@/lib/jobs/types"
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
   ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -84,6 +85,14 @@ export default function CVMallClient() {
   const editId = searchParams.get('edit')
   const shouldOpenPayment = searchParams.get('pay') === 'true'
 
+  // The editor has already looked up open jobs for the CV; the paywall shows
+  // that answer if there is one by now, and never fetches or waits for it.
+  const [paywallJobMatch, setPaywallJobMatch] = useState<JobMatchResult | null>(null)
+  const openCapturePayment = useCallback(() => {
+    setPaywallJobMatch(editorRef.current?.getJobMatch() ?? null)
+    setShowCapturePayment(true)
+  }, [])
+
   // Read the Stripe return params once, on first render: the editor can rewrite
   // the URL before the signed-in user has loaded.
   const [checkoutReturn] = useState(() =>
@@ -142,7 +151,7 @@ export default function CVMallClient() {
       if (subscribed) {
         setIsSubscribed(true)
       } else {
-        setShowCapturePayment(true)
+        openCapturePayment()
       }
     })
   }, [shouldOpenPayment, user])
@@ -368,7 +377,7 @@ export default function CVMallClient() {
   }, [user])
 
   const handleSignupSuccess = () => {
-    setShowCapturePayment(true)
+    openCapturePayment()
   }
 
   const handleDownloadClick = () => {
@@ -376,7 +385,7 @@ export default function CVMallClient() {
       if (isSubscribed) {
         downloadPDF()
       } else {
-        setShowCapturePayment(true)
+        openCapturePayment()
       }
     } else {
       setShowSignupPopup(true)
@@ -557,6 +566,7 @@ export default function CVMallClient() {
       {/* Capture Payment Dialog */}
       <CapturePayment
         isOpen={showCapturePayment}
+        jobMatch={paywallJobMatch}
         onClose={() => setShowCapturePayment(false)}
         onPaymentSuccess={() => {
           setShowCapturePayment(false)
@@ -571,7 +581,7 @@ export default function CVMallClient() {
         onClose={() => setShowSignupPopup(false)}
         onSignupSuccess={() => {
           setShowSignupPopup(false)
-          setShowCapturePayment(true)
+          openCapturePayment()
         }}
         onOpenLogin={() => setPopupMode("login")}
       />

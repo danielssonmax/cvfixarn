@@ -10,6 +10,7 @@ import { Check } from "lucide-react"
 import { sanitizeHTML } from "@/lib/sanitize"
 import { cvExamples } from "@/lib/cv-examples"
 import { coverLetterExamples, cvSlugForLetter } from "@/lib/cover-letter-examples"
+import { professionLandingForExample } from "@/lib/jobs/landing"
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -52,6 +53,7 @@ export default async function CVExamplePage({ params }: Props) {
   }
 
   const letter = coverLetterExamples.find((candidate) => cvSlugForLetter(candidate.slug) === resolvedParams.slug)
+  const jobsPage = professionLandingForExample("cv", resolvedParams.slug)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -186,6 +188,13 @@ export default async function CVExamplePage({ params }: Props) {
               <p className="mt-8">
                 <Link href={`/exempel-personliga-brev/${letter.slug}`} className="font-semibold text-brand-700 hover:underline">
                   Se ett exempel på personligt brev som {letter.roleLower}
+                </Link>
+              </p>
+            )}
+            {jobsPage && (
+              <p className={letter ? "mt-3" : "mt-8"}>
+                <Link href={jobsPage.path} className="font-semibold text-brand-700 hover:underline">
+                  Se {jobsPage.heading.toLowerCase()}
                 </Link>
               </p>
             )}

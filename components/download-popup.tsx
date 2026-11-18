@@ -28,8 +28,15 @@ export function DownloadPopup({ isOpen, onClose, onDownload }: DownloadPopupProp
         </div>
         <div className="mt-4 space-y-4">
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-            Genom att ladda ner detta CV bekräftar du att du har läst och godkänt våra användarvillkor och
-            sekretesspolicy.
+            Genom att ladda ner detta CV bekräftar du att du har läst och godkänt våra{" "}
+            <a href="/anvandarvillkor" target="_blank" rel="noopener" className="underline">
+              användarvillkor
+            </a>{" "}
+            och vår{" "}
+            <a href="/integritetspolicy" target="_blank" rel="noopener" className="underline">
+              integritetspolicy
+            </a>
+            .
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
             <Button 
